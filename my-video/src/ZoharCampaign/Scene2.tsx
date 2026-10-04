@@ -1,8 +1,13 @@
 import React from "react";
-import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { GoldDust, RevealText } from "./effects";
 import { ZoharImageCard } from "./ZoharImageCard";
-import { COLORS, HEARTBEAT_PERIOD, IMAGES } from "./theme";
+import { COLORS, HEARTBEAT_PERIOD, IMAGES, cue } from "./theme";
 
 // Lub-dub envelope matching the heartbeat SFX (second beat 0.2s = 6 frames later).
 const heartbeat = (frame: number) => {
@@ -12,18 +17,20 @@ const heartbeat = (frame: number) => {
   return Math.min(1, lub + dub);
 };
 
-// Scene 2 (4–9s): struggle and persistent hope. Stormy, dark road; the
+// Scene 2: struggle and persistent hope. Stormy, dark road; the
 // words land one by one and a heartbeat glow pulses behind "הלב שלו".
 export const Scene2: React.FC = () => {
   const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
   const beat = heartbeat(frame);
-  const heartIn = interpolate(frame, [60, 80], [0, 1], {
+  const heartCue = cue("l4", "struggle", 9).delay;
+  const heartIn = interpolate(frame, [heartCue - 10, heartCue + 10], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   // ECG trace that draws across the screen in time with the beat.
-  const ecgProgress = interpolate(frame, [0, 150], [0, 1]);
+  const ecgProgress = interpolate(frame, [0, durationInFrames], [0, 1]);
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.night }}>
@@ -75,8 +82,7 @@ export const Scene2: React.FC = () => {
       >
         <RevealText
           text="יש מי שכבר התפלל, קיווה, ניסה, נשבר וקם שוב –"
-          delay={6}
-          stagger={7}
+          {...cue("l3", "struggle", 10)}
           size={80}
           weight={700}
         />
@@ -98,8 +104,7 @@ export const Scene2: React.FC = () => {
           />
           <RevealText
             text="ועדיין הלב שלו נשאר עם אותה בקשה שלא זזה."
-            delay={70}
-            stagger={5}
+            {...cue("l4", "struggle", 9)}
             size={84}
             weight={900}
             highlight={["הלב", "שלו"]}

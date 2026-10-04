@@ -1,19 +1,26 @@
 import React from "react";
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  Easing,
+  interpolate,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import { Glow, GoldDust, LightRays, RevealText } from "./effects";
 import { ZoharImageCard } from "./ZoharImageCard";
-import { COLORS, IMAGES } from "./theme";
+import { COLORS, IMAGES, cue } from "./theme";
 
-// Scene 3 (9–14s): the turning point. Darkness gives way to golden light
+// Scene 3: the turning point. Darkness gives way to golden light
 // bursting from the centre, revealing the glowing book and the lit path.
 export const Scene3: React.FC = () => {
   const frame = useCurrentFrame();
-  const light = interpolate(frame, [10, 140], [0, 1], {
+  const { durationInFrames } = useVideoConfig();
+  const light = interpolate(frame, [10, durationInFrames - 10], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.inOut(Easing.cubic),
   });
-  const burst = interpolate(frame, [0, 150], [0.3, 1.6]);
+  const burst = interpolate(frame, [0, durationInFrames], [0.3, 1.6]);
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#05070f" }}>
@@ -45,16 +52,14 @@ export const Scene3: React.FC = () => {
       >
         <RevealText
           text="דווקא מהמקום הזה, של כאב אמיתי ותקווה שלא כבתה,"
-          delay={6}
-          stagger={5}
+          {...cue("l5", "turning", 9)}
           size={76}
           weight={700}
           highlight={["ותקווה"]}
         />
         <RevealText
           text="נפתחת אפשרות קטנה – אבל עם משמעות גדולה:"
-          delay={70}
-          stagger={5}
+          {...cue("l6", "turning", 8)}
           size={84}
           weight={900}
           highlight={["משמעות", "גדולה:"]}

@@ -5,10 +5,10 @@
 //
 // Writes: music.wav, rumble.wav, heartbeat.wav, riser.wav, chime.wav, pop.wav
 //
-// Score layout (matches the video's script):
-//   0–9s   soft piano arpeggios over gentle strings   (D minor)
-//   9–14s  build: strings swell, timpani roll, filter opens
-//   14–30s triumphant climax in F major, full strings, brass, timpani
+// Score layout (section times follow the voiceover-driven scenes):
+//   0 → BUILD_START     soft piano arpeggios over gentle strings   (D minor)
+//   BUILD_START → REVEAL build: strings swell, timpani roll, filter opens
+//   REVEAL → TOTAL       triumphant climax in F major, strings, brass, timpani
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -16,6 +16,12 @@ import { join } from "node:path";
 const SR = 44100;
 const outDir = process.argv[2] ?? ".";
 mkdirSync(outDir, { recursive: true });
+
+// Must match SCENES / DURATION in src/ZoharCampaign/theme.ts (seconds):
+// BUILD_START = turning.from, REVEAL = zohar.from, TOTAL = DURATION.
+const BUILD_START = 486 / 30;
+const REVEAL = 784 / 30;
+const TOTAL = 1379 / 30;
 
 // Must match HEARTBEAT_PERIOD in src/ZoharCampaign/theme.ts (28 frames @30fps).
 const HEARTBEAT_PERIOD = 28 / 30;
@@ -198,19 +204,21 @@ const brass = (tr, start, dur, notes, gain) =>
 // Music
 // ---------------------------------------------------------------------------
 {
-  const tr = makeTrack(30);
+  const tr = makeTrack(TOTAL);
 
-  // Section A (0–9s): D minor, gentle. Dm – Bb – F – C, 2.25s each.
+  // Section A (0 → BUILD_START): D minor, gentle. Dm – Bb – F – C, looped.
   const A = [
     [50, [62, 65, 69]],
     [46, [62, 65, 70]],
     [41, [60, 65, 69]],
     [48, [60, 64, 67]],
   ];
-  A.forEach(([bass, chord], i) => {
-    const t0 = i * 2.25;
-    strings(tr, t0, 2.25, [bass, ...chord], 0.05, 0.02 + i * 0.004);
-    // Piano arpeggio: up through the chord and back, 8th notes.
+  const aLen = BUILD_START / 8;
+  for (let i = 0; i < 8; i++) {
+    const [bass, chord] = A[i % 4];
+    const t0 = i * aLen;
+    strings(tr, t0, aLen, [bass, ...chord], 0.05, 0.02 + (i % 4) * 0.004);
+    // Piano arpeggio: up through the chord and back.
     const arp = [
       chord[0],
       chord[1],
@@ -220,71 +228,68 @@ const brass = (tr, start, dur, notes, gain) =>
       chord[1],
     ];
     arp.forEach((n, k) =>
-      piano(tr, t0 + k * 0.375, n, 0.11, k % 2 ? 0.4 : -0.4),
+      piano(tr, t0 + (k * aLen) / 6, n, 0.11, k % 2 ? 0.4 : -0.4),
     );
-  });
+  }
 
-  // Section B (9–14s): build. Gm – Eb – Bb – C(sus→maj).
+  // Section B (BUILD_START → REVEAL): build. Gm – Eb – Bb – C, twice.
   const B = [
     [43, [62, 67, 70]],
     [39, [63, 67, 70]],
     [46, [62, 65, 70]],
     [48, [60, 65, 67]],
   ];
-  B.forEach(([bass, chord], i) => {
-    const t0 = 9 + i * 1.25;
+  const bSpan = REVEAL - BUILD_START;
+  const bLen = bSpan / 8;
+  for (let i = 0; i < 8; i++) {
+    const [bass, chord] = B[i % 4];
+    const t0 = BUILD_START + i * bLen;
     strings(
       tr,
       t0,
-      1.25,
+      bLen,
       [bass, bass + 12, ...chord, chord[2] + 12],
       0.055,
-      (t) => 0.03 + 0.06 * ((t - 9) / 5),
+      (t) => 0.03 + 0.06 * ((t - BUILD_START) / bSpan),
     );
-    [0, 0.3125, 0.625, 0.9375].forEach((d, k) =>
-      piano(tr, t0 + d, chord[k % 3] + 12, 0.08 + 0.02 * i),
+    [0, 1, 2, 3].forEach((k) =>
+      piano(tr, t0 + (k * bLen) / 4, chord[k % 3] + 12, 0.08 + 0.005 * i),
     );
-  });
-  // Timpani roll that accelerates into 14s.
-  for (let t = 11; t < 14; ) {
-    const p = (t - 11) / 3;
+  }
+  // Timpani roll that accelerates into the reveal.
+  for (let t = REVEAL - 3; t < REVEAL; ) {
+    const p = (t - (REVEAL - 3)) / 3;
     timpani(tr, t, 38, 0.05 + 0.14 * p * p);
     t += 0.18 - 0.12 * p;
   }
 
-  // Section C (14–30s): climax in F major. F – C – Dm – Bb, 2s each, twice.
+  // Section C (REVEAL → end): climax in F major. F – C – Dm – Bb, 2s each.
   const C = [
     [41, [65, 69, 72]],
     [48, [64, 67, 72]],
     [50, [65, 69, 74]],
     [46, [65, 70, 74]],
   ];
-  for (let rep = 0; rep < 2; rep++) {
-    C.forEach(([bass, chord], i) => {
-      const t0 = 14 + rep * 8 + i * 2;
-      strings(
-        tr,
-        t0,
-        2,
-        [bass, bass + 12, ...chord, chord[0] + 12, chord[2] + 12],
-        0.065,
-        0.11,
-        0.3,
-      );
-      brass(tr, t0, 2, [bass + 12, chord[0], chord[1]], 0.05);
-      timpani(tr, t0, bass - 12 < 36 ? bass : bass - 12, 0.45);
-      timpani(tr, t0 + 1, bass, 0.2);
-      // Soaring piano melody in octaves.
-      const melody = [
-        chord[2] + 12,
-        chord[1] + 12,
-        chord[0] + 12,
-        chord[1] + 12,
-      ];
-      melody.forEach((n, k) => {
-        piano(tr, t0 + k * 0.5, n, 0.09, -0.3);
-        piano(tr, t0 + k * 0.5, n - 12, 0.07, 0.3);
-      });
+  for (let i = 0; REVEAL + i * 2 < TOTAL; i++) {
+    const [bass, chord] = C[i % 4];
+    const t0 = REVEAL + i * 2;
+    strings(
+      tr,
+      t0,
+      2,
+      [bass, bass + 12, ...chord, chord[0] + 12, chord[2] + 12],
+      0.065,
+      0.11,
+      0.3,
+    );
+    brass(tr, t0, 2, [bass + 12, chord[0], chord[1]], 0.05);
+    timpani(tr, t0, bass - 12 < 36 ? bass : bass - 12, 0.45);
+    timpani(tr, t0 + 1, bass, 0.2);
+    // Soaring piano melody in octaves.
+    const melody = [chord[2] + 12, chord[1] + 12, chord[0] + 12, chord[1] + 12];
+    melody.forEach((n, k) => {
+      piano(tr, t0 + k * 0.5, n, 0.09, -0.3);
+      piano(tr, t0 + k * 0.5, n - 12, 0.07, 0.3);
     });
   }
   reverb(tr, 0.32, 1.2);

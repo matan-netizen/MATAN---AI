@@ -2,9 +2,9 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { Glow, GoldDust, RevealText } from "./effects";
 import { ZoharImageCard } from "./ZoharImageCard";
-import { COLORS, IMAGES } from "./theme";
+import { COLORS, IMAGES, cue } from "./theme";
 
-// Scene 1 (0–4s): internal silence and pain. A man alone in thought,
+// Scene 1: internal silence and pain. A man alone in thought,
 // dim candle-warm light, slow push-in, floating gold dust.
 export const Scene1: React.FC = () => {
   const frame = useCurrentFrame();
@@ -51,15 +51,13 @@ export const Scene1: React.FC = () => {
       >
         <RevealText
           text="יש רגעים שאדם שואל את עצמו בשקט, בלי שאף אחד ישמע…"
-          delay={12}
-          stagger={4}
+          {...cue("l1", "silence", 11)}
           size={74}
           weight={500}
         />
         <RevealText
           text="“כמה עוד אפשר לחכות?”"
-          delay={58}
-          stagger={6}
+          {...cue("l2", "silence", 4)}
           size={84}
           weight={900}
           gold

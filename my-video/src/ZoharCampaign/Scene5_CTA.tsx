@@ -10,7 +10,15 @@ import {
 } from "remotion";
 import { Glow, GoldDust, Ornament, RevealText } from "./effects";
 import { ZoharImageCard } from "./ZoharImageCard";
-import { COLORS, GOLD_TEXT, IMAGES, SANS } from "./theme";
+import {
+  COLORS,
+  CTA_POP_FRAME,
+  GOLD_TEXT,
+  IMAGES,
+  SANS,
+  SCENES,
+  cue,
+} from "./theme";
 
 const BANNER_H = 860;
 
@@ -122,8 +130,11 @@ const Thumb: React.FC<{
 };
 
 // Pulsing golden CTA with a glowing aura.
-const CTAButton: React.FC<{ label: string }> = ({ label }) => {
-  const frame = useCurrentFrame();
+const CTAButton: React.FC<{ label: string; delay: number }> = ({
+  label,
+  delay,
+}) => {
+  const frame = Math.max(0, useCurrentFrame() - delay);
   const { fps } = useVideoConfig();
   const pop = spring({ frame, fps, config: { damping: 9, stiffness: 160 } });
   const pulse = 1 + 0.045 * Math.sin(frame * 0.22);
@@ -178,7 +189,7 @@ const CTAButton: React.FC<{ label: string }> = ({ label }) => {
   );
 };
 
-// Scene 5 (21–30s): call to action. The Chavria study hall above, golden
+// Scene 5: call to action. The Chavria study hall above, golden
 // beams linking the viewer to the scholars, and a pulsing CTA.
 export const Scene5CTA: React.FC = () => {
   const frame = useCurrentFrame();
@@ -221,8 +232,7 @@ export const Scene5CTA: React.FC = () => {
       <AbsoluteFill style={{ alignItems: "center", paddingTop: 830, gap: 26 }}>
         <RevealText
           text="זה הזמן שלך להתחבר לשפע ולהגשים את כל החלומות"
-          delay={8}
-          stagger={4}
+          {...cue("l10", "cta", 9)}
           size={82}
           weight={900}
           highlight={["לשפע", "החלומות"]}
@@ -237,7 +247,10 @@ export const Scene5CTA: React.FC = () => {
       </AbsoluteFill>
 
       <AbsoluteFill style={{ alignItems: "center", paddingTop: 1480 }}>
-        <CTAButton label="👉 להצטרפות וקבלת הדף האישי" />
+        <CTAButton
+          label="👉 להצטרפות וקבלת הדף האישי"
+          delay={CTA_POP_FRAME - SCENES.cta.from}
+        />
       </AbsoluteFill>
     </AbsoluteFill>
   );

@@ -15,12 +15,12 @@ import {
   RevealText,
 } from "./effects";
 import { ZoharImageCard } from "./ZoharImageCard";
-import { COLORS, GOLD_TEXT, IMAGES, SERIF } from "./theme";
+import { COLORS, GOLD_TEXT, IMAGES, SERIF, cue } from "./theme";
 
 const CARD_W = 860;
 const CARD_H = 860;
 
-// Scene 4 (14–21s): the Holy Zohar revealed. A man holding the golden
+// Scene 4: the Holy Zohar revealed. A man holding the golden
 // embossed Zohar in a shimmering gold frame, light radiating from the book,
 // Hebrew letters floating over a glowing parchment.
 export const Scene4Zohar: React.FC = () => {
@@ -152,26 +152,23 @@ export const Scene4Zohar: React.FC = () => {
       >
         <RevealText
           text="להיות שותף בדף אחד מתוך הזוהר הקדוש,"
-          delay={18}
-          stagger={4}
+          {...cue("l7", "zohar", 7)}
           size={58}
           weight={700}
           highlight={["הזוהר", "הקדוש,"]}
-          style={{ opacity: dim(78) }}
+          style={{ opacity: dim(cue("l8", "zohar", 6).delay) }}
         />
         <RevealText
           text="השם נרשם ב“ספר החבריא של הרשב״י”,"
-          delay={78}
-          stagger={4}
+          {...cue("l8", "zohar", 6)}
           size={58}
           weight={700}
           highlight={["החבריא", "הרשב״י”,"]}
-          style={{ opacity: dim(138) }}
+          style={{ opacity: dim(cue("l9", "zohar", 8).delay) }}
         />
         <RevealText
           text="והדף נשלח כקמיע אישי שפורץ את כל המחסומים."
-          delay={138}
-          stagger={4}
+          {...cue("l9", "zohar", 8)}
           size={58}
           weight={900}
           highlight={["כקמיע", "אישי"]}
