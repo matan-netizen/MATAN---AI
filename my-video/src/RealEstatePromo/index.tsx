@@ -1,0 +1,70 @@
+import React from "react";
+import { AbsoluteFill } from "remotion";
+import {
+  linearTiming,
+  TransitionPresentation,
+  TransitionSeries,
+} from "@remotion/transitions";
+import { fade } from "@remotion/transitions/fade";
+import { slide } from "@remotion/transitions/slide";
+import { wipe } from "@remotion/transitions/wipe";
+import { BackgroundVideoOrGradient } from "./components";
+import {
+  SceneCTA,
+  SceneEquity,
+  SceneGrowth,
+  SceneHook,
+  SceneReturn,
+  SceneUrgency,
+} from "./scenes";
+import { FONT_FAMILY } from "./theme";
+
+export const FPS = 30;
+const T = 12; // transition length in frames
+
+// Every scene except the last is padded by one transition length (T), so
+// after the overlaps the scenes start at the script timecodes
+// (0, 60, 135, 210, 285, 360) and the total comes to 450 frames.
+const SCENES = [
+  { Component: SceneHook, frames: 60 + T },
+  { Component: SceneReturn, frames: 75 + T },
+  { Component: SceneGrowth, frames: 75 + T },
+  { Component: SceneUrgency, frames: 75 + T },
+  { Component: SceneEquity, frames: 75 + T },
+  { Component: SceneCTA, frames: 90 },
+];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TRANSITIONS: TransitionPresentation<any>[] = [
+  slide({ direction: "from-bottom" }),
+  fade(),
+  wipe({ direction: "from-right" }),
+  slide({ direction: "from-left" }),
+  fade(),
+];
+
+export const PROMO_DURATION =
+  SCENES.reduce((sum, s) => sum + s.frames, 0) - TRANSITIONS.length * T;
+
+export const RealEstatePromo: React.FC = () => {
+  return (
+    <AbsoluteFill style={{ direction: "rtl", fontFamily: FONT_FAMILY }}>
+      <BackgroundVideoOrGradient />
+      <TransitionSeries>
+        {SCENES.map(({ Component, frames }, i) => (
+          <React.Fragment key={i}>
+            <TransitionSeries.Sequence durationInFrames={frames}>
+              <Component />
+            </TransitionSeries.Sequence>
+            {i < TRANSITIONS.length ? (
+              <TransitionSeries.Transition
+                presentation={TRANSITIONS[i]}
+                timing={linearTiming({ durationInFrames: T })}
+              />
+            ) : null}
+          </React.Fragment>
+        ))}
+      </TransitionSeries>
+    </AbsoluteFill>
+  );
+};
