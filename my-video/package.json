@@ -27,7 +27,8 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "music": "node scripts/generate-music.mjs scripts/promo-beat.wav && remotion ffmpeg -y -loglevel error -i scripts/promo-beat.wav -c:a libmp3lame -b:a 192k public/music/promo-beat.mp3 && rm scripts/promo-beat.wav"
   },
   "sideEffects": [
     "*.css"
