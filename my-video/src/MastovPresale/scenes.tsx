@@ -26,8 +26,9 @@ import {
   sec,
 } from "./theme";
 
-// Cue times inside each scene follow the pauses in the narration
-// (public/mastov/voiceover.mp3), measured from the scene's start.
+// Cue times are measured from each scene's start and land on the phrases
+// of the narration (public/mastov/voiceover.mp3); scene cuts live in
+// index.tsx.
 
 const clamp = {
   extrapolateLeft: "clamp",
@@ -96,12 +97,63 @@ export const MastovLogo: React.FC<{ width: number }> = ({ width }) => (
   />
 );
 
-// 1 — Hook (0–4.3s): hot pre-sale, 5 units below market.
+// 1 — Hook: attention investors, a smart investment with a big return.
 export const SceneHook: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const five = useEnter(sec(1.6), 9);
-  const shake = Math.sin(frame / 2) * (frame < sec(1.4) ? 2.5 : 0);
+  const shake = Math.sin(frame / 2) * (frame < sec(1.2) ? 2.5 : 0);
+  return (
+    <AbsoluteFill>
+      <KenBurns
+        src={img("skyline-sunset")}
+        x={[70, 82]}
+        zoom={[1.18, 1.0]}
+        durationInFrames={durationInFrames}
+      />
+      <Shade background="linear-gradient(180deg, rgba(0,20,10,0.7) 0%, rgba(0,20,10,0.45) 40%, rgba(0,20,10,0.92) 75%)" />
+      <AbsoluteFill
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 70,
+          fontFamily: FONT_FAMILY,
+          color: COLORS.white,
+          textAlign: "center",
+        }}
+      >
+        <div style={{ rotate: `${shake}deg` }}>
+          <Tag variant="red" delay={2} fontSize={84}>
+            📢 משקיעים, שימו לב!
+          </Tag>
+        </div>
+        <div>
+          <Rise
+            delay={sec(1.5)}
+            style={{ fontSize: 90, fontWeight: 900, lineHeight: 1.1 }}
+          >
+            הזדמנות להשקעה חכמה
+          </Rise>
+          <Rise
+            delay={sec(2.6)}
+            style={{
+              fontSize: 104,
+              fontWeight: 900,
+              lineHeight: 1.1,
+              color: COLORS.gold,
+            }}
+          >
+            עם רווח גדול
+          </Rise>
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// 3 — Five special units below market price.
+export const SceneFive: React.FC = () => {
+  const { durationInFrames } = useVideoConfig();
+  const five = useEnter(4, 9);
   return (
     <AbsoluteFill>
       <KenBurns
@@ -115,20 +167,14 @@ export const SceneHook: React.FC = () => {
       <AbsoluteFill
         style={{
           alignItems: "center",
-          paddingTop: 330,
+          justifyContent: "center",
           fontFamily: FONT_FAMILY,
           color: COLORS.white,
           textAlign: "center",
         }}
       >
-        <div style={{ rotate: `${shake}deg` }}>
-          <Tag variant="red" delay={2} fontSize={68}>
-            🚨 הזדמנות פרי-סייל חמה
-          </Tag>
-        </div>
         <div
           style={{
-            marginTop: 380,
             display: "flex",
             alignItems: "center",
             gap: 30,
@@ -162,9 +208,9 @@ export const SceneHook: React.FC = () => {
             מיוחדות
           </div>
         </div>
-        <div style={{ marginTop: 30 }}>
-          <Tag variant="gold" delay={sec(2.6)} fontSize={70}>
-            מתחת למחירי השוק!
+        <div style={{ marginTop: 50 }}>
+          <Tag variant="gold" delay={sec(1.2)} fontSize={72}>
+            מתחת למחירי השוק! 🚨
           </Tag>
         </div>
       </AbsoluteFill>
@@ -172,8 +218,8 @@ export const SceneHook: React.FC = () => {
   );
 };
 
-// 2 — Project (4.3–11.7s): luxury project in Ramat Gan, next to Bnei Brak.
-export const SceneAllocation: React.FC = () => {
+// 2 — Project: luxury project in Ramat Gan, next to Bnei Brak.
+export const SceneProject: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
     <AbsoluteFill>
@@ -225,7 +271,7 @@ export const SceneAllocation: React.FC = () => {
           gap: 30,
         }}
       >
-        <Tag variant="gold" delay={sec(3.4)} fontSize={68}>
+        <Tag variant="gold" delay={sec(1.9)} fontSize={68}>
           📍 במרחק נגיעה מבני ברק!
         </Tag>
       </div>
@@ -233,7 +279,7 @@ export const SceneAllocation: React.FC = () => {
   );
 };
 
-// 3 — Location (11.7–18.9s): strategic, next to Bnei Brak and main roads.
+// 4 — Location: strategic, next to Bnei Brak and main roads.
 export const SceneLocation: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
@@ -291,13 +337,13 @@ export const SceneLocation: React.FC = () => {
           }}
         >
           <Chip
-            delay={sec(3.4)}
+            delay={sec(5.2)}
             color={COLORS.green}
             icon={Icons.key}
             label="ביקוש קשיח לשכירות"
           />
           <Chip
-            delay={sec(4.9)}
+            delay={sec(6.9)}
             color={COLORS.goldDark}
             icon={Icons.chart}
             label="רווח הון משמעותי במכירה"
@@ -308,7 +354,7 @@ export const SceneLocation: React.FC = () => {
   );
 };
 
-// 4 — Terms intro (18.9–24.6s): unprecedented terms, special pre-sale price.
+// 5 — Terms intro: unprecedented terms, special pre-sale price.
 export const SceneTerms: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
@@ -360,7 +406,7 @@ export const SceneTerms: React.FC = () => {
             חסרי תקדים
           </Rise>
         </div>
-        <Tag delay={sec(3.1)} fontSize={60}>
+        <Tag delay={sec(2.3)} fontSize={60}>
           ✔ מחיר פרי-סייל מיוחד
           <br />
           ל-<Ltr>5</Ltr> הדירות הראשונות!
@@ -418,7 +464,7 @@ const PayBar: React.FC<{
   );
 };
 
-// 5 — Payment plan (24.6–30.4s): 15% on signing, the rest on occupancy.
+// 6 — Payment plan: 15% on signing, the rest on occupancy.
 export const ScenePlan: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
@@ -482,7 +528,7 @@ export const ScenePlan: React.FC = () => {
           />
         </div>
         <div style={{ marginTop: 80 }}>
-          <Tag variant="gold" delay={sec(3.7)} fontSize={62}>
+          <Tag variant="gold" delay={sec(3.8)} fontSize={62}>
             ללא הלוואות קבלן!
           </Tag>
         </div>
@@ -498,7 +544,7 @@ const SPEC = [
   { src: "apt-3room-c", label: "בית חכם", x: [40, 60] },
 ] as const;
 
-// 6 — Rich specification (30.4–34s): quick montage.
+// 7 — Rich specification: quick montage.
 export const SceneSpec: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   const len = Math.floor(durationInFrames / SPEC.length);
@@ -571,7 +617,63 @@ const SpecSlide: React.FC<{
   );
 };
 
-// 7 — CTA (34s–end): click for details, Mastov logo.
+// 8 — Low entry equity and full support.
+export const SceneEquity: React.FC = () => {
+  const { durationInFrames } = useVideoConfig();
+  const big = useEnter(sec(0.5), 10);
+  return (
+    <AbsoluteFill>
+      <KenBurns
+        src={img("penthouse-terrace")}
+        x={[40, 60]}
+        zoom={[1.12, 1.0]}
+        durationInFrames={durationInFrames}
+      />
+      <Shade background="linear-gradient(180deg, rgba(0,32,14,0.88) 0%, rgba(0,32,14,0.7) 50%, rgba(0,32,14,0.92) 100%)" />
+      <AbsoluteFill
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: FONT_FAMILY,
+          color: COLORS.white,
+          textAlign: "center",
+        }}
+      >
+        <Rise
+          delay={2}
+          style={{ fontSize: 76, fontWeight: 700, color: COLORS.gold }}
+        >
+          החל מ-
+        </Rise>
+        <div
+          style={{
+            fontSize: 250,
+            fontWeight: 900,
+            lineHeight: 1,
+            background: GOLD_GRADIENT,
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+            transform: `scale(${big})`,
+            opacity: big,
+          }}
+        >
+          <Ltr>300</Ltr>
+        </div>
+        <Rise delay={sec(0.9)} style={{ fontSize: 96, fontWeight: 900 }}>
+          אלף ₪ הון עצמי
+        </Rise>
+        <div style={{ marginTop: 110 }}>
+          <Tag delay={sec(2.7)} fontSize={68}>
+            🤝 ליווי מלא בכל התהליך
+          </Tag>
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// 9 — CTA: click for details, Mastov logo.
 export const SceneCTA: React.FC = () => {
   const frame = useCurrentFrame();
   const card = useEnter(4, 16);

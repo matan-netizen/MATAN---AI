@@ -1,21 +1,20 @@
-// Synthesizes an original 38s background bed for MastovPresale (it sits
-// under the voiceover), so there are no licensing concerns. Same engine as
+// Synthesizes an original 43.5s background bed for MastovPresale, so there are no licensing concerns. Same engine as
 // generate-uziel-music.mjs; writes a 16-bit WAV.
 //
 //   node scripts/generate-mastov-music.mjs out/mastov-music.wav
 //
-// 120 BPM in C major; whooshes on the scene cuts that follow the narration
-// (4.3, 11.7, 18.9, 24.6, 30.4, 34s) and a riser into the CTA at 34s.
+// 120 BPM in C major; whooshes on the scene cuts (see CUTS in
+// src/MastovPresale/index.tsx) and a riser into the CTA at 39.8s.
 
 import { writeFileSync } from "node:fs";
 
 const SR = 44100;
-const DURATION = 38;
+const DURATION = 43.5;
 const BPM = 120;
 const BEAT = 60 / BPM;
 const N = SR * DURATION;
-const TRANSITIONS = [4.3, 11.7, 18.9, 24.6, 30.4, 34.0];
-const CTA = 34.0;
+const TRANSITIONS = [4.1, 7.7, 10.6, 19.3, 24.5, 29.7, 35.4, 39.8];
+const CTA = 39.8;
 const DRUMS_IN = 4.0;
 
 const left = new Float32Array(N);
