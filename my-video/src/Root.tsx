@@ -3,6 +3,7 @@ import { Composition } from "remotion";
 import { MyComposition } from "./Composition";
 import { FPS, PROMO_DURATION, RealEstatePromo } from "./RealEstatePromo";
 import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
+import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -21,6 +22,14 @@ export const RemotionRoot: React.FC = () => {
         component={ZoharCampaign}
         durationInFrames={ZOHAR_DURATION}
         fps={ZOHAR_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="KardanUziel"
+        component={KardanUziel}
+        durationInFrames={KARDAN_DURATION}
+        fps={KARDAN_FPS}
         width={1080}
         height={1920}
       />
