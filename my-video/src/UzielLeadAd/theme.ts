@@ -1,7 +1,7 @@
 // Heebo is loaded (from public/fonts) by the RealEstatePromo theme module.
 export { FONT_FAMILY } from "../RealEstatePromo/theme";
 
-// Kardan brand palette, sampled from the Uziel brochure.
+// Palette sampled from the project brochure.
 export const COLORS = {
   blue: "#0E8FC0",
   navy: "#1F4C86",
@@ -20,6 +20,3 @@ export const COPPER_GRADIENT = `linear-gradient(100deg, ${COLORS.orange} 0%, ${C
 export const SAGE_GRADIENT = `linear-gradient(135deg, #9DAF9C 0%, ${COLORS.sage} 100%)`;
 
 export const img = (name: string) => `uziel/${name}.jpg`;
-
-export const PHONE = "*9199";
-export const WEBSITE = "kardan-nadlan.co.il";

@@ -11,32 +11,29 @@ import {
   Chip,
   Icons,
   KenBurns,
-  Logo,
   Pin,
   Rise,
   Shade,
   useEnter,
 } from "./components";
-import {
-  BLUE_GRADIENT,
-  COLORS,
-  COPPER_GRADIENT,
-  FONT_FAMILY,
-  img,
-  PHONE,
-  SAGE_GRADIENT,
-  WEBSITE,
-} from "./theme";
+import { COLORS, COPPER_GRADIENT, FONT_FAMILY, img } from "./theme";
 
 const clamp = {
   extrapolateLeft: "clamp",
   extrapolateRight: "clamp",
 } as const;
 
-// 1 — Hook: brand promise over the rooftop render.
+const GOLD = "#F3C792";
+
+// Keeps numbers and ranges (e.g. "15%") in their own LTR run inside RTL text.
+const Ltr: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span style={{ direction: "ltr", unicodeBidi: "isolate" }}>{children}</span>
+);
+
+// 1 — Hook: the opportunity, right next to Bnei Brak.
 export const SceneHook: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
-  const panel = useEnter(28);
+  const panel = useEnter(30);
   return (
     <AbsoluteFill>
       <KenBurns
@@ -49,7 +46,7 @@ export const SceneHook: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 330,
+          top: 300,
           left: 0,
           right: 0,
           display: "flex",
@@ -58,11 +55,11 @@ export const SceneHook: React.FC = () => {
           gap: 34,
         }}
       >
-        <Bubble delay={6} fontSize={78} tail="none">
-          בשבילכם זו דירה.
+        <Bubble delay={6} fontSize={74} tail="none">
+          הזדמנות נדל״נית מנצחת
         </Bubble>
-        <Bubble delay={34} fontSize={78} variant="copper" tail="right">
-          בשבילנו זה בית.
+        <Bubble delay={30} fontSize={74} variant="copper" tail="right">
+          בלב רמת גן
         </Bubble>
       </div>
       {/* White diagonal panel, echoing the brochure cover */}
@@ -72,25 +69,38 @@ export const SceneHook: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          height: 620,
+          height: 600,
           background: COLORS.white,
           clipPath: "polygon(0 22%, 100% 0, 100% 100%, 0 100%)",
-          transform: `translateY(${(1 - panel) * 640}px)`,
+          transform: `translateY(${(1 - panel) * 620}px)`,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           paddingTop: 120,
-          gap: 18,
+          fontFamily: FONT_FAMILY,
+          textAlign: "center",
         }}
       >
-        <Logo size={170} subtitle="בעוזיאל רמת גן" />
+        <div style={{ fontSize: 56, fontWeight: 700, color: COLORS.slate }}>
+          מרחק נגיעה
+        </div>
+        <div
+          style={{
+            fontSize: 112,
+            fontWeight: 900,
+            color: COLORS.blue,
+            lineHeight: 1.05,
+          }}
+        >
+          מבני ברק! 📍
+        </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-// 2 — Location: aerial with a pin on the tower and nearby amenities.
+// 2 — Location: next to Bnei Brak and Givatayim, rental & appreciation upside.
 export const SceneLocation: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
@@ -104,12 +114,12 @@ export const SceneLocation: React.FC = () => {
         origin="39% 22%"
         durationInFrames={durationInFrames}
       />
-      <Shade background="linear-gradient(180deg, transparent 0%, transparent 38%, rgba(15,25,35,0.82) 62%, rgba(15,25,35,0.95) 100%)" />
+      <Shade background="linear-gradient(180deg, transparent 0%, transparent 38%, rgba(15,25,35,0.82) 60%, rgba(15,25,35,0.95) 100%)" />
       <Pin x={421} y={400} delay={8} />
       <div
         style={{
           position: "absolute",
-          top: 1000,
+          top: 960,
           right: 80,
           left: 80,
           color: COLORS.white,
@@ -117,25 +127,21 @@ export const SceneLocation: React.FC = () => {
       >
         <Rise
           delay={12}
-          style={{ fontSize: 46, fontWeight: 700, color: "#9ED8F0" }}
+          style={{ fontSize: 50, fontWeight: 700, color: "#9ED8F0" }}
         >
-          עוזיאל{" "}
-          <span style={{ unicodeBidi: "isolate", direction: "ltr" }}>
-            13–15
-          </span>{" "}
-          · רמת גן
+          לוקיישן מרכזי ברמת גן
         </Rise>
         <Rise
           delay={18}
-          style={{ fontSize: 92, fontWeight: 900, lineHeight: 1.05 }}
+          style={{ fontSize: 88, fontWeight: 900, lineHeight: 1.05 }}
         >
-          מרכז החיים של רמת גן
+          צמוד לבני ברק
         </Rise>
         <Rise
           delay={24}
-          style={{ fontSize: 60, fontWeight: 400, marginTop: 6 }}
+          style={{ fontSize: 88, fontWeight: 900, lineHeight: 1.05 }}
         >
-          תמיד היה כאן.
+          ולגבעתיים
         </Rise>
         <div
           style={{
@@ -143,32 +149,26 @@ export const SceneLocation: React.FC = () => {
             flexDirection: "column",
             alignItems: "flex-start",
             gap: 22,
-            marginTop: 50,
+            marginTop: 46,
           }}
         >
           <Chip
             delay={40}
             color={COLORS.copper}
-            icon={Icons.train}
-            label="קרבה לקו הרכבת הקלה"
+            icon={Icons.key}
+            label="שכירות זמינה וגבוהה כל השנה"
           />
           <Chip
-            delay={50}
+            delay={52}
             color={COLORS.blue}
-            icon={Icons.road}
-            label="נתיבי איילון ודרך השלום"
+            icon={Icons.chart}
+            label="פוטנציאל השבחה ארוך טווח"
           />
           <Chip
-            delay={60}
+            delay={64}
             color={COLORS.sage}
-            icon={Icons.tree}
-            label="פארק הבנים וגינות ציבוריות"
-          />
-          <Chip
-            delay={70}
-            color={COLORS.copperDark}
-            icon={Icons.cup}
-            label="שדרות ירושלים, מסחר ובתי קפה"
+            icon={Icons.pin}
+            label="לוקיישן שמבטיח ביקוש"
           />
         </div>
       </div>
@@ -176,50 +176,23 @@ export const SceneLocation: React.FC = () => {
   );
 };
 
-const StatTile: React.FC<{
-  value: React.ReactNode;
-  label: string;
-  bg: string;
-  delay: number;
-  valueSize?: number;
-}> = ({ value, label, bg, delay, valueSize = 66 }) => {
-  const s = useEnter(delay, 14);
-  return (
-    <div
-      style={{
-        flex: 1,
-        background: bg,
-        borderRadius: 26,
-        padding: "30px 10px",
-        textAlign: "center",
-        color: COLORS.white,
-        fontFamily: FONT_FAMILY,
-        boxShadow: "0 20px 50px rgba(0,0,0,0.4)",
-        opacity: interpolate(s, [0, 0.4], [0, 1], clamp),
-        transform: `translateY(${(1 - s) * 80}px)`,
-      }}
-    >
-      <div
-        style={{
-          fontSize: valueSize,
-          fontWeight: 900,
-          lineHeight: 1.05,
-          height: 70,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {value}
-      </div>
-      <div style={{ fontSize: 34, fontWeight: 700, marginTop: 6 }}>{label}</div>
-    </div>
-  );
+const Counter: React.FC<{ to: number; delay: number; len?: number }> = ({
+  to,
+  delay,
+  len = 30,
+}) => {
+  const frame = useCurrentFrame();
+  const p = interpolate(frame, [delay, delay + len], [0, 1], clamp);
+  const eased = 1 - Math.pow(1 - p, 3);
+  return <>{Math.round(to * eased)}</>;
 };
 
-// 3 — The project: tower + boutique buildings, unit mix.
-export const SceneProject: React.FC = () => {
+// 3 — Financing terms: 15% on signing, the rest on occupancy.
+export const SceneFinancing: React.FC = () => {
+  const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
+  const ring = useEnter(10, 18);
+  const glow = 0.5 + 0.5 * Math.sin(frame / 8);
   return (
     <AbsoluteFill>
       <KenBurns
@@ -229,90 +202,71 @@ export const SceneProject: React.FC = () => {
         origin="60% 40%"
         durationInFrames={durationInFrames}
       />
-      <Shade background="linear-gradient(180deg, rgba(20,15,30,0.85) 0%, rgba(20,15,30,0.35) 26%, transparent 45%, transparent 60%, rgba(10,12,20,0.9) 85%)" />
-      <div
-        style={{
-          position: "absolute",
-          top: 150,
-          right: 80,
-          left: 80,
-          color: COLORS.white,
-        }}
-      >
+      <Shade background="linear-gradient(180deg, rgba(20,15,30,0.88) 0%, rgba(20,15,30,0.55) 40%, rgba(10,12,20,0.75) 70%, rgba(10,12,20,0.92) 100%)" />
+      <AbsoluteFill style={{ alignItems: "center", paddingTop: 190 }}>
+        <Bubble delay={2} fontSize={60} tail="none">
+          תנאי מימון
+        </Bubble>
         <Rise
-          delay={4}
-          style={{ fontSize: 88, fontWeight: 900, lineHeight: 1.05 }}
-        >
-          מגדל יוקרה
-        </Rise>
-        <Rise
-          delay={10}
-          style={{ fontSize: 88, fontWeight: 900, lineHeight: 1.05 }}
-        >
-          או בניין בוטיק.
-        </Rise>
-        <Rise
-          delay={20}
-          style={{ fontSize: 62, fontWeight: 400, color: "#F3C792" }}
-        >
-          לכם נותר רק לבחור…
-        </Rise>
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          bottom: 150,
-          right: 70,
-          left: 70,
-        }}
-      >
-        <div style={{ display: "flex", gap: 22 }}>
-          <StatTile
-            delay={34}
-            bg={BLUE_GRADIENT}
-            value={
-              <span style={{ direction: "ltr", unicodeBidi: "isolate" }}>
-                2–5
-              </span>
-            }
-            label="חדרים"
-          />
-          <StatTile
-            delay={42}
-            bg={SAGE_GRADIENT}
-            value="מיני"
-            label="פנטהאוזים"
-          />
-          <StatTile
-            delay={50}
-            bg={COPPER_GRADIENT}
-            value="פנטהאוז"
-            label="יוקרתיים"
-            valueSize={52}
-          />
-        </div>
-        <Rise
-          delay={62}
+          delay={8}
           style={{
-            fontSize: 42,
+            fontSize: 64,
             fontWeight: 700,
             color: COLORS.white,
             textAlign: "center",
-            marginTop: 30,
+            marginTop: 60,
           }}
         >
-          מרפסות גדולות הצופות לקו הרקיע של גוש דן
+          משלמים בחתימה
         </Rise>
-      </div>
+        <div
+          style={{
+            marginTop: 30,
+            width: 560,
+            height: 560,
+            borderRadius: "50%",
+            background: COPPER_GRADIENT,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            color: COLORS.white,
+            fontFamily: FONT_FAMILY,
+            boxShadow: `0 0 ${60 + glow * 50}px rgba(217,154,69,${0.45 + glow * 0.25})`,
+            transform: `scale(${ring})`,
+          }}
+        >
+          <div style={{ fontSize: 230, fontWeight: 900, lineHeight: 1 }}>
+            <Ltr>
+              <Counter to={15} delay={14} len={24} />%
+            </Ltr>
+          </div>
+          <div style={{ fontSize: 70, fontWeight: 900, marginTop: -6 }}>
+            בלבד
+          </div>
+        </div>
+        <Rise
+          delay={46}
+          style={{
+            fontSize: 96,
+            fontWeight: 900,
+            color: GOLD,
+            textAlign: "center",
+            marginTop: 70,
+          }}
+        >
+          והיתרה באכלוס!
+        </Rise>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
 
-const INTERIORS = [
-  { src: "penthouse-living", label: "פנטהאוזים מרווחים ומוארים", x: [30, 60] },
-  { src: "apt-3room-a", label: "דירות מעוצבות עם נוף פתוח", x: [20, 45] },
-  { src: "lobby-1", label: "לובי מעוצב ברמה הגבוהה ביותר", x: [70, 45] },
-  { src: "gym", label: "חדר כושר מתקדם בבניין", x: [55, 80] },
+const SPEC = [
+  { src: "skyline-sunset", label: "מגדל יוקרה + בנייני בוטיק", x: [70, 85] },
+  { src: "gym", label: "חדר כושר לדיירים", x: [55, 80] },
+  { src: "apt-3room-a", label: "מיזוג VRF", x: [20, 45] },
+  { src: "penthouse-living", label: "בית חכם", x: [30, 60] },
 ] as const;
 
 const Slide: React.FC<{
@@ -341,26 +295,26 @@ const Slide: React.FC<{
           justifyContent: "center",
         }}
       >
-        <Bubble delay={6} fontSize={54} variant="copper" tail="left">
-          {label}
+        <Bubble delay={6} fontSize={64} variant="copper" tail="left">
+          ✔ {label}
         </Bubble>
       </div>
     </AbsoluteFill>
   );
 };
 
-// 4 — Lifestyle montage of interiors and building amenities.
-export const SceneInteriors: React.FC = () => {
+// 4 — Rich specification montage.
+export const SceneSpec: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
-  const len = Math.floor(durationInFrames / INTERIORS.length);
+  const len = Math.floor(durationInFrames / SPEC.length);
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.slateDeep }}>
-      {INTERIORS.map((it, i) => (
+      {SPEC.map((it, i) => (
         <Sequence
           key={it.src}
           from={i * len}
           durationInFrames={
-            i === INTERIORS.length - 1 ? durationInFrames - i * len : len + 10
+            i === SPEC.length - 1 ? durationInFrames - i * len : len + 10
           }
         >
           <Slide src={it.src} label={it.label} x={it.x} len={len} />
@@ -378,143 +332,75 @@ export const SceneInteriors: React.FC = () => {
       >
         <Rise
           delay={2}
-          style={{ fontSize: 84, fontWeight: 900, color: COLORS.white }}
+          style={{ fontSize: 92, fontWeight: 900, color: COLORS.white }}
         >
-          לגור ברמה אחרת
+          מפרט עשיר
         </Rise>
       </div>
     </AbsoluteFill>
   );
 };
 
-const Counter: React.FC<{ to: number; delay: number; suffix?: string }> = ({
-  to,
-  delay,
-  suffix = "",
-}) => {
+// 5 — Hot pre-sale: 5 special units below market price.
+export const ScenePresale: React.FC = () => {
   const frame = useCurrentFrame();
-  const p = interpolate(frame, [delay, delay + 30], [0, 1], clamp);
-  const eased = 1 - Math.pow(1 - p, 3);
-  return (
-    <>
-      {Math.round(to * eased)}
-      {suffix}
-    </>
-  );
-};
-
-const TrustTile: React.FC<{
-  bg: string;
-  delay: number;
-  big: React.ReactNode;
-  small: string;
-}> = ({ bg, delay, big, small }) => {
-  const s = useEnter(delay, 14);
-  return (
-    <div
-      style={{
-        width: 430,
-        height: 300,
-        background: bg,
-        borderRadius: 30,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        color: COLORS.white,
-        fontFamily: FONT_FAMILY,
-        textAlign: "center",
-        boxShadow: "0 24px 60px rgba(0,0,0,0.45)",
-        transform: `scale(${0.6 + s * 0.4})`,
-        opacity: interpolate(s, [0, 0.35], [0, 1], clamp),
-      }}
-    >
-      <div style={{ fontSize: 84, fontWeight: 900, lineHeight: 1 }}>{big}</div>
-      <div
-        style={{
-          fontSize: 36,
-          fontWeight: 700,
-          marginTop: 12,
-          lineHeight: 1.2,
-          padding: "0 20px",
-        }}
-      >
-        {small}
-      </div>
-    </div>
-  );
-};
-
-// 5 — Why Kardan: track record and financial strength.
-export const SceneTrust: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
+  const badge = useEnter(4, 10);
+  const big = useEnter(16, 9);
+  const shake = frame > 30 ? Math.sin(frame / 2.2) * 2 : 0;
   return (
     <AbsoluteFill>
       <KenBurns
-        src={img("skyline-sunset")}
-        x={[20, 40]}
-        zoom={[1.1, 1.0]}
+        src={img("aerial-day")}
+        x={[60, 75]}
+        zoom={[1.12, 1.0]}
         durationInFrames={durationInFrames}
-        filter="saturate(0.9)"
       />
-      <Shade background="linear-gradient(180deg, rgba(27,36,43,0.78) 0%, rgba(27,36,43,0.9) 100%)" />
+      <Shade background="linear-gradient(180deg, rgba(27,36,43,0.82) 0%, rgba(27,36,43,0.92) 100%)" />
       <AbsoluteFill
         style={{
           alignItems: "center",
-          paddingTop: 210,
-          gap: 30,
+          paddingTop: 260,
+          fontFamily: FONT_FAMILY,
+          color: COLORS.white,
+          textAlign: "center",
         }}
       >
-        <Logo size={130} dark />
-        <Rise
-          delay={8}
-          style={{
-            fontSize: 60,
-            fontWeight: 700,
-            color: COLORS.white,
-            textAlign: "center",
-          }}
-        >
-          חברה יציבה עם גב כלכלי איתן
-        </Rise>
         <div
           style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: 30,
-            width: 900,
-            marginTop: 40,
+            background: "linear-gradient(100deg, #E5484D, #B4232A)",
+            borderRadius: 999,
+            padding: "18px 56px",
+            fontSize: 62,
+            fontWeight: 900,
+            boxShadow: "0 18px 50px rgba(229,72,77,0.45)",
+            transform: `scale(${badge}) rotate(${shake}deg)`,
           }}
         >
-          <TrustTile
-            delay={16}
-            bg={BLUE_GRADIENT}
-            big={<Counter to={1988} delay={16} />}
-            small="פועלת משנת"
-          />
-          <TrustTile
-            delay={24}
-            bg={SAGE_GRADIENT}
-            big={
-              <span style={{ direction: "ltr", unicodeBidi: "isolate" }}>
-                +<Counter to={751} delay={24} />
-              </span>
-            }
-            small="מיליון ₪ הון עצמי"
-          />
-          <TrustTile
-            delay={32}
-            bg={COPPER_GRADIENT}
-            big="בורסה"
-            small="חברה ציבורית בת״א"
-          />
-          <TrustTile
-            delay={40}
-            bg={`linear-gradient(135deg, ${COLORS.orange}, ${COLORS.copper})`}
-            big="יזם"
-            small="שהוא גם מבצע"
-          />
+          🔥 הזדמנות פרי-סייל חמה
+        </div>
+        <div
+          style={{
+            fontSize: 520,
+            fontWeight: 900,
+            lineHeight: 1,
+            marginTop: 50,
+            background: `linear-gradient(180deg, #FFE7C2 0%, ${COLORS.orange} 60%, ${COLORS.copper} 100%)`,
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+            transform: `scale(${big})`,
+          }}
+        >
+          5
+        </div>
+        <Rise delay={28} style={{ fontSize: 86, fontWeight: 900 }}>
+          דירות מיוחדות
+        </Rise>
+        <div style={{ marginTop: 34 }}>
+          <Bubble delay={40} fontSize={70} tail="none">
+            מתחת למחירי השוק 😉
+          </Bubble>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
@@ -555,14 +441,14 @@ const FormField: React.FC<{ label: string; typed: string; delay: number }> = ({
   );
 };
 
-// 6 — Call to action: lead form card.
+// 6 — Call to action: lead form card pointing at the platform's button.
 export const SceneCTA: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const card = useEnter(6, 16);
   const press = interpolate(frame, [86, 92, 100], [1, 0.92, 1], clamp);
   const pulse = 1 + Math.sin(Math.max(0, frame - 100) / 5) * 0.035;
-  const arrow = Math.sin(frame / 6) * 16;
+  const bounce = Math.abs(Math.sin(frame / 7)) * 26;
   return (
     <AbsoluteFill>
       <KenBurns
@@ -572,34 +458,34 @@ export const SceneCTA: React.FC = () => {
         durationInFrames={durationInFrames}
         filter="blur(6px) brightness(0.55)"
       />
-      <AbsoluteFill style={{ alignItems: "center", paddingTop: 130 }}>
+      <AbsoluteFill style={{ alignItems: "center", paddingTop: 140 }}>
         <Rise
           delay={2}
           style={{
-            fontSize: 96,
+            fontSize: 72,
             fontWeight: 900,
             color: COLORS.white,
             textAlign: "center",
-            lineHeight: 1.05,
+            lineHeight: 1.15,
           }}
         >
-          הבית הבא שלכם
+          📩 לקבלת תוכניות, מחירון
         </Rise>
         <Rise
           delay={8}
           style={{
-            fontSize: 96,
+            fontSize: 72,
             fontWeight: 900,
-            color: "#F3C792",
+            color: GOLD,
             textAlign: "center",
-            lineHeight: 1.05,
+            lineHeight: 1.15,
           }}
         >
-          מתחיל כאן
+          ופרטים נוספים
         </Rise>
         <div
           style={{
-            marginTop: 60,
+            marginTop: 56,
             width: 900,
             background: COLORS.white,
             borderRadius: 40,
@@ -625,7 +511,7 @@ export const SceneCTA: React.FC = () => {
                 marginTop: 8,
               }}
             >
-              וקבלו מחירון ותוכניות דירות
+              ונחזור אליכם בהקדם
             </div>
           </div>
           <FormField label="שם מלא" typed="ישראל ישראלי" delay={24} />
@@ -646,71 +532,47 @@ export const SceneCTA: React.FC = () => {
               marginTop: 8,
             }}
           >
-            {frame >= 92 ? "✓ נשמח לחזור אליכם" : "לקבלת פרטים ←"}
+            {frame >= 92 ? "✓ נשמח לחזור אליכם" : "שליחה ←"}
           </div>
         </div>
         <div
           style={{
-            marginTop: 50,
+            marginTop: 54,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             color: COLORS.white,
             fontFamily: FONT_FAMILY,
-            opacity: interpolate(frame, [100, 112], [0, 1], clamp),
+            opacity: interpolate(frame, [96, 108], [0, 1], clamp),
           }}
         >
-          <div style={{ fontSize: 46, fontWeight: 700 }}>
-            לחצו למטה והשאירו פרטים
-          </div>
-          <svg
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            style={{ transform: `translateY(${arrow}px)`, marginTop: 6 }}
+          <div style={{ fontSize: 84, fontWeight: 900 }}>לחצו כאן</div>
+          <div
+            style={{
+              fontSize: 110,
+              lineHeight: 1,
+              marginTop: 6,
+              transform: `translateY(${bounce}px)`,
+            }}
           >
-            <path
-              d="M12 4v15M5 12l7 7 7-7"
-              fill="none"
-              stroke="#F3C792"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+            👇
+          </div>
         </div>
       </AbsoluteFill>
       <div
         style={{
           position: "absolute",
-          bottom: 60,
+          bottom: 50,
           left: 0,
           right: 0,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 14,
+          textAlign: "center",
           fontFamily: FONT_FAMILY,
+          fontSize: 24,
           color: COLORS.white,
+          opacity: 0.7,
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 26,
-            fontSize: 48,
-            fontWeight: 700,
-          }}
-        >
-          <span style={{ direction: "ltr" }}>{PHONE}</span>
-          <span style={{ opacity: 0.5 }}>|</span>
-          <span style={{ direction: "ltr" }}>{WEBSITE}</span>
-        </div>
-        <div style={{ fontSize: 24, opacity: 0.7 }}>
-          ההדמיות להמחשה בלבד. ייתכנו שינויים לפי דרישת הרשויות ו/או החלטת
-          החברה.
-        </div>
+        ההדמיות להמחשה בלבד. ייתכנו שינויים לפי דרישת הרשויות.
       </div>
     </AbsoluteFill>
   );

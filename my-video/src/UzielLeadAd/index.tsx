@@ -11,11 +11,11 @@ import { wipe } from "@remotion/transitions/wipe";
 import { BrandStripe } from "./components";
 import {
   SceneCTA,
+  SceneFinancing,
   SceneHook,
-  SceneInteriors,
   SceneLocation,
-  SceneProject,
-  SceneTrust,
+  ScenePresale,
+  SceneSpec,
 } from "./scenes";
 import { COLORS, FONT_FAMILY } from "./theme";
 
@@ -28,9 +28,9 @@ const T = 15; // transition length in frames
 const SCENES = [
   { Component: SceneHook, frames: 120 + T },
   { Component: SceneLocation, frames: 150 + T },
-  { Component: SceneProject, frames: 150 + T },
-  { Component: SceneInteriors, frames: 180 + T },
-  { Component: SceneTrust, frames: 120 + T },
+  { Component: SceneFinancing, frames: 150 + T },
+  { Component: SceneSpec, frames: 180 + T },
+  { Component: ScenePresale, frames: 120 + T },
   { Component: SceneCTA, frames: 180 },
 ];
 

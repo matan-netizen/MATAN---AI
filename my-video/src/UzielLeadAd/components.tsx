@@ -159,66 +159,6 @@ export const Rise: React.FC<{
   );
 };
 
-export const LogoIcon: React.FC<{
-  size: number;
-  style?: React.CSSProperties;
-}> = ({ size, style }) => (
-  <div
-    style={{
-      width: size,
-      height: size,
-      borderRadius: size * 0.16,
-      overflow: "hidden",
-      boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
-      flexShrink: 0,
-      ...style,
-    }}
-  >
-    <Img
-      src={staticFile("uziel/logo-icon.png")}
-      style={{
-        width: "106%",
-        height: "106%",
-        margin: "-3%",
-        objectFit: "cover",
-      }}
-    />
-  </div>
-);
-
-// Icon + "קרדן" wordmark lock-up.
-export const Logo: React.FC<{
-  size?: number;
-  dark?: boolean;
-  subtitle?: string;
-}> = ({ size = 150, dark = false, subtitle = "נדל״ן" }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: size * 0.2 }}>
-    <LogoIcon size={size} />
-    <div style={{ fontFamily: FONT_FAMILY, lineHeight: 1 }}>
-      <div
-        style={{
-          fontSize: size * 0.78,
-          fontWeight: 900,
-          color: dark ? COLORS.white : COLORS.blue,
-          letterSpacing: -2,
-        }}
-      >
-        קרדן
-      </div>
-      <div
-        style={{
-          fontSize: size * 0.3,
-          fontWeight: 700,
-          color: dark ? "rgba(255,255,255,0.85)" : COLORS.slate,
-          marginTop: size * 0.06,
-        }}
-      >
-        {subtitle}
-      </div>
-    </div>
-  </div>
-);
-
 // Four-colour brand stripe running down the right edge, as in the brochure.
 export const BrandStripe: React.FC = () => {
   const s = useEnter(4);
@@ -302,6 +242,23 @@ const stroke = {
 };
 
 export const Icons = {
+  key: (
+    <svg width="36" height="36" viewBox="0 0 24 24" {...stroke}>
+      <circle cx="8" cy="15" r="4" />
+      <path d="M11 12l9-9M17 6l3 3M14 9l2 2" />
+    </svg>
+  ),
+  chart: (
+    <svg width="36" height="36" viewBox="0 0 24 24" {...stroke}>
+      <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />
+    </svg>
+  ),
+  pin: (
+    <svg width="36" height="36" viewBox="0 0 24 24" {...stroke}>
+      <path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z" />
+      <circle cx="12" cy="9" r="2.5" />
+    </svg>
+  ),
   train: (
     <svg width="36" height="36" viewBox="0 0 24 24" {...stroke}>
       <rect x="5" y="3" width="14" height="13" rx="3" />
