@@ -19,26 +19,29 @@ import {
 } from "../MastovPresale/theme";
 
 // Re-cut of the supplied promo footage (public/mastov/source-footage.mp4,
-// 832×464) for Mastov: only the building / interior / amenity shots are
-// used, the burned-in captions and the previous developer's corner logo
-// are hidden under a blurred, tinted band, and new copy, narration and
-// logo go on top. Scene cuts match MastovPresale, which uses the same
-// narration.
+// 832×464) for Mastov. The previous developer's logo is burned in at the
+// bottom centre of every shot, so the footage is zoomed (ZOOM, anchored
+// near the top) until that strip — and a small credit on the left edge —
+// fall outside the frame. Shots whose captions name the previous developer,
+// and shots with people other than the gym, are not used. The remaining
+// burned-in captions sit under a compact solid panel that carries the new
+// copy. Scene cuts match MastovPresale, which uses the same narration.
 
 export const FOOTAGE_FPS = FPS;
 export const FOOTAGE_W = 1280;
 export const FOOTAGE_H = 720;
 
 const SRC = "mastov/source-footage.mp4";
+const ZOOM = 1.18;
+const ZOOM_ORIGIN = "50% 20%";
 const clamp = {
   extrapolateLeft: "clamp",
   extrapolateRight: "clamp",
 } as const;
 
-// Shots in the source, in seconds. Shots with people in them are skipped.
+// Shots in the source, in seconds.
 const SHOT = {
   sunsetTower: [0, 3.55],
-  penthouseTop: [3.65, 5.55],
   towerDay: [5.65, 7.75],
   penthouseLiving: [7.85, 9.35],
   twoRoom: [9.45, 11.05],
@@ -48,38 +51,26 @@ const SHOT = {
   kitchen: [23.05, 24.65],
   lobby: [24.75, 25.65],
   gym: [25.75, 26.85],
-  facade: [28.95, 30.35],
   skyline: [30.45, 33.8],
 } as const;
 type Shot = readonly [number, number];
 
-// Rectangles (output px) where the source has burned-in text or a logo
-// (the previous developer's logo sits bottom-centre).
-const BAND = { x: 120, y: 205, w: 1040, h: 310 };
-const SOURCE_LOGO = { x: 500, y: 615, w: 280, h: 105 };
-const EDGE_CREDIT = { x: 0, y: 290, w: 46, h: 170 };
-const TOP_LEFT_TITLE = { x: 40, y: 30, w: 600, h: 230 };
-
+// Where the burned-in captions land after the zoom (output px).
 type Rect = { x: number; y: number; w: number; h: number };
-const rectPath = (rects: Rect[]) =>
-  `path('${rects
-    .map((r) => `M${r.x} ${r.y}h${r.w}v${r.h}h${-r.w}Z`)
-    .join(" ")}')`;
+const CENTER: Rect = { x: 270, y: 278, w: 740, h: 228 };
+// towerDay has its caption in the top-left corner instead.
+const TOP_LEFT: Rect = { x: 10, y: 30, w: 490, h: 215 };
 
-// Plays a list of shots back to back, stretched to fill `duration`
-// frames, with the caption/logo areas blurred out.
-const Footage: React.FC<{
-  shots: Shot[];
-  duration: number;
-  extraMasks?: Rect[];
-  tint?: boolean;
-}> = ({ shots, duration, extraMasks = [], tint = true }) => {
+// Plays a list of shots back to back, stretched to fill `duration` frames.
+const Footage: React.FC<{ shots: Shot[]; duration: number }> = ({
+  shots,
+  duration,
+}) => {
   const total = shots.reduce((s, [a, b]) => s + (b - a), 0);
   const rate = (total * FPS) / duration;
-  const masks = [BAND, SOURCE_LOGO, EDGE_CREDIT, ...extraMasks];
   let from = 0;
   return (
-    <AbsoluteFill style={{ backgroundColor: "#000" }}>
+    <AbsoluteFill style={{ backgroundColor: "#000", overflow: "hidden" }}>
       {shots.map(([a, b], i) => {
         const len =
           i === shots.length - 1
@@ -87,99 +78,63 @@ const Footage: React.FC<{
             : Math.round(((b - a) * FPS) / rate);
         const seq = (
           <Sequence key={i} from={from} durationInFrames={len}>
-            {[false, true].map((blurred) => (
-              <AbsoluteFill
-                key={String(blurred)}
-                style={
-                  blurred
-                    ? { clipPath: rectPath(masks), overflow: "hidden" }
-                    : undefined
-                }
-              >
-                <OffthreadVideo
-                  src={staticFile(SRC)}
-                  muted
-                  trimBefore={Math.round(a * FPS)}
-                  trimAfter={Math.round(b * FPS)}
-                  playbackRate={rate}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    filter: blurred ? "blur(22px) brightness(0.8)" : undefined,
-                    transform: blurred ? "scale(1.04)" : undefined,
-                  }}
-                />
-              </AbsoluteFill>
-            ))}
+            <OffthreadVideo
+              src={staticFile(SRC)}
+              muted
+              trimBefore={Math.round(a * FPS)}
+              trimAfter={Math.round(b * FPS)}
+              playbackRate={rate}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                transform: `scale(${ZOOM})`,
+                transformOrigin: ZOOM_ORIGIN,
+              }}
+            />
           </Sequence>
         );
         from += len;
         return seq;
       })}
-      {/* Tint over the blurred band so it reads as a deliberate panel. */}
-      <div
-        hidden={!tint}
-        style={{
-          position: "absolute",
-          left: BAND.x,
-          top: BAND.y,
-          width: BAND.w,
-          height: BAND.h,
-          background: "rgba(0,40,18,0.55)",
-          borderRadius: 28,
-          border: `2px solid rgba(216,184,112,0.55)`,
-        }}
-      />
-      {/* Location plate over the old logo spot. */}
-      <div
-        style={{
-          position: "absolute",
-          left: SOURCE_LOGO.x - 6,
-          top: SOURCE_LOGO.y + 14,
-          width: SOURCE_LOGO.w + 12,
-          height: SOURCE_LOGO.h - 8,
-          background: "rgba(0,40,18,0.82)",
-          borderRadius: 18,
-          border: `2px solid rgba(216,184,112,0.6)`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: FONT_FAMILY,
-          fontSize: 34,
-          fontWeight: 700,
-          color: COLORS.gold,
-        }}
-      >
-        📍 רמת גן
-      </div>
     </AbsoluteFill>
   );
 };
 
-// Centred content inside the band.
-const Panel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div
-    style={{
-      position: "absolute",
-      left: BAND.x,
-      top: BAND.y,
-      width: BAND.w,
-      height: BAND.h,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 14,
-      fontFamily: FONT_FAMILY,
-      color: COLORS.white,
-      textAlign: "center",
-      textShadow: "0 3px 12px rgba(0,0,0,0.45)",
-    }}
-  >
-    {children}
-  </div>
-);
+// Solid panel over the burned-in caption, carrying the new copy.
+const Panel: React.FC<{
+  rect?: Rect;
+  children: React.ReactNode;
+}> = ({ rect = CENTER, children }) => {
+  const s = useEnter(0, 18);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: rect.x,
+        top: rect.y,
+        width: rect.w,
+        height: rect.h,
+        background: `linear-gradient(135deg, #0D5530 0%, #002812 100%)`,
+        border: `3px solid ${COLORS.gold}`,
+        borderRadius: 26,
+        boxShadow: "0 18px 50px rgba(0,0,0,0.45)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 12,
+        padding: "0 24px",
+        fontFamily: FONT_FAMILY,
+        color: COLORS.white,
+        textAlign: "center",
+        transform: `scale(${0.96 + s * 0.04})`,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const Ltr: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span style={{ direction: "ltr", unicodeBidi: "isolate" }}>{children}</span>
@@ -195,13 +150,26 @@ const Hook: React.FC<SceneProps> = ({ duration }) => {
       <Footage shots={[SHOT.sunsetTower]} duration={duration} />
       <Panel>
         <div style={{ rotate: `${shake}deg` }}>
-          <Tag variant="red" delay={2} fontSize={52}>
+          <Tag variant="red" delay={2} fontSize={38}>
             📢 משקיעים, שימו לב!
           </Tag>
         </div>
-        <Rise delay={sec(1.5)} style={{ fontSize: 56, fontWeight: 900 }}>
-          הזדמנות להשקעה חכמה{" "}
-          <span style={{ color: COLORS.gold }}>עם רווח גדול</span>
+        <Rise
+          delay={sec(1.5)}
+          style={{ fontSize: 44, fontWeight: 900, lineHeight: 1.1 }}
+        >
+          הזדמנות להשקעה חכמה
+        </Rise>
+        <Rise
+          delay={sec(2.6)}
+          style={{
+            fontSize: 44,
+            fontWeight: 900,
+            lineHeight: 1.1,
+            color: COLORS.gold,
+          }}
+        >
+          עם רווח גדול
         </Rise>
       </Panel>
     </AbsoluteFill>
@@ -210,16 +178,17 @@ const Hook: React.FC<SceneProps> = ({ duration }) => {
 
 const Project: React.FC<SceneProps> = ({ duration }) => (
   <AbsoluteFill>
-    <Footage
-      shots={[SHOT.penthouseTop, SHOT.towerDay]}
-      duration={duration}
-      extraMasks={[TOP_LEFT_TITLE]}
-    />
-    <Panel>
-      <Rise delay={4} style={{ fontSize: 66, fontWeight: 900 }}>
-        בפרויקט יוקרה בלב רמת גן
+    <Footage shots={[SHOT.towerDay]} duration={duration} />
+    <Panel rect={TOP_LEFT}>
+      <Rise
+        delay={4}
+        style={{ fontSize: 40, fontWeight: 900, lineHeight: 1.15 }}
+      >
+        בפרויקט יוקרה
+        <br />
+        בלב רמת גן
       </Rise>
-      <Tag variant="gold" delay={sec(1.9)} fontSize={50}>
+      <Tag variant="gold" delay={sec(1.9)} fontSize={30}>
         📍 במרחק נגיעה מבני ברק!
       </Tag>
     </Panel>
@@ -239,29 +208,28 @@ const Five: React.FC<SceneProps> = ({ duration }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 26,
+            gap: 20,
             transform: `scale(${five})`,
           }}
         >
           <div
             style={{
-              fontSize: 190,
+              fontSize: 120,
               fontWeight: 900,
               lineHeight: 0.9,
               background: GOLD_GRADIENT,
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
               color: "transparent",
-              textShadow: "none",
             }}
           >
             5
           </div>
-          <div style={{ fontSize: 76, fontWeight: 900, lineHeight: 1.05 }}>
+          <div style={{ fontSize: 52, fontWeight: 900, lineHeight: 1.05 }}>
             דירות מיוחדות
           </div>
         </div>
-        <Tag variant="gold" delay={sec(1.2)} fontSize={50}>
+        <Tag variant="gold" delay={sec(1.2)} fontSize={34}>
           מתחת למחירי השוק! 🚨
         </Tag>
       </Panel>
@@ -278,26 +246,29 @@ const Location: React.FC<SceneProps> = ({ duration }) => (
     <Panel>
       <Rise
         delay={4}
-        style={{ fontSize: 40, fontWeight: 700, color: COLORS.gold }}
+        style={{ fontSize: 30, fontWeight: 700, color: COLORS.gold }}
       >
         מיקום אסטרטגי
       </Rise>
       <Rise
         delay={10}
-        style={{ fontSize: 58, fontWeight: 900, lineHeight: 1.15 }}
+        style={{ fontSize: 42, fontWeight: 900, lineHeight: 1.15 }}
       >
-        סמוך לבני ברק ולצירי התחבורה המרכזיים
+        סמוך לבני ברק
+        <br />
+        ולצירי התחבורה המרכזיים
       </Rise>
     </Panel>
     <div
       style={{
         position: "absolute",
-        top: BAND.y + BAND.h + 30,
+        top: CENTER.y + CENTER.h + 26,
         left: 0,
         right: 0,
         display: "flex",
         justifyContent: "center",
-        gap: 30,
+        gap: 60,
+        transform: "scale(0.8)",
       }}
     >
       <Chip
@@ -320,140 +291,83 @@ const Terms: React.FC<SceneProps> = ({ duration }) => (
   <AbsoluteFill>
     <Footage shots={[SHOT.terrace, [32.1, 33.8]]} duration={duration} />
     <Panel>
-      <Rise delay={4} style={{ fontSize: 62, fontWeight: 900 }}>
-        💡 תנאי מימון ורכישה{" "}
+      <Rise
+        delay={4}
+        style={{ fontSize: 44, fontWeight: 900, lineHeight: 1.15 }}
+      >
+        💡 תנאי מימון ורכישה
+        <br />
         <span style={{ color: COLORS.gold }}>חסרי תקדים</span>
       </Rise>
-      <Tag delay={sec(2.3)} fontSize={46}>
+      <Tag delay={sec(2.3)} fontSize={30}>
         ✔ מחיר פרי-סייל מיוחד ל-<Ltr>5</Ltr> הדירות הראשונות!
       </Tag>
     </Panel>
   </AbsoluteFill>
 );
 
-const PayBar: React.FC<{
-  pct: number;
-  label: string;
-  delay: number;
-  bg: string;
-  color: string;
-}> = ({ pct, label, delay, bg, color }) => {
-  const frame = useCurrentFrame();
-  const p = interpolate(frame, [delay, delay + 20], [0, 1], clamp);
-  const eased = 1 - Math.pow(1 - p, 3);
+const Plan: React.FC<SceneProps> = ({ duration }) => {
+  const right = useEnter(4, 14);
+  const left = useEnter(sec(1.6), 14);
   return (
-    <div style={{ width: "100%", opacity: p > 0 ? 1 : 0 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-          marginBottom: 8,
-        }}
-      >
-        <div style={{ fontSize: 40, fontWeight: 700 }}>{label}</div>
-        <div style={{ fontSize: 58, fontWeight: 900, color }}>
-          <Ltr>{Math.round(pct * eased)}%</Ltr>
-        </div>
-      </div>
-      <div
-        style={{
-          height: 34,
-          borderRadius: 999,
-          background: "rgba(255,255,255,0.15)",
-          overflow: "hidden",
-        }}
-      >
+    <AbsoluteFill>
+      <Footage shots={[SHOT.skyline]} duration={duration} />
+      <Panel>
         <div
           style={{
-            height: "100%",
-            width: `${pct * eased}%`,
-            background: bg,
-            borderRadius: 999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 40,
           }}
-        />
-      </div>
-    </div>
-  );
-};
-
-const Plan: React.FC<SceneProps> = ({ duration }) => (
-  <AbsoluteFill>
-    <Footage
-      shots={[SHOT.facade, SHOT.sunsetTower]}
-      duration={duration}
-      tint={false}
-    />
-    <AbsoluteFill style={{ background: "rgba(0,32,14,0.82)" }} />
-    <AbsoluteFill
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 90,
-        padding: "0 110px",
-        fontFamily: FONT_FAMILY,
-        color: COLORS.white,
-        textAlign: "center",
-      }}
-    >
-      <div style={{ flexShrink: 0 }}>
-        <Rise
-          delay={2}
-          style={{ fontSize: 46, fontWeight: 700, color: COLORS.gold }}
         >
-          משלמים בחתימה
-        </Rise>
-        <Rise
-          delay={6}
-          style={{ fontSize: 170, fontWeight: 900, lineHeight: 1 }}
-        >
-          <Ltr>15%</Ltr>
-        </Rise>
-        <Rise
-          delay={10}
-          style={{ fontSize: 64, fontWeight: 900, color: COLORS.gold }}
-        >
-          בלבד
-        </Rise>
-      </div>
+          <div style={{ opacity: right, transform: `scale(${right})` }}>
+            <div style={{ fontSize: 30, fontWeight: 700, color: COLORS.gold }}>
+              משלמים בחתימה
+            </div>
+            <div style={{ fontSize: 96, fontWeight: 900, lineHeight: 1 }}>
+              <Ltr>15%</Ltr>
+            </div>
+            <div style={{ fontSize: 34, fontWeight: 900 }}>בלבד</div>
+          </div>
+          <div
+            style={{
+              width: 3,
+              height: 150,
+              background: COLORS.gold,
+              opacity: 0.6,
+            }}
+          />
+          <div style={{ opacity: left, transform: `scale(${left})` }}>
+            <div style={{ fontSize: 30, fontWeight: 700, color: COLORS.gold }}>
+              והיתרה
+            </div>
+            <div style={{ fontSize: 76, fontWeight: 900, lineHeight: 1.1 }}>
+              באכלוס
+            </div>
+          </div>
+        </div>
+      </Panel>
       <div
         style={{
-          flex: 1,
+          position: "absolute",
+          top: CENTER.y + CENTER.h + 24,
+          left: 0,
+          right: 0,
           display: "flex",
-          flexDirection: "column",
-          gap: 34,
-          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <PayBar
-          pct={15}
-          label="בחתימה"
-          delay={sec(1.2)}
-          bg={GOLD_GRADIENT}
-          color={COLORS.gold}
-        />
-        <PayBar
-          pct={85}
-          label="היתרה באכלוס"
-          delay={sec(2.7)}
-          bg={`linear-gradient(100deg, #3F8F62, ${COLORS.greenMid})`}
-          color="#8FD3A8"
-        />
-        <Tag variant="gold" delay={sec(3.8)} fontSize={46}>
+        <Tag variant="gold" delay={sec(3.8)} fontSize={34}>
           ללא הלוואות קבלן!
         </Tag>
       </div>
     </AbsoluteFill>
-  </AbsoluteFill>
-);
+  );
+};
 
-const SPEC: { shot: Shot; label: string; masks?: Rect[] }[] = [
-  {
-    shot: SHOT.towerDay,
-    label: "מגדל יוקרה + בנייני בוטיק",
-    masks: [TOP_LEFT_TITLE],
-  },
+const SPEC: { shot: Shot; label: string; rect?: Rect }[] = [
+  { shot: SHOT.towerDay, label: "מגדל יוקרה + בנייני בוטיק", rect: TOP_LEFT },
   { shot: SHOT.gym, label: "חדר כושר לדיירים" },
   { shot: SHOT.kitchen, label: "מיזוג VRF" },
   { shot: SHOT.lobby, label: "בית חכם" },
@@ -467,15 +381,14 @@ const Spec: React.FC<SceneProps> = ({ duration }) => {
         const len = i === SPEC.length - 1 ? duration - i * each : each;
         return (
           <Sequence key={it.label} from={i * each} durationInFrames={len}>
-            <Footage shots={[it.shot]} duration={len} extraMasks={it.masks} />
-            <Panel>
-              <Rise
-                delay={0}
-                style={{ fontSize: 40, fontWeight: 700, color: COLORS.gold }}
+            <Footage shots={[it.shot]} duration={len} />
+            <Panel rect={it.rect}>
+              <div
+                style={{ fontSize: 30, fontWeight: 700, color: COLORS.gold }}
               >
                 מפרט עשיר
-              </Rise>
-              <Tag variant="gold" delay={2} fontSize={58}>
+              </div>
+              <Tag variant="gold" delay={2} fontSize={it.rect ? 30 : 42}>
                 ✔ {it.label}
               </Tag>
             </Panel>
@@ -488,19 +401,20 @@ const Spec: React.FC<SceneProps> = ({ duration }) => {
 
 const Equity: React.FC<SceneProps> = ({ duration }) => (
   <AbsoluteFill>
-    <Footage
-      shots={[SHOT.penthouseTop, SHOT.penthouseLiving]}
-      duration={duration}
-    />
+    <Footage shots={[SHOT.aerialSunset]} duration={duration} />
     <Panel>
-      <Rise delay={2} style={{ fontSize: 66, fontWeight: 900 }}>
+      <Rise
+        delay={2}
+        style={{ fontSize: 46, fontWeight: 900, lineHeight: 1.15 }}
+      >
         החל מ-
         <span style={{ color: COLORS.gold }}>
           <Ltr>300</Ltr> אלף ₪
-        </span>{" "}
+        </span>
+        <br />
         הון עצמי
       </Rise>
-      <Tag delay={sec(2.7)} fontSize={50}>
+      <Tag delay={sec(2.7)} fontSize={34}>
         🤝 ליווי מלא בכל התהליך
       </Tag>
     </Panel>
@@ -662,8 +576,8 @@ export const MastovFootage: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 22,
-          left: 22,
+          top: 46,
+          right: 22,
           background: "rgba(255,255,255,0.95)",
           borderRadius: 16,
           padding: "10px 14px",
@@ -676,9 +590,9 @@ export const MastovFootage: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 26,
-          right: 30,
-          fontSize: 22,
+          top: 12,
+          right: 26,
+          fontSize: 20,
           fontWeight: 700,
           color: "rgba(255,255,255,0.9)",
           textShadow: "0 2px 8px rgba(0,0,0,0.6)",
