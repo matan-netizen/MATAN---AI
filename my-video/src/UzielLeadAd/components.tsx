@@ -290,11 +290,13 @@ export const Icons = {
 };
 
 // Map pin that drops in and keeps a soft pulse ring.
-export const Pin: React.FC<{ x: number; y: number; delay: number }> = ({
-  x,
-  y,
-  delay,
-}) => {
+export const Pin: React.FC<{
+  x: number;
+  y: number;
+  delay: number;
+  // [gradient start, gradient end, pulse ring]
+  colors?: [string, string, string];
+}> = ({ x, y, delay, colors = [COLORS.blue, COLORS.navy, COLORS.orange] }) => {
   const frame = useCurrentFrame();
   const s = useEnter(delay, 9);
   const pulse = ((frame - delay) % 40) / 40;
@@ -319,21 +321,27 @@ export const Pin: React.FC<{ x: number; y: number; delay: number }> = ({
             width: 80 * (1 + pulse * 1.6),
             height: 28 * (1 + pulse * 1.6),
             borderRadius: "50%",
-            border: `4px solid ${COLORS.orange}`,
+            border: `4px solid ${colors[2]}`,
             opacity: 1 - pulse,
           }}
         />
       ) : null}
       <svg width="100" height="120" viewBox="0 0 100 120">
         <defs>
-          <linearGradient id="pinGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor={COLORS.blue} />
-            <stop offset="100%" stopColor={COLORS.navy} />
+          <linearGradient
+            id={`pinGrad-${colors[0].replace("#", "")}`}
+            x1="0"
+            y1="0"
+            x2="1"
+            y2="1"
+          >
+            <stop offset="0%" stopColor={colors[0]} />
+            <stop offset="100%" stopColor={colors[1]} />
           </linearGradient>
         </defs>
         <path
           d="M50 118C50 118 8 70 8 44a42 42 0 0 1 84 0c0 26-42 74-42 74z"
-          fill="url(#pinGrad)"
+          fill={`url(#pinGrad-${colors[0].replace("#", "")})`}
           stroke="#fff"
           strokeWidth="5"
         />

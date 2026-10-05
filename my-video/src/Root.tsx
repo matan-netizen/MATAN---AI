@@ -1,6 +1,7 @@
 import "./index.css";
 import { Composition } from "remotion";
 import { MyComposition } from "./Composition";
+import { MASTOV_DURATION, MASTOV_FPS, MastovPresale } from "./MastovPresale";
 import { FPS, PROMO_DURATION, RealEstatePromo } from "./RealEstatePromo";
 import { UZIEL_DURATION, UZIEL_FPS, UzielLeadAd } from "./UzielLeadAd";
 import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
@@ -30,6 +31,14 @@ export const RemotionRoot: React.FC = () => {
         component={UzielLeadAd}
         durationInFrames={UZIEL_DURATION}
         fps={UZIEL_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="MastovPresale"
+        component={MastovPresale}
+        durationInFrames={MASTOV_DURATION}
+        fps={MASTOV_FPS}
         width={1080}
         height={1920}
       />
