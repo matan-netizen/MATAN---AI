@@ -32,7 +32,8 @@
     "zohar-audio": "node scripts/generate-zohar-audio.mjs scripts/zohar-wav && for f in music rumble heartbeat riser chime pop; do remotion ffmpeg -y -loglevel error -i scripts/zohar-wav/$f.wav -c:a libmp3lame -b:a 192k public/zohar/audio/$f.mp3; done && rm -r scripts/zohar-wav",
     "voiceover": "NODE_USE_ENV_PROXY=1 node scripts/generate-voiceover.mjs",
     "uziel-music": "node scripts/generate-uziel-music.mjs scripts/uziel-music.wav && remotion ffmpeg -y -loglevel error -i scripts/uziel-music.wav -c:a libmp3lame -b:a 192k public/uziel/audio/music.mp3 && rm scripts/uziel-music.wav",
-    "mastov-music": "node scripts/generate-mastov-music.mjs scripts/mastov-music.wav && remotion ffmpeg -y -loglevel error -i scripts/mastov-music.wav -c:a libmp3lame -b:a 192k public/mastov/audio/music.mp3 && rm scripts/mastov-music.wav"
+    "mastov-music": "node scripts/generate-mastov-music.mjs scripts/mastov-music.wav && remotion ffmpeg -y -loglevel error -i scripts/mastov-music.wav -c:a libmp3lame -b:a 192k public/mastov/audio/music.mp3 && rm scripts/mastov-music.wav",
+    "uziel-reel-music": "node scripts/generate-uziel-reel-music.mjs scripts/uziel-reel-music.wav && remotion ffmpeg -y -loglevel error -i scripts/uziel-reel-music.wav -c:a libmp3lame -b:a 192k public/uziel-reel/music.mp3 && rm scripts/uziel-reel-music.wav"
   },
   "sideEffects": [
     "*.css"

@@ -1,6 +1,7 @@
 import "./index.css";
 import { Composition } from "remotion";
 import { MyComposition } from "./Composition";
+import { REEL_DURATION, REEL_FPS, UzielReelClean } from "./UzielReelClean";
 import {
   FOOTAGE_DURATION,
   FOOTAGE_FPS,
@@ -56,6 +57,14 @@ export const RemotionRoot: React.FC = () => {
         fps={FOOTAGE_FPS}
         width={FOOTAGE_W}
         height={FOOTAGE_H}
+      />
+      <Composition
+        id="UzielReelClean"
+        component={UzielReelClean}
+        durationInFrames={REEL_DURATION}
+        fps={REEL_FPS}
+        width={1080}
+        height={1920}
       />
     </>
   );
