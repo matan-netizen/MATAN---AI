@@ -31,8 +31,8 @@ const SCHOLARS = [
   { x: 1010, y: 365 },
   { x: 370, y: 350 },
 ];
-// Where the viewer "stands": just above the CTA button.
-const VIEWER = { x: 540, y: 1420 };
+// Where the beams converge: just above the headline, so they never cross text.
+const VIEWER = { x: 540, y: 790 };
 
 const GoldenBeams: React.FC = () => {
   const frame = useCurrentFrame();
@@ -109,8 +109,8 @@ const Thumb: React.FC<{
   return (
     <div
       style={{
-        width: 290,
-        height: 230,
+        width: 250,
+        height: 190,
         borderRadius: 22,
         overflow: "hidden",
         border: `4px solid ${COLORS.gold}`,
@@ -231,11 +231,11 @@ export const Scene5CTA: React.FC = () => {
 
       <AbsoluteFill style={{ alignItems: "center", paddingTop: 830, gap: 26 }}>
         <RevealText
-          text="זה הזמן שלך להתחבר לשפע ולהגשים את כל החלומות"
-          {...cue("l10", "cta", 9)}
+          text="אל תישאר עם זה לבד. תן לזה הזדמנות לשנות."
+          {...cue("alone", "cta", 8)}
           size={82}
           weight={900}
-          highlight={["לשפע", "החלומות"]}
+          highlight={["הזדמנות", "לשנות."]}
           style={{ padding: "0 70px" }}
         />
         <Ornament delay={40} width={600} />
@@ -244,13 +244,18 @@ export const Scene5CTA: React.FC = () => {
           <Thumb src={IMAGES.zoharMan} delay={58} rotate={0} />
           <Thumb src={IMAGES.stormZohar} delay={66} rotate={-4} />
         </div>
+        <RevealText
+          text="רשום את השם שלך וקבל את הדף האישי שלך 👇"
+          {...cue("register", "cta", 9)}
+          size={50}
+          weight={700}
+          highlight={["הדף", "האישי"]}
+          style={{ padding: "0 30px", marginTop: 6 }}
+        />
       </AbsoluteFill>
 
-      <AbsoluteFill style={{ alignItems: "center", paddingTop: 1480 }}>
-        <CTAButton
-          label="👉 להצטרפות וקבלת הדף האישי"
-          delay={CTA_POP_FRAME - SCENES.cta.from}
-        />
+      <AbsoluteFill style={{ alignItems: "center", paddingTop: 1530 }}>
+        <CTAButton label="לחץ כאן" delay={CTA_POP_FRAME - SCENES.cta.from} />
       </AbsoluteFill>
     </AbsoluteFill>
   );

@@ -224,7 +224,10 @@ export const RevealText: React.FC<RevealProps> = ({
           fps,
           config: { damping: 200, stiffness: 90 },
         });
-        const isGold = gold || highlight.some((h) => w.includes(h));
+        // Emoji keep their own colours instead of being clipped to gold.
+        const isEmoji = /^\p{Extended_Pictographic}/u.test(w);
+        const isGold =
+          !isEmoji && (gold || highlight.some((h) => w.includes(h)));
         return (
           <span
             key={i}

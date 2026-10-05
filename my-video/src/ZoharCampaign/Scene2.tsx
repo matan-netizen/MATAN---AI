@@ -7,7 +7,15 @@ import {
 } from "remotion";
 import { GoldDust, RevealText } from "./effects";
 import { ZoharImageCard } from "./ZoharImageCard";
-import { COLORS, HEARTBEAT_PERIOD, IMAGES, cue } from "./theme";
+import {
+  COLORS,
+  HEARTBEAT_PERIOD,
+  HEART_WORD,
+  IMAGES,
+  SCENES,
+  cue,
+  f,
+} from "./theme";
 
 // Lub-dub envelope matching the heartbeat SFX (second beat 0.2s = 6 frames later).
 const heartbeat = (frame: number) => {
@@ -23,7 +31,8 @@ export const Scene2: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const beat = heartbeat(frame);
-  const heartCue = cue("l4", "struggle", 9).delay;
+  // Glow swells in as "הלב" is spoken.
+  const heartCue = f(HEART_WORD) - SCENES.struggle.from;
   const heartIn = interpolate(frame, [heartCue - 10, heartCue + 10], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -76,15 +85,22 @@ export const Scene2: React.FC = () => {
           justifyContent: "center",
           alignItems: "center",
           padding: "0 80px",
-          gap: 90,
-          paddingTop: 260,
+          gap: 46,
+          paddingTop: 300,
         }}
       >
         <RevealText
-          text="יש מי שכבר התפלל, קיווה, ניסה, נשבר וקם שוב –"
-          {...cue("l3", "struggle", 10)}
-          size={80}
+          text="ניסית הכל, התפללת, קיווית, לפעמים כמעט נשברת –"
+          {...cue("tried", "struggle", 8)}
+          size={72}
           weight={700}
+        />
+        <RevealText
+          text="ואז אספת את עצמך וקמת שוב."
+          {...cue("rose", "struggle", 6)}
+          size={72}
+          weight={700}
+          highlight={["וקמת", "שוב."]}
         />
         <div style={{ position: "relative" }}>
           {/* Heartbeat glow */}
@@ -103,11 +119,11 @@ export const Scene2: React.FC = () => {
             }}
           />
           <RevealText
-            text="ועדיין הלב שלו נשאר עם אותה בקשה שלא זזה."
-            {...cue("l4", "struggle", 9)}
-            size={84}
+            text="אבל מבפנים, הלב עדיין מחכה לבקשה האחת הזו שלא זזה."
+            {...cue("heart", "struggle", 10)}
+            size={76}
             weight={900}
-            highlight={["הלב", "שלו"]}
+            highlight={["הלב"]}
             style={{
               position: "relative",
               transform: `scale(${1 + beat * 0.025 * heartIn})`,

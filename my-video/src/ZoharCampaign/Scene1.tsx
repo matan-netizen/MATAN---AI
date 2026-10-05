@@ -50,15 +50,15 @@ export const Scene1: React.FC = () => {
         }}
       >
         <RevealText
-          text="יש רגעים שאדם שואל את עצמו בשקט, בלי שאף אחד ישמע…"
-          {...cue("l1", "silence", 11)}
+          text="יש רגעים שאתה יושב לבד, מסתכל למעלה ושואל בשקט:"
+          {...cue("hook", "silence", 9)}
           size={74}
           weight={500}
         />
         <RevealText
-          text="“כמה עוד אפשר לחכות?”"
-          {...cue("l2", "silence", 4)}
-          size={84}
+          text="“כמה עוד אפשר לחכות? מתי כבר יגיע התור שלי?” 💔"
+          {...cue("quote", "silence", 10)}
+          size={76}
           weight={900}
           gold
         />

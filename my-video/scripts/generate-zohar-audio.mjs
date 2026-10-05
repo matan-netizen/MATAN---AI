@@ -19,7 +19,7 @@ mkdirSync(outDir, { recursive: true });
 
 // Must match SCENES / DURATION in src/ZoharCampaign/theme.ts (seconds):
 // BUILD_START = turning.from, REVEAL = zohar.from, TOTAL = DURATION.
-const BUILD_START = 486 / 30;
+const BUILD_START = 585 / 30;
 const REVEAL = 784 / 30;
 const TOTAL = 1379 / 30;
 

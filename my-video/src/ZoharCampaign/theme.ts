@@ -33,26 +33,31 @@ export const GOLD_TEXT = `linear-gradient(180deg, #FFF3C4 0%, ${COLORS.brightGol
 
 export const FPS = 30;
 
-// Voiceover line timings in seconds (start/end of speech), measured from
-// public/zohar/voiceover.mp3 by detecting the pauses between phrases.
-// Everything on screen is cued from these, so re-measure if the
-// recording changes.
+// Voiceover phrase timings in seconds (start/end of speech), measured from
+// public/zohar/voiceover.mp3 by detecting the pauses between phrases and
+// matching them to the narration text by syllable count. Everything on
+// screen is cued from these, so re-measure if the recording changes.
 export const VO_LINES = {
-  l1: { start: 0.0, end: 5.71 }, // יש רגעים שאדם שואל את עצמו בשקט…
-  l2: { start: 6.11, end: 7.58 }, // כמה עוד אפשר לחכות?
-  l3: { start: 7.99, end: 12.39 }, // יש מי שכבר התפלל, קיווה, ניסה…
-  l4: { start: 12.71, end: 16.23 }, // ועדיין הלב שלו נשאר…
-  l5: { start: 16.45, end: 21.37 }, // דווקא מהמקום הזה…
-  l6: { start: 21.62, end: 26.12 }, // נפתחת אפשרות קטנה…
-  l7: { start: 26.39, end: 29.07 }, // להיות שותף בדף אחד…
-  l8: { start: 29.34, end: 32.04 }, // השם נרשם בספר החבריא…
-  l9: { start: 32.24, end: 35.89 }, // והדף נשלח כקמיע אישי…
-  l10: { start: 35.99, end: 39.79 }, // זה הזמן שלך להתחבר לשפע…
-  l11: { start: 40.19, end: 43.67 }, // להצטרפות וקבלת הדף האישי
+  hook: { start: 0.0, end: 4.03 }, // יש רגעים שאתה יושב לבד, מסתכל למעלה ושואל בשקט:
+  quote: { start: 4.4, end: 7.58 }, // "כמה עוד אפשר לחכות? מתי כבר יגיע התור שלי?"
+  tried: { start: 7.99, end: 12.39 }, // ניסית הכל, התפללת, קיווית, לפעמים כמעט נשברת –
+  rose: { start: 12.71, end: 14.98 }, // ואז אספת את עצמך וקמת שוב.
+  heart: { start: 15.35, end: 19.4 }, // אבל מבפנים, הלב עדיין מחכה…
+  faith: { start: 19.76, end: 23.28 }, // דווקא עכשיו, כשקשה אבל האמונה…
+  path: { start: 23.48, end: 26.12 }, // נפתחת דרך פשוטה שיכולה להזיז הרים:
+  partner: { start: 26.39, end: 29.07 }, // להיות שותף בדף אחד מתוך הזוהר הקדוש.
+  name: { start: 29.34, end: 32.04 }, // השם שלך נרשם בספר החבריא של הרשב״י,
+  home: { start: 32.24, end: 34.45 }, // והדף נשלח אליך הביתה.
+  amulet: { start: 34.59, end: 36.93 }, // זה קמיע עוצמתי אישי שפותח את המחסומים.
+  alone: { start: 37.17, end: 39.77 }, // אל תישאר עם זה לבד. תן לזה הזדמנות לשנות.
+  click: { start: 40.19, end: 40.88 }, // לחץ כאן,
+  register: { start: 40.99, end: 43.67 }, // רשום את השם שלך וקבל את הדף האישי שלך:
 };
+// "הלב" is spoken here, just after "אבל מבפנים,".
+export const HEART_WORD = 16.45;
 export type VoLine = keyof typeof VO_LINES;
 
-const f = (seconds: number) => Math.round(seconds * FPS);
+export const f = (seconds: number) => Math.round(seconds * FPS);
 export const voStart = (line: VoLine) => f(VO_LINES[line].start);
 export const voEnd = (line: VoLine) => f(VO_LINES[line].end);
 
@@ -60,14 +65,14 @@ export const voEnd = (line: VoLine) => f(VO_LINES[line].end);
 const LEAD = 8;
 const HOLD_AFTER_VO = 2.3; // seconds the end card stays after the last word
 
-export const DURATION = f(VO_LINES.l11.end + HOLD_AFTER_VO);
+export const DURATION = f(VO_LINES.register.end + HOLD_AFTER_VO);
 
 const starts = {
   silence: 0,
-  struggle: voStart("l3") - LEAD,
-  turning: voStart("l5") - LEAD,
-  zohar: voStart("l7") - LEAD,
-  cta: voStart("l10") - LEAD,
+  struggle: voStart("tried") - LEAD,
+  turning: voStart("faith") - LEAD,
+  zohar: voStart("partner") - LEAD,
+  cta: voStart("alone") - LEAD,
 };
 export const SCENES = {
   silence: { from: starts.silence, duration: starts.struggle },
@@ -92,8 +97,8 @@ export const cue = (line: VoLine, scene: SceneId, words: number) => {
   };
 };
 
-// The CTA button pops in (with its SFX) as "להצטרפות" is spoken.
-export const CTA_POP_FRAME = voStart("l11") - 4;
+// The CTA button pops in (with its SFX) as "לחץ כאן" is spoken.
+export const CTA_POP_FRAME = voStart("click") - 4;
 
 // Crossfade length between scenes, in frames.
 export const CROSSFADE = 15;

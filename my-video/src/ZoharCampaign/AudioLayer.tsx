@@ -6,8 +6,9 @@ import {
   FPS,
   HEARTBEAT_PERIOD,
   SCENES,
+  HEART_WORD,
   VOICEOVER_FILE,
-  voStart,
+  f,
 } from "./theme";
 
 // Background score volume, per the audio brief:
@@ -40,7 +41,7 @@ const heartbeatFrom =
   SCENES.struggle.from +
   Math.max(
     0,
-    Math.round((voStart("l4") - 30 - SCENES.struggle.from) / HEARTBEAT_PERIOD),
+    Math.round((f(HEART_WORD) - 30 - SCENES.struggle.from) / HEARTBEAT_PERIOD),
   ) *
     HEARTBEAT_PERIOD;
 

@@ -17,8 +17,8 @@ import {
 import { ZoharImageCard } from "./ZoharImageCard";
 import { COLORS, GOLD_TEXT, IMAGES, SERIF, cue } from "./theme";
 
-const CARD_W = 860;
-const CARD_H = 860;
+const CARD_W = 780;
+const CARD_H = 780;
 
 // Scene 4: the Holy Zohar revealed. A man holding the golden
 // embossed Zohar in a shimmering gold frame, light radiating from the book,
@@ -144,34 +144,42 @@ export const Scene4Zohar: React.FC = () => {
         style={{
           justifyContent: "flex-start",
           alignItems: "center",
-          paddingTop: 1230,
+          paddingTop: 1150,
           paddingLeft: 40,
           paddingRight: 40,
           gap: 18,
         }}
       >
         <RevealText
-          text="להיות שותף בדף אחד מתוך הזוהר הקדוש,"
-          {...cue("l7", "zohar", 7)}
-          size={58}
+          text="להיות שותף בדף אחד מתוך הזוהר הקדוש."
+          {...cue("partner", "zohar", 7)}
+          size={56}
           weight={700}
-          highlight={["הזוהר", "הקדוש,"]}
-          style={{ opacity: dim(cue("l8", "zohar", 6).delay) }}
+          highlight={["הזוהר", "הקדוש."]}
+          style={{ opacity: dim(cue("name", "zohar", 7).delay) }}
         />
         <RevealText
-          text="השם נרשם ב“ספר החבריא של הרשב״י”,"
-          {...cue("l8", "zohar", 6)}
-          size={58}
+          text="השם שלך נרשם ב“ספר החבריא של הרשב״י”,"
+          {...cue("name", "zohar", 7)}
+          size={56}
           weight={700}
           highlight={["החבריא", "הרשב״י”,"]}
-          style={{ opacity: dim(cue("l9", "zohar", 8).delay) }}
+          style={{ opacity: dim(cue("home", "zohar", 4).delay) }}
         />
         <RevealText
-          text="והדף נשלח כקמיע אישי שפורץ את כל המחסומים."
-          {...cue("l9", "zohar", 8)}
-          size={58}
+          text="והדף נשלח אליך הביתה."
+          {...cue("home", "zohar", 4)}
+          size={56}
+          weight={700}
+          highlight={["הביתה."]}
+          style={{ opacity: dim(cue("amulet", "zohar", 7).delay) }}
+        />
+        <RevealText
+          text="זה קמיע עוצמתי אישי שפותח את המחסומים."
+          {...cue("amulet", "zohar", 7)}
+          size={60}
           weight={900}
-          highlight={["כקמיע", "אישי"]}
+          highlight={["קמיע", "עוצמתי", "אישי"]}
         />
       </AbsoluteFill>
     </AbsoluteFill>

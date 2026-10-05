@@ -51,18 +51,18 @@ export const Scene3: React.FC = () => {
         }}
       >
         <RevealText
-          text="דווקא מהמקום הזה, של כאב אמיתי ותקווה שלא כבתה,"
-          {...cue("l5", "turning", 9)}
+          text="דווקא עכשיו, כשקשה אבל האמונה עוד קיימת בלב –"
+          {...cue("faith", "turning", 9)}
           size={76}
           weight={700}
-          highlight={["ותקווה"]}
+          highlight={["האמונה"]}
         />
         <RevealText
-          text="נפתחת אפשרות קטנה – אבל עם משמעות גדולה:"
-          {...cue("l6", "turning", 8)}
+          text="נפתחת דרך פשוטה שיכולה להזיז הרים:"
+          {...cue("path", "turning", 6)}
           size={84}
           weight={900}
-          highlight={["משמעות", "גדולה:"]}
+          highlight={["להזיז", "הרים:"]}
           color={COLORS.parchment}
         />
       </AbsoluteFill>
