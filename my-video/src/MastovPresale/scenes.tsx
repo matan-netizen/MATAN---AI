@@ -172,32 +172,7 @@ export const SceneHook: React.FC = () => {
   );
 };
 
-const RoomBadge: React.FC<{ n: string; delay: number }> = ({ n, delay }) => {
-  const s = useEnter(delay, 10);
-  return (
-    <div
-      style={{
-        width: 210,
-        height: 210,
-        borderRadius: 32,
-        background: GOLD_GRADIENT,
-        color: COLORS.green,
-        fontFamily: FONT_FAMILY,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.45)",
-        transform: `scale(${s})`,
-      }}
-    >
-      <div style={{ fontSize: 120, fontWeight: 900, lineHeight: 1 }}>{n}</div>
-      <div style={{ fontSize: 38, fontWeight: 700 }}>חדרים</div>
-    </div>
-  );
-};
-
-// 2 — Allocation (4.3–11.7s): 2/3/4 rooms, luxury project, next to Bnei Brak.
+// 2 — Project (4.3–11.7s): luxury project in Ramat Gan, next to Bnei Brak.
 export const SceneAllocation: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
@@ -219,21 +194,24 @@ export const SceneAllocation: React.FC = () => {
           textAlign: "center",
         }}
       >
-        <Rise delay={4} style={{ fontSize: 86, fontWeight: 900 }}>
-          פתחנו הקצאה מוגבלת
-        </Rise>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: 36,
-            marginTop: 40,
-          }}
+        <Rise
+          delay={4}
+          style={{ fontSize: 60, fontWeight: 700, color: COLORS.gold }}
         >
-          <RoomBadge n="2" delay={sec(1.6)} />
-          <RoomBadge n="3" delay={sec(2.1)} />
-          <RoomBadge n="4" delay={sec(2.6)} />
-        </div>
+          בפרויקט
+        </Rise>
+        <Rise
+          delay={10}
+          style={{ fontSize: 120, fontWeight: 900, lineHeight: 1.05 }}
+        >
+          יוקרה
+        </Rise>
+        <Rise
+          delay={16}
+          style={{ fontSize: 96, fontWeight: 900, lineHeight: 1.1 }}
+        >
+          בלב רמת גן
+        </Rise>
       </div>
       <div
         style={{
@@ -247,11 +225,8 @@ export const SceneAllocation: React.FC = () => {
           gap: 30,
         }}
       >
-        <Tag delay={sec(3.5)} fontSize={66}>
-          פרויקט יוקרה בלב רמת גן
-        </Tag>
-        <Tag variant="gold" delay={sec(5.4)} fontSize={66}>
-          📍 במרחק נגיעה מבני ברק!
+        <Tag variant="gold" delay={sec(3.4)} fontSize={68}>
+          📍 במרחק הליכה מבני ברק!
         </Tag>
       </div>
     </AbsoluteFill>
@@ -443,7 +418,7 @@ const PayBar: React.FC<{
   );
 };
 
-// 5 — 15/85 payment plan (24.6–30.4s).
+// 5 — Payment plan (24.6–30.4s): 15% on signing, the rest on occupancy.
 export const ScenePlan: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
@@ -468,13 +443,19 @@ export const ScenePlan: React.FC = () => {
           delay={2}
           style={{ fontSize: 64, fontWeight: 700, color: COLORS.gold }}
         >
-          מתווה
+          משלמים בחתימה
         </Rise>
         <Rise
           delay={6}
           style={{ fontSize: 230, fontWeight: 900, lineHeight: 1 }}
         >
-          <Ltr>15/85</Ltr>
+          <Ltr>15%</Ltr>
+        </Rise>
+        <Rise
+          delay={10}
+          style={{ fontSize: 84, fontWeight: 900, color: COLORS.gold }}
+        >
+          בלבד
         </Rise>
         <div
           style={{
@@ -487,7 +468,7 @@ export const ScenePlan: React.FC = () => {
         >
           <PayBar
             pct={15}
-            label="בחתימה בלבד"
+            label="בחתימה"
             delay={sec(1.2)}
             bg={GOLD_GRADIENT}
             color={COLORS.gold}
