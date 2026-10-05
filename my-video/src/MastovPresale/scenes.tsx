@@ -226,7 +226,7 @@ export const SceneAllocation: React.FC = () => {
         }}
       >
         <Tag variant="gold" delay={sec(3.4)} fontSize={68}>
-          📍 במרחק הליכה מבני ברק!
+          📍 במרחק נגיעה מבני ברק!
         </Tag>
       </div>
     </AbsoluteFill>
