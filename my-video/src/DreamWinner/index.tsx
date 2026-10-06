@@ -18,7 +18,6 @@ import {
   Panel,
   PosterBackdrop,
   Sfx,
-  Shade,
   TopBanner,
   WhiteText,
 } from "../DreamLottery/components";
@@ -27,13 +26,13 @@ import { COLORS, FACTS, FONT, MEDIA } from "../DreamLottery/theme";
 
 export const WINNER_FPS = 30;
 
-// The winning moment, cut from the draw video. Set `file` to the clip in
-// public/ (e.g. "dream/winner.mp4") and `from` to its start frame; until
-// then a placeholder slate stands in.
+// The winning moment: the first 15.5s of the draw video, cropped to the TV
+// screen it was filmed from (the call to the winner, his walk to the
+// apartment door, and the "meet the winner" card). Landscape 1080x558.
 export const WINNER_CLIP = {
-  file: null as string | null,
+  file: "dream/winner.mp4" as string | null,
   from: 0,
-  duration: 270,
+  duration: 465,
 };
 
 const SCENES = [
@@ -99,27 +98,74 @@ const Placeholder: React.FC = () => (
 const SceneWin: React.FC = () => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const zoom = interpolate(frame, [0, durationInFrames], [1, 1.08]);
+  const zoom = interpolate(frame, [0, durationInFrames], [1, 1.06]);
+  const clip = WINNER_CLIP.file ? (
+    <OffthreadVideo
+      src={staticFile(WINNER_CLIP.file)}
+      trimBefore={WINNER_CLIP.from}
+      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+    />
+  ) : (
+    <Placeholder />
+  );
   return (
-    <AbsoluteFill>
-      <AbsoluteFill style={{ overflow: "hidden", transform: `scale(${zoom})` }}>
-        {WINNER_CLIP.file ? (
+    <AbsoluteFill style={{ backgroundColor: COLORS.deep }}>
+      {/* Blurred copy fills the vertical frame behind the landscape clip. */}
+      {WINNER_CLIP.file ? (
+        <AbsoluteFill style={{ filter: "blur(30px) brightness(0.45)" }}>
           <OffthreadVideo
             src={staticFile(WINNER_CLIP.file)}
             trimBefore={WINNER_CLIP.from}
+            muted
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
-        ) : (
-          <Placeholder />
-        )}
-      </AbsoluteFill>
-      <Shade />
-      <TopBanner at={6} until={durationInFrames} gold={false}>
+        </AbsoluteFill>
+      ) : null}
+      <div
+        style={{
+          position: "absolute",
+          top: 690,
+          left: 0,
+          width: 1080,
+          height: 558,
+          overflow: "hidden",
+          borderTop: `6px solid ${COLORS.gold}`,
+          borderBottom: `6px solid ${COLORS.gold}`,
+          boxShadow: "0 0 70px rgba(232,182,74,0.45)",
+        }}
+      >
+        <AbsoluteFill style={{ transform: `scale(${zoom})` }}>
+          {clip}
+        </AbsoluteFill>
+      </div>
+      <TopBanner at={6} until={140} gold={false}>
         רגע הזכייה!
       </TopBanner>
-      <Confetti at={20} />
+      <TopBanner at={144} until={330}>
+        בדרך לדירה החדשה בירושלים
+      </TopBanner>
+      <TopBanner at={334} until={durationInFrames}>
+        הזוכה של הגרלת החלומות 8!
+      </TopBanner>
+      <div
+        style={{
+          position: "absolute",
+          top: 1300,
+          left: 0,
+          right: 0,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <GoldText size={84} delay={150}>
+          השנה – זה יכול להיות אתה!
+        </GoldText>
+      </div>
+      <Confetti at={110} />
       <CornerBadge />
-      <Sfx src={MEDIA.chime} at={20} volume={0.5} />
+      <Sfx src={MEDIA.chime} at={110} volume={0.5} />
+      <Sfx src={MEDIA.pop} at={144} volume={0.4} />
+      <Sfx src={MEDIA.pop} at={334} volume={0.4} />
     </AbsoluteFill>
   );
 };
