@@ -6,6 +6,7 @@ import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
 import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
 import { DREAM_FPS, DreamLottery, dreamDuration } from "./DreamLottery";
 import { DreamPoster, POSTER_DURATION, POSTER_FPS } from "./DreamPoster";
+import { DreamWinner, WINNER_DURATION, WINNER_FPS } from "./DreamWinner";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -67,6 +68,14 @@ export const RemotionRoot: React.FC = () => {
         component={DreamPoster}
         durationInFrames={POSTER_DURATION}
         fps={POSTER_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamWinner"
+        component={DreamWinner}
+        durationInFrames={WINNER_DURATION}
+        fps={WINNER_FPS}
         width={1080}
         height={1920}
       />
