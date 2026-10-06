@@ -16,7 +16,8 @@ import { FONT_FAMILY } from "../RealEstatePromo/theme";
 // an AI assistant hands him the right tool (Nanonets) and the work flows
 // into Priority on its own. Motion-graphics only: flat illustrated people
 // and UI mock-ups. Scene times (s): 0 arrival, 5 voice note, 11 chat,
-// 16 tool match, 22 live walkthrough, 32 done, 37 auto update, 43 end card.
+// 16 tool match, 22 live walkthrough, 32 done, 37 auto update, 43 end card
+// (Kitzuri.AI logo).
 
 export const DEMO_FPS = 30;
 const sec = (s: number) => Math.round(s * DEMO_FPS);
@@ -1231,29 +1232,32 @@ const S7AutoUpdate: React.FC = () => (
   </AbsoluteFill>
 );
 
+// End card: the Kitzuri.AI logo (background removed, see
+// public/office-demo/kitzuri-logo.png).
 const S8EndCard: React.FC = () => {
   const s = useEnter(4, 14);
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(135deg, ${C.blue}, #0A2E7A)`,
+        background: "#FFFFFF",
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        color: "#fff",
+        color: "#12204A",
         textAlign: "center",
       }}
     >
       <Img
-        src={staticFile("office-demo/public-logo-white.svg")}
-        style={{ width: 720, transform: `scale(${0.8 + s * 0.2})`, opacity: s }}
+        src={staticFile("office-demo/kitzuri-logo.png")}
+        style={{
+          width: 1100,
+          transform: `scale(${0.85 + s * 0.15})`,
+          opacity: s,
+        }}
       />
       <Pop delay={sec(1)} style={{ marginTop: 50 }}>
-        <div style={{ fontSize: 60, fontWeight: 900 }}>
+        <div style={{ fontSize: 56, fontWeight: 900 }}>
           הכלי הנכון, לאדם הנכון, ברגע הנכון
-        </div>
-        <div style={{ fontSize: 36, marginTop: 14, opacity: 0.85 }}>
-          עוזר AI שמכיר את המשימות של כל עובד במשרד
         </div>
       </Pop>
     </AbsoluteFill>
