@@ -5,6 +5,7 @@ import { FPS, PROMO_DURATION, RealEstatePromo } from "./RealEstatePromo";
 import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
 import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
 import { DREAM_FPS, DreamLottery, dreamDuration } from "./DreamLottery";
+import { DreamPoster, POSTER_DURATION, POSTER_FPS } from "./DreamPoster";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -58,6 +59,14 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{ cut: "chesed" as const }}
         durationInFrames={dreamDuration("chesed")}
         fps={DREAM_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamPoster"
+        component={DreamPoster}
+        durationInFrames={POSTER_DURATION}
+        fps={POSTER_FPS}
         width={1080}
         height={1920}
       />
