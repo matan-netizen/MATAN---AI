@@ -3,7 +3,7 @@
 //
 //   node scripts/generate-investor-audio.mjs <out-dir>
 //
-// Writes: music.wav, pencil.wav, paper.wav, cup.wav, ping.wav, check.wav
+// Writes: music.wav, pencil.wav, cup.wav, ping.wav
 //
 // Score: premium business beat, 120 BPM in F minor (one bar = 2s).
 //   0 → 4s     pads + pluck intro, filter closed
@@ -350,24 +350,6 @@ const bandNoise = () => {
   writeWav(tr, "pencil.wav", { peakTarget: 0.7 });
 }
 
-// Paper rustle: flipping plans on the table.
-{
-  const tr = makeTrack(1.4);
-  const bn = bandNoise();
-  for (let i = 0; i < tr.n; i++) {
-    const t = i / SR;
-    const env =
-      Math.min(1, t / 0.05) *
-      Math.exp(-t * 2.4) *
-      (0.6 + 0.4 * Math.sin(2 * Math.PI * 3 * t));
-    const crackle = Math.abs(noise()) > 0.985 ? noise() * 2.5 : 0;
-    const v = bn(0.9, 0.6) * 0.7 + crackle * 0.3;
-    add(tr, i, v * env * 0.9, v * env * 0.75);
-  }
-  reverb(tr, 0.12, 0.6);
-  writeWav(tr, "paper.wav", { peakTarget: 0.75, fadeOut: 0.3 });
-}
-
 // Coffee cup set down on a wooden table: thud + short ceramic ring.
 {
   const tr = makeTrack(1.0);
@@ -409,23 +391,4 @@ const bandNoise = () => {
   });
   reverb(tr, 0.25, 0.8);
   writeWav(tr, "ping.wav", { peakTarget: 0.8 });
-}
-
-// Check mark: quick pen tick (two short strokes).
-{
-  const tr = makeTrack(0.6);
-  const bn = bandNoise();
-  const strokes = [
-    [0.0, 0.08],
-    [0.1, 0.18],
-  ];
-  for (let i = 0; i < tr.n; i++) {
-    const t = i / SR;
-    const v = bn(0.97, 0.5);
-    const s = strokes.find(([a, d]) => t >= a && t < a + d);
-    if (!s) continue;
-    const p = (t - s[0]) / s[1];
-    add(tr, i, v * Math.sin(Math.PI * p) * 0.9);
-  }
-  writeWav(tr, "check.wav", { peakTarget: 0.7 });
 }

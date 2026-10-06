@@ -68,13 +68,8 @@ const musicVolume = (frame: number) =>
 
 // Sound effects from scripts/generate-investor-audio.mjs.
 const SFX: { file: string; from: number; volume: number }[] = [
-  { file: "pencil", from: 150, volume: 0.45 }, // writing in the notebook outside
-  { file: "paper", from: 242, volume: 0.6 }, // plans on the table
+  { file: "pencil", from: 150, volume: 0.45 }, // opening: writing in the notebook
   { file: "cup", from: 452, volume: 0.55 }, // coffee cup set down
-  { file: "paper", from: 512, volume: 0.45 }, // unrolling the blueprint
-  { file: "pencil", from: 540, volume: 0.35 }, // marking the plan
-  { file: "pencil", from: 678, volume: 0.35 }, // signing off
-  { file: "check", from: CHECK_FROM, volume: 0.6 }, // V in the notebook
   { file: "ping", from: NOTIFY_FROM, volume: 0.65 }, // incoming message
 ];
 

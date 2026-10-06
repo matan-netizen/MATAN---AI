@@ -288,7 +288,7 @@ export const PhoneNotification: React.FC<{ duration: number }> = ({
             ✅ העסקה אושרה בהצלחה!
           </div>
           <div style={{ fontSize: 30, color: "#333", marginTop: 2 }}>
-            דירת גן | צמוד לבני ברק ולגבעתיים
+            צמוד לבני ברק ולגבעתיים | ביקוש שיא
           </div>
         </div>
       </div>
@@ -296,15 +296,14 @@ export const PhoneNotification: React.FC<{ duration: number }> = ({
   );
 };
 
-// Feature card over the blurred blueprint: the premium spec in four lines.
+// Offer card over the blurred blueprint: headline and three selling points.
 export const SpecCard: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const items = [
-    ["🌿", "דירות גן מרהיבות"],
-    ["🏙️", "פנטהאוזים מפוארים"],
-    ["✨", "מפרט יוקרתי"],
-    ["📐", "תכנון אדריכלי חכם"],
+    ["💰", "מחירי פרי-סייל חסרי תקדים ל-5 הדירות הראשונות"],
+    ["😎", "תנאי תשלום נוחים"],
+    ["🏢", "מפרט פרימיום"],
   ];
   const title = spring({ frame, fps, config: { damping: 16 } });
   return (
@@ -326,16 +325,19 @@ export const SpecCard: React.FC = () => {
           color: "transparent",
           opacity: title,
           transform: `translateY(${(1 - title) * 30}px)`,
-          marginBottom: 46,
+          marginBottom: 40,
         }}
       >
-        פרויקט היוקרה החדש
+        מיקום מנצח וביקוש שיא
+        {/* Emoji outside the gradient clip so they keep their colours. */}
+        <span style={{ color: "white", fontSize: 76 }}> ‼️🤩</span>
       </div>
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "26px 40px",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "stretch",
+          gap: 22,
         }}
       >
         {items.map(([emoji, label], i) => {
@@ -351,7 +353,6 @@ export const SpecCard: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: 20,
-                width: 600,
                 whiteSpace: "nowrap",
                 padding: "22px 30px",
                 borderRadius: 18,
@@ -430,20 +431,24 @@ export const EndCard: React.FC = () => {
           transform: `scale(${0.9 + 0.1 * a})`,
         }}
       >
-        דירות גן ופנטהאוזים
+        מיקום מנצח וביקוש שיא
+        <span style={{ color: "white", fontSize: 96 }}> ‼️🤩</span>
       </div>
       <div
         style={{
           fontFamily: SANS,
           fontWeight: 700,
-          fontSize: 50,
+          fontSize: 42,
+          lineHeight: 1.4,
+          maxWidth: 1400,
           color: "white",
           marginTop: 18,
           opacity: b,
           transform: `translateY(${(1 - b) * 20}px)`,
         }}
       >
-        עליית ערך · שכירות גבוהה בכל ימות השנה
+        לוקיישן מבוקש במיוחד שיוצר פוטנציאל אדיר לעליית ערך ולשכירות גבוהה
+        וזמינה בכל ימות השנה!
       </div>
       <div
         style={{
@@ -460,7 +465,7 @@ export const EndCard: React.FC = () => {
           transform: `scale(${(0.6 + 0.4 * c) * pulse})`,
         }}
       >
-        👈 לחצו כאן לתיאום פגישת משקיעים
+        👇🏻 לחצו כאן להשארת פרטים 👇🏻
       </div>
     </AbsoluteFill>
   );
