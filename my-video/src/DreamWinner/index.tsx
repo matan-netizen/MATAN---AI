@@ -44,7 +44,7 @@ const SCENES = [
 export const WINNER_DURATION = SCENES.reduce((s, x) => s + x.duration, 0);
 
 // Gold and white confetti falling over the winner.
-const Confetti: React.FC<{ at: number }> = ({ at }) => {
+export const Confetti: React.FC<{ at: number }> = ({ at }) => {
   const frame = useCurrentFrame() - at;
   if (frame < 0) return null;
   return (
