@@ -1,6 +1,7 @@
 import "./index.css";
 import { Composition } from "remotion";
 import { MyComposition } from "./Composition";
+import { DEMO_DURATION, DEMO_FPS, OfficeAIDemo } from "./OfficeAIDemo";
 import { REEL_DURATION, REEL_FPS, UzielReelClean } from "./UzielReelClean";
 import {
   FOOTAGE_DURATION,
@@ -65,6 +66,14 @@ export const RemotionRoot: React.FC = () => {
         fps={REEL_FPS}
         width={1080}
         height={1920}
+      />
+      <Composition
+        id="OfficeAIDemo"
+        component={OfficeAIDemo}
+        durationInFrames={DEMO_DURATION}
+        fps={DEMO_FPS}
+        width={1920}
+        height={1080}
       />
     </>
   );
