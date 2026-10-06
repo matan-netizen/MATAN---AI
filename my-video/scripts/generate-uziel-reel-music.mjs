@@ -1,23 +1,24 @@
-// Synthesizes an original 30s background track for UzielReelClean (it
+// Synthesizes an original 32.5s background track for UzielReelClean (it
 // replaces the reel's original music). Same engine as
 // generate-uziel-music.mjs, in a darker, more cinematic D minor
 // (Dm – Bb – F – C). No dependencies; writes a 16-bit WAV.
 //
 //   node scripts/generate-uziel-reel-music.mjs out/uziel-reel-music.wav
 //
-// Whooshes on the reel's shot changes; drums enter at 3s and a riser
-// builds into the call-to-action card at 24.6s.
+// Whooshes on the reel's shot changes; drums enter after the 2.5s title
+// card and a riser builds into the call-to-action card at 27.1s.
 
 import { writeFileSync } from "node:fs";
 
 const SR = 44100;
-const DURATION = 30;
+const DURATION = 32.5;
 const BPM = 120;
 const BEAT = 60 / BPM;
 const N = SR * DURATION;
-const TRANSITIONS = [3.0, 5.96, 9.0, 11.88, 13.9, 15.0, 18.08, 21.2, 24.6, 27.6];
-const CTA = 24.6;
-const DRUMS_IN = 3.0;
+// Shot changes of the reel, shifted by the 2.5s title card.
+const TRANSITIONS = [2.5, 5.5, 8.46, 11.5, 14.38, 16.4, 17.5, 20.58, 23.7, 27.1, 30.1];
+const CTA = 27.1;
+const DRUMS_IN = 2.5;
 
 const left = new Float32Array(N);
 const right = new Float32Array(N);

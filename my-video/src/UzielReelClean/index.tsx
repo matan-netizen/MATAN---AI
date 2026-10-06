@@ -11,16 +11,21 @@ import {
 } from "remotion";
 import { FONT_FAMILY } from "../RealEstatePromo/theme";
 
-// Clean-up of the supplied 9:16 reel (public/uziel-reel/source.mp4):
+// Clean-up of the supplied 9:16 reel (public/uziel-reel/source.mp4),
+// opened by a 2.5s title card:
 //  - the "clideo.com" watermark in the bottom-right corner is cropped out
 //    by a slight zoom anchored at the top (ZOOM);
-//  - the shots that show women are covered by the project's own renders
-//    (public/uziel/*.jpg) with the reel's caption panels recreated on top,
+//  - the shots that show women are covered by clips of men or by the
+//    project's own renders (public/uziel/*.jpg) with the reel's caption panels recreated on top,
 //    faded in and out on the same timings as the original captions;
 //  - the original music is replaced by scripts/generate-uziel-reel-music.mjs.
 
 export const REEL_FPS = 24;
-export const REEL_DURATION = 30 * REEL_FPS;
+const f0 = (s: number) => Math.round(s * REEL_FPS);
+// Title card added in front of the reel; everything after it is the
+// cleaned-up source, shifted by INTRO.
+const INTRO = f0(2.5);
+export const REEL_DURATION = INTRO + 30 * REEL_FPS;
 const f = (s: number) => Math.round(s * REEL_FPS);
 
 const ZOOM = 1.06;
@@ -149,13 +154,22 @@ type Cue = {
   out?: [number, number];
 };
 
+// Landscape clips of men (public/uziel-reel/men-*.mp4, cut from footage
+// the client supplied). The source has a channel logo along its top edge,
+// so the clip is zoomed from the bottom to crop that strip out.
+type Clip = { src: string; seconds: number };
+const CLIP_ZOOM = 1.16;
+const CARD = { top: 470, height: 608 };
+
 // Source shots that show women (exact source frame ranges), covered by a
-// render. Cue times are in seconds of the source and copy the original captions' fades.
+// render or by clips of men. Cue times are in seconds of the source and
+// copy the original captions' fades.
 const COVERS: {
   from: number;
   to: number;
   image: string;
   pan: [number, number];
+  clips?: Clip[];
   cues: Cue[];
 }[] = [
   {
@@ -163,6 +177,7 @@ const COVERS: {
     to: 143 / REEL_FPS,
     image: "aerial-day",
     pan: [30, 45],
+    clips: [{ src: "men-street", seconds: 3.6 }],
     cues: [
       { panel: "hook", in: [0, 0], out: [3.2, 3.9] },
       { panel: "location", in: [4.5, 5.0] },
@@ -180,6 +195,10 @@ const COVERS: {
     to: 434 / REEL_FPS,
     image: "penthouse-living",
     pan: [25, 55],
+    clips: [
+      { src: "men-home-1", seconds: 1.24 },
+      { src: "men-home-2", seconds: 0.88 },
+    ],
     cues: [{ panel: "spec", in: [0, 0] }],
   },
   {
@@ -194,11 +213,78 @@ const COVERS: {
   },
 ];
 
+// Plays landscape clips back to back, stretched to `len` frames: a blurred,
+// darkened copy fills the 9:16 frame and the sharp clip sits in a card.
+const ClipStack: React.FC<{ clips: Clip[]; len: number }> = ({
+  clips,
+  len,
+}) => {
+  const total = clips.reduce((sum, c) => sum + c.seconds, 0);
+  const rate = (total * REEL_FPS) / len;
+  let start = 0;
+  return (
+    <AbsoluteFill style={{ backgroundColor: "#000" }}>
+      {clips.map((c, i) => {
+        const dur =
+          i === clips.length - 1
+            ? len - start
+            : Math.round((c.seconds * REEL_FPS) / rate);
+        const src = staticFile(`uziel-reel/${c.src}.mp4`);
+        const seq = (
+          <Sequence key={c.src} from={start} durationInFrames={dur}>
+            <OffthreadVideo
+              src={src}
+              muted
+              playbackRate={rate}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                filter: "blur(28px) brightness(0.5)",
+                transform: "scale(1.15)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                top: CARD.top,
+                left: 0,
+                width: 1080,
+                height: CARD.height,
+                overflow: "hidden",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+                borderTop: "3px solid rgba(213,174,117,0.8)",
+                borderBottom: "3px solid rgba(213,174,117,0.8)",
+              }}
+            >
+              <OffthreadVideo
+                src={src}
+                muted
+                playbackRate={rate}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  transform: `scale(${CLIP_ZOOM})`,
+                  transformOrigin: "50% 100%",
+                }}
+              />
+            </div>
+          </Sequence>
+        );
+        start += dur;
+        return seq;
+      })}
+    </AbsoluteFill>
+  );
+};
+
 const Cover: React.FC<(typeof COVERS)[number]> = ({
   from,
   to,
   image,
   pan,
+  clips,
   cues,
 }) => {
   const frame = useCurrentFrame();
@@ -207,7 +293,9 @@ const Cover: React.FC<(typeof COVERS)[number]> = ({
   const p = frame / len;
   return (
     <AbsoluteFill>
+      {clips ? <ClipStack clips={clips} len={len} /> : null}
       <Img
+        hidden={Boolean(clips)}
         src={staticFile(`uziel/${image}.jpg`)}
         style={{
           width: "100%",
@@ -229,22 +317,99 @@ const Cover: React.FC<(typeof COVERS)[number]> = ({
   );
 };
 
+// Opening title card, in the reel's own caption style.
+const Intro: React.FC = () => {
+  const frame = useCurrentFrame();
+  const t = frame / REEL_FPS;
+  const rise = (start: number) => ({
+    opacity: interpolate(t, [start, start + 0.35], [0, 1], clamp),
+    transform: `translateY(${interpolate(t, [start, start + 0.35], [40, 0], clamp)}px)`,
+  });
+  return (
+    <AbsoluteFill
+      style={{ opacity: interpolate(frame, [INTRO, INTRO + 6], [1, 0], clamp) }}
+    >
+      <Img
+        src={staticFile("uziel/tower-night.jpg")}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "62% 50%",
+          transform: `scale(${interpolate(frame, [0, INTRO], [1.15, 1.05], clamp)})`,
+        }}
+      />
+      <AbsoluteFill
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 40%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          top: 420,
+          left: 0,
+          right: 0,
+          textAlign: "center",
+          fontFamily: FONT_FAMILY,
+          direction: "rtl",
+          color: "#fff",
+          textShadow: "0 4px 18px rgba(0,0,0,0.6)",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 112,
+            fontWeight: 900,
+            lineHeight: 1.1,
+            ...rise(0.1),
+          }}
+        >
+          אל תפספסו
+        </div>
+        <div
+          style={{
+            fontSize: 96,
+            fontWeight: 900,
+            lineHeight: 1.15,
+            color: GOLD,
+            ...rise(0.4),
+          }}
+        >
+          את ההשקעה הזאת
+        </div>
+      </div>
+      <Panel
+        title="5 דירות להשקעה"
+        lines={["במיקום נדיר"]}
+        opacity={interpolate(t, [0.9, 1.3], [0, 1], clamp)}
+      />
+    </AbsoluteFill>
+  );
+};
+
 export const UzielReelClean: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "#000", overflow: "hidden" }}>
       <AbsoluteFill
         style={{ transform: `scale(${ZOOM})`, transformOrigin: "50% 0%" }}
       >
-        <OffthreadVideo src={staticFile("uziel-reel/source.mp4")} muted />
-        {COVERS.map((c) => (
-          <Sequence
-            key={c.from}
-            from={f(c.from)}
-            durationInFrames={f(c.to - c.from)}
-          >
-            <Cover {...c} />
-          </Sequence>
-        ))}
+        <Sequence durationInFrames={INTRO + 6}>
+          <Intro />
+        </Sequence>
+        <Sequence from={INTRO}>
+          <OffthreadVideo src={staticFile("uziel-reel/source.mp4")} muted />
+          {COVERS.map((c) => (
+            <Sequence
+              key={c.from}
+              from={f(c.from)}
+              durationInFrames={f(c.to - c.from)}
+            >
+              <Cover {...c} />
+            </Sequence>
+          ))}
+        </Sequence>
       </AbsoluteFill>
       <Html5Audio
         src={staticFile("uziel-reel/music.mp3")}
