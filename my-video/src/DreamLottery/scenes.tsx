@@ -20,7 +20,7 @@ import {
   usePop,
   WhiteText,
 } from "./components";
-import { COLORS, FONT, GOLD_GRADIENT, MEDIA, SCENES } from "./theme";
+import { COLORS, FACTS, FONT, GOLD_GRADIENT, MEDIA, SCENES } from "./theme";
 
 // Choice card for the hook: "200 ₪" or "an apartment in Jerusalem".
 const ChoiceCard: React.FC<{
@@ -105,7 +105,7 @@ export const SceneHook: React.FC = () => {
         </WhiteText>
         <ChoiceCard
           title="דירה בירושלים"
-          sub="בשווי מיליונים"
+          sub={`בשווי ${FACTS.prize}`}
           delay={18}
           winner
         />
@@ -125,7 +125,7 @@ export const SceneHook: React.FC = () => {
 // 2 — The ask: "Do you want an apartment in Jerusalem as a gift?"
 export const SceneAskClip: React.FC = () => (
   <AbsoluteFill>
-    <Footage src={SCENES.askClip.src} punchAt={[45, 120, 210]} />
+    <Footage src={SCENES.askClip.src} punchAt={[45, 120, 225, 310]} />
     <Shade />
     <TopBanner at={8} until={110}>
       דירה בירושלים? ברור שכן!
@@ -133,8 +133,11 @@ export const SceneAskClip: React.FC = () => (
     <TopBanner at={120} until={200}>
       דירת יוקרה בשווי 1.3 מיליון דולר!
     </TopBanner>
-    <TopBanner at={215} until={297} gold={false}>
+    <TopBanner at={215} until={305} gold={false}>
       מכירת הכרטיסים החלה!
+    </TopBanner>
+    <TopBanner at={309} until={403}>
+      הקישור בפרופיל: אינסטגרם · טיקטוק · פייסבוק
     </TopBanner>
     <CornerBadge />
   </AbsoluteFill>
@@ -196,6 +199,9 @@ export const ScenePrize: React.FC = () => (
           </WhiteText>
         </div>
       </div>
+      <WhiteText size={38} weight={700} delay={108}>
+        קרן &quot;עם ישראל חי&quot; · פועלת מאז {FACTS.foundedYear}
+      </WhiteText>
     </AbsoluteFill>
     <Sfx src={MEDIA.riser} at={0} volume={0.4} />
     <Sfx src={MEDIA.chime} at={54} volume={0.6} />
@@ -209,6 +215,9 @@ export const SceneCauseClip: React.FC = () => (
   <AbsoluteFill>
     <Footage src={SCENES.causeClip.src} punchAt={[64, 120, 168, 200]} />
     <Shade />
+    <TopBanner at={4} until={58} gold={false}>
+      כרטיס {FACTS.ticket} ₪ – ועכשיו 1+1!
+    </TopBanner>
     <TopBanner at={60} until={118}>
       כל הכסף חוזר לעם ישראל
     </TopBanner>
@@ -218,7 +227,7 @@ export const SceneCauseClip: React.FC = () => (
     <TopBanner at={168} until={198}>
       למשפחות השכולות
     </TopBanner>
-    <TopBanner at={200} until={270} gold={false}>
+    <TopBanner at={200} until={267} gold={false}>
       אתה לא רק קונה כרטיס – אתה עושה מצווה!
     </TopBanner>
     <CornerBadge />
@@ -367,7 +376,7 @@ const Deadline: React.FC<{ delay: number }> = ({ delay }) => {
         opacity: Math.min(1, s * 2),
       }}
     >
-      רק עד 11/11!
+      רק עד {FACTS.bonusDeadline}!
     </div>
   );
 };
@@ -391,6 +400,12 @@ export const SceneBonus: React.FC = () => (
             <WhiteText size={60} delay={16}>
               מתנה על הכרטיסים
             </WhiteText>
+            <WhiteText size={44} weight={700} delay={26}>
+              2 כרטיסים – {FACTS.ticket} ₪ בלבד
+            </WhiteText>
+            <GoldText size={60} delay={30}>
+              רק {FACTS.perTicketWithGift} ₪ לכרטיס!
+            </GoldText>
           </div>
           <GiftBox delay={14} />
         </div>
@@ -402,7 +417,7 @@ export const SceneBonus: React.FC = () => (
               הגרלת בונוס
             </WhiteText>
             <GoldText size={160} delay={56}>
-              $15,000
+              {FACTS.bonus}
             </GoldText>
             <WhiteText size={46} weight={700} delay={60}>
               למצטרפים מוקדם
@@ -429,8 +444,11 @@ export const SceneFollowClip: React.FC = () => (
     <TopBanner at={4} until={60} gold={false}>
       היכנסו לקישור בפרופיל!
     </TopBanner>
-    <TopBanner at={66} until={207}>
+    <TopBanner at={66} until={196}>
       כל שקל חוזר בחסד לעם ישראל
+    </TopBanner>
+    <TopBanner at={200} until={260}>
+      עם ישראל חי – ממחנה יהודה!
     </TopBanner>
     <CornerBadge />
   </AbsoluteFill>
@@ -485,6 +503,50 @@ const EnterButton: React.FC<{ delay: number }> = ({ delay }) => {
   );
 };
 
+// Recap of the offer, so each cut ends with every number on screen.
+const FactStrip: React.FC<{ delay: number }> = ({ delay }) => {
+  const s = usePop(delay, 12);
+  const chip: React.CSSProperties = {
+    fontFamily: FONT,
+    fontWeight: 900,
+    fontSize: 40,
+    lineHeight: 1.15,
+    textAlign: "center",
+    color: COLORS.navy,
+    backgroundImage: GOLD_GRADIENT,
+    padding: "14px 24px",
+    borderRadius: 20,
+  };
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: 20,
+        opacity: Math.min(1, s * 2),
+        transform: `scale(${s})`,
+      }}
+    >
+      <div style={chip}>
+        1+1 מתנה
+        <br />
+        {FACTS.perTicketWithGift} ₪ לכרטיס
+      </div>
+      <div
+        style={{
+          ...chip,
+          backgroundImage: "none",
+          backgroundColor: COLORS.red,
+          color: COLORS.white,
+        }}
+      >
+        בונוס {FACTS.bonus}
+        <br />
+        עד {FACTS.bonusDeadline}
+      </div>
+    </div>
+  );
+};
+
 // 7 — Call to action: buy a ticket through the profile link.
 export const SceneCTA: React.FC = () => {
   const poster = usePop(22, 12);
@@ -504,13 +566,14 @@ export const SceneCTA: React.FC = () => {
         <Img
           src={staticFile(MEDIA.poster)}
           style={{
-            width: 440,
+            width: 330,
             borderRadius: 24,
             border: `6px solid ${COLORS.gold}`,
             boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
             transform: `scale(${poster})`,
           }}
         />
+        <FactStrip delay={28} />
         <WhiteText size={72} delay={34}>
           הקישור בפרופיל
         </WhiteText>

@@ -53,6 +53,18 @@ export const Footage: React.FC<{ src: number; punchAt?: number[] }> = ({
       <OffthreadVideo
         src={staticFile(MEDIA.footage)}
         trimBefore={src}
+        // Short fades so the street audio never clicks on a hard cut.
+        volume={(f) =>
+          interpolate(
+            f,
+            [0, 3, durationInFrames - 3, durationInFrames],
+            [0, 1, 1, 0],
+            {
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            },
+          )
+        }
         style={{
           width: "100%",
           height: "100%",

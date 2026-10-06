@@ -26,15 +26,28 @@ export const NAVY_GRADIENT = `linear-gradient(180deg, #13284F 0%, ${COLORS.navy}
 
 export const FPS = 30;
 
+// Sales figures, all taken from the campaign poster and the market footage.
+// Update here if the campaign terms change.
+export const FACTS = {
+  prize: "1.3 מיליון דולר",
+  ticket: 660, // ₪, as said in the footage
+  perTicketWithGift: 660 / 2, // ₪, with the 1+1 offer
+  bonus: "$15,000",
+  bonusDeadline: "11/11",
+  foundedYear: 2001, // Am Yisrael Chai foundation, per press coverage
+};
+
 // Scene lengths in frames. Footage scenes also give `src`, the start frame
-// of the take inside public/dream/market.mp4 (30fps).
+// of the take inside public/dream/market.mp4 (30fps). The three takes cover
+// the whole footage in order, and each cut sits on a pause in the speech:
+// 13.43s (after "פייסבוק") and 22.33s (the change of speaker).
 export const SCENES = {
   hook: { duration: 120 },
-  askClip: { duration: 297, src: 0 },
+  askClip: { duration: 403, src: 0 },
   prize: { duration: 150 },
-  causeClip: { duration: 270, src: 402 },
+  causeClip: { duration: 267, src: 403 },
   bonus: { duration: 180 },
-  followClip: { duration: 207, src: 672 },
+  followClip: { duration: 260, src: 670 },
   cta: { duration: 186 },
 };
 export type SceneKey = keyof typeof SCENES;
