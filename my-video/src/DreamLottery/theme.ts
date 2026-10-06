@@ -26,18 +26,29 @@ export const NAVY_GRADIENT = `linear-gradient(180deg, #13284F 0%, ${COLORS.navy}
 
 export const FPS = 30;
 
-// Source footage (public/dream/market.mp4, 30fps) is cut into three takes.
-// `src` is the start frame inside the footage.
+// Scene lengths in frames. Footage scenes also give `src`, the start frame
+// of the take inside public/dream/market.mp4 (30fps).
 export const SCENES = {
-  hook: { from: 0, duration: 120 },
-  askClip: { from: 120, duration: 297, src: 0 },
-  prize: { from: 417, duration: 150 },
-  causeClip: { from: 567, duration: 270, src: 402 },
-  bonus: { from: 837, duration: 180 },
-  followClip: { from: 1017, duration: 207, src: 672 },
-  cta: { from: 1224, duration: 186 },
+  hook: { duration: 120 },
+  askClip: { duration: 297, src: 0 },
+  prize: { duration: 150 },
+  causeClip: { duration: 270, src: 402 },
+  bonus: { duration: 180 },
+  followClip: { duration: 207, src: 672 },
+  cta: { duration: 186 },
 };
-export const DURATION = SCENES.cta.from + SCENES.cta.duration;
+export type SceneKey = keyof typeof SCENES;
+
+// The full cut, and the two standalone ads made from it.
+export const CUTS = {
+  full: ["hook", "askClip", "prize", "causeClip", "bonus", "followClip", "cta"],
+  apartment: ["hook", "askClip", "prize", "cta"],
+  chesed: ["prize", "causeClip", "bonus", "followClip", "cta"],
+} satisfies Record<string, SceneKey[]>;
+export type CutName = keyof typeof CUTS;
+
+export const cutDuration = (cut: CutName) =>
+  CUTS[cut].reduce((sum, key) => sum + SCENES[key].duration, 0);
 
 export const MEDIA = {
   footage: "dream/market.mp4",

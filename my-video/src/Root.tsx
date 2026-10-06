@@ -4,7 +4,7 @@ import { MyComposition } from "./Composition";
 import { FPS, PROMO_DURATION, RealEstatePromo } from "./RealEstatePromo";
 import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
 import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
-import { DREAM_DURATION, DREAM_FPS, DreamLottery } from "./DreamLottery";
+import { DREAM_FPS, DreamLottery, dreamDuration } from "./DreamLottery";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -37,7 +37,26 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="DreamLottery"
         component={DreamLottery}
-        durationInFrames={DREAM_DURATION}
+        defaultProps={{ cut: "full" as const }}
+        durationInFrames={dreamDuration("full")}
+        fps={DREAM_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamLotteryApartment"
+        component={DreamLottery}
+        defaultProps={{ cut: "apartment" as const }}
+        durationInFrames={dreamDuration("apartment")}
+        fps={DREAM_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamLotteryChesed"
+        component={DreamLottery}
+        defaultProps={{ cut: "chesed" as const }}
+        durationInFrames={dreamDuration("chesed")}
         fps={DREAM_FPS}
         width={1080}
         height={1920}
