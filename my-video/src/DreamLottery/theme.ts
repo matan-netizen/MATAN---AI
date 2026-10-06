@@ -26,7 +26,8 @@ export const NAVY_GRADIENT = `linear-gradient(180deg, #13284F 0%, ${COLORS.navy}
 
 export const FPS = 30;
 
-// Sales figures, all taken from the campaign poster and the market footage.
+// Sales figures, from the campaign poster, the market footage, and terms
+// the client confirmed (the apartment comes fully furnished).
 // Update here if the campaign terms change.
 export const FACTS = {
   prize: "1.3 מיליון דולר",

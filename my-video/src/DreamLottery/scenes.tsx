@@ -131,7 +131,9 @@ export const SceneAskClip: React.FC = () => (
       דירה בירושלים? ברור שכן!
     </TopBanner>
     <TopBanner at={120} until={200}>
-      דירת יוקרה בשווי 1.3 מיליון דולר!
+      דירת יוקרה מרוהטת
+      <br />
+      בשווי {FACTS.prize}!
     </TopBanner>
     <TopBanner at={215} until={305} gold={false}>
       מכירת הכרטיסים החלה!
@@ -154,6 +156,29 @@ const PrizeCounter: React.FC<{ delay: number }> = ({ delay }) => {
     <GoldText size={260} delay={delay}>
       {v.toFixed(1)}
     </GoldText>
+  );
+};
+
+// Red pill under the prize value.
+const FurnishedTag: React.FC<{ delay: number }> = ({ delay }) => {
+  const s = usePop(delay, 9);
+  return (
+    <div
+      style={{
+        marginTop: 8,
+        fontFamily: FONT,
+        fontWeight: 900,
+        fontSize: 54,
+        color: COLORS.white,
+        backgroundColor: COLORS.red,
+        padding: "10px 40px",
+        borderRadius: 60,
+        transform: `scale(${s}) rotate(${(1 - s) * -8}deg)`,
+        opacity: Math.min(1, s * 2),
+      }}
+    >
+      מרוהטת לגמרי!
+    </div>
   );
 };
 
@@ -180,6 +205,7 @@ export const ScenePrize: React.FC = () => (
         <WhiteText size={80} delay={30} style={{ marginTop: -20 }}>
           מיליון דולר
         </WhiteText>
+        <FurnishedTag delay={60} />
       </Panel>
       <div style={{ display: "flex", alignItems: "center", gap: 30 }}>
         <NinthYearBadge size={290} delay={82} />
