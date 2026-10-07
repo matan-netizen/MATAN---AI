@@ -11,7 +11,6 @@ import {
 } from "remotion";
 import {
   Badge,
-  FinePrint,
   GoldBackdrop,
   KenBurns,
   Logo,
@@ -23,7 +22,45 @@ import {
 } from "./components";
 import { COLORS, FONT, GOLD_GRADIENT, GOLD_TEXT, IMG, SERIF } from "./theme";
 
-const PHOTO_NOTE = "בתמונות: הדירה מהגרלת החלומות הקודמת";
+// The site only has photos of last year's apartment so far, so the photo
+// scenes say so up front, and promise this year's is even more luxurious.
+const PhotoNote: React.FC<{ delay?: number }> = ({ delay = 20 }) => (
+  <AbsoluteFill
+    style={{
+      justifyContent: "flex-end",
+      alignItems: "center",
+      paddingBottom: 50,
+    }}
+  >
+    <Pop delay={delay} damping={14}>
+      <div
+        style={{
+          fontFamily: FONT,
+          textAlign: "center",
+          background: "rgba(42,26,16,0.85)",
+          border: `3px solid ${COLORS.gold}`,
+          borderRadius: 26,
+          padding: "16px 36px",
+          boxShadow: "0 14px 34px rgba(0,0,0,0.45)",
+        }}
+      >
+        <div style={{ fontSize: 36, fontWeight: 700, color: COLORS.cream }}>
+          📸 בתמונות: הדירה מהשנה שעברה
+        </div>
+        <div
+          style={{
+            fontSize: 50,
+            fontWeight: 900,
+            lineHeight: 1.2,
+            ...GOLD_TEXT,
+          }}
+        >
+          השנה – עוד יותר יוקרתית! ✨
+        </div>
+      </div>
+    </Pop>
+  </AbsoluteFill>
+);
 
 // 1 — Hook: Jerusalem, the logo and "year nine in a row".
 export const SceneHook: React.FC = () => (
@@ -112,7 +149,7 @@ export const ScenePrize: React.FC = () => {
         style={{
           justifyContent: "flex-end",
           alignItems: "center",
-          paddingBottom: 190,
+          paddingBottom: 300,
           gap: 4,
         }}
       >
@@ -138,7 +175,7 @@ export const ScenePrize: React.FC = () => {
           1.3 מיליון דולר
         </Rise>
       </AbsoluteFill>
-      <FinePrint>{PHOTO_NOTE}</FinePrint>
+      <PhotoNote />
     </AbsoluteFill>
   );
 };
@@ -173,7 +210,7 @@ export const SceneSuper: React.FC = () => {
         style={{
           justifyContent: "flex-end",
           alignItems: "center",
-          paddingBottom: 170,
+          paddingBottom: 280,
           gap: 26,
         }}
       >
@@ -224,7 +261,7 @@ export const SceneSuper: React.FC = () => {
           · תוספת ₪70 בלבד להזמנה
         </Rise>
       </AbsoluteFill>
-      <FinePrint>{PHOTO_NOTE}</FinePrint>
+      <PhotoNote />
     </AbsoluteFill>
   );
 };

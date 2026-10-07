@@ -227,23 +227,3 @@ export const Mascot: React.FC<{
     />
   );
 };
-
-export const FinePrint: React.FC<{
-  children: React.ReactNode;
-  color?: string;
-}> = ({ children, color = "rgba(255,255,255,0.75)" }) => (
-  <div
-    style={{
-      position: "absolute",
-      bottom: 40,
-      left: 40,
-      right: 40,
-      textAlign: "center",
-      fontFamily: FONT,
-      fontSize: 26,
-      color,
-    }}
-  >
-    {children}
-  </div>
-);
