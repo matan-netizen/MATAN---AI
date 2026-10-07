@@ -1,5 +1,8 @@
 # Video work in this repo
 
+Always write to the user in Hebrew. All narration and on-screen copy is
+Hebrew too, voiced with a native Israeli accent.
+
 The client wants every available tool used on each video, not only Remotion.
 For each video, go through this list and use whatever is connected:
 
