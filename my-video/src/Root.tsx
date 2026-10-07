@@ -6,6 +6,11 @@ import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
 import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
 import { DreamRaffle, RAFFLE_DURATION, RAFFLE_FPS } from "./DreamRaffle";
 import { WINNER_DURATION, WINNER_FPS, WinnerSpot } from "./WinnerSpot";
+import {
+  WINNER_PROMO_DURATION,
+  WINNER_PROMO_FPS,
+  WinnerPromo,
+} from "./WinnerPromo";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -48,6 +53,14 @@ export const RemotionRoot: React.FC = () => {
         component={WinnerSpot}
         durationInFrames={WINNER_DURATION}
         fps={WINNER_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="WinnerPromo"
+        component={WinnerPromo}
+        durationInFrames={WINNER_PROMO_DURATION}
+        fps={WINNER_PROMO_FPS}
         width={1080}
         height={1920}
       />
