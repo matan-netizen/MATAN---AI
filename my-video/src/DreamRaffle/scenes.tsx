@@ -372,7 +372,7 @@ export const SceneCause: React.FC = () => (
   </AbsoluteFill>
 );
 
-// 7 — Call to action: buy a ticket on the site.
+// 7 — Call to action: leave your details (the lead form sits under the ad).
 export const SceneCTA: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -421,7 +421,7 @@ export const SceneCTA: React.FC = () => {
               whiteSpace: "nowrap",
             }}
           >
-            🎟️ לרכישת כרטיס
+            👇 השאירו פרטים כאן
           </div>
         </div>
         <Rise
@@ -433,6 +433,35 @@ export const SceneCTA: React.FC = () => {
         >
           thedreamraffle.co.il
         </Rise>
+      </AbsoluteFill>
+      {/* Chevrons bouncing down towards the lead form under the ad. */}
+      <AbsoluteFill
+        style={{
+          justifyContent: "flex-end",
+          alignItems: "center",
+          paddingBottom: 240,
+          paddingRight: 380,
+          opacity: interpolate(frame, [50, 62], [0, 1], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          }),
+        }}
+      >
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            style={{
+              width: 90,
+              height: 90,
+              marginTop: -30,
+              borderRight: `16px solid ${COLORS.gold}`,
+              borderBottom: `16px solid ${COLORS.gold}`,
+              transform: `translateY(${Math.sin(frame * 0.25) * 18}px) rotate(45deg)`,
+              opacity:
+                0.35 + 0.65 * ((Math.sin(frame * 0.25 - i * 0.9) + 1) / 2),
+            }}
+          />
+        ))}
       </AbsoluteFill>
       <Mascot
         src={IMG.mascotPointing}

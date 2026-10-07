@@ -9,7 +9,7 @@
 // Writes public/raffle/vo/<scene>.mp3.
 
 import { execFileSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 // Keys match the scene names in src/DreamRaffle/index.tsx. Numbers are
@@ -38,7 +38,7 @@ const LINES = [
   { scene: "cause", text: "כרטיס אחד. מאה דרכים לבנות את ארץ ישראל." },
   {
     scene: "cta",
-    text: "היכנסו עכשיו לאתר הגרלת החלומות, וקחו חלק בחלום!",
+    text: "רוצים לקחת חלק בחלום? השאירו פרטים כאן, ונחזור אליכם!",
   },
 ];
 
@@ -92,9 +92,15 @@ for (const { scene, text } of LINES) {
   lines.push({ scene, text, seconds: Number(seconds.toFixed(3)) });
 }
 
-if (!ONLY) {
-  writeFileSync(
-    "src/DreamRaffle/voiceover.json",
-    JSON.stringify({ voice: VOICE, model: MODEL, lines }, null, 2) + "\n",
-  );
-}
+// With a scene name (npm run raffle-voiceover -- cta) only that line is
+// regenerated and the others keep their recorded timings.
+const JSON_PATH = "src/DreamRaffle/voiceover.json";
+const merged = ONLY
+  ? JSON.parse(readFileSync(JSON_PATH, "utf8")).lines.map(
+      (l) => lines.find((n) => n.scene === l.scene) ?? l,
+    )
+  : lines;
+writeFileSync(
+  JSON_PATH,
+  JSON.stringify({ voice: VOICE, model: MODEL, lines: merged }, null, 2) + "\n",
+);
