@@ -5,6 +5,10 @@ import { FPS, PROMO_DURATION, RealEstatePromo } from "./RealEstatePromo";
 import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
 import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
 import { DREAM9_DURATION, DREAM9_FPS, DreamRaffle9 } from "./DreamRaffle9";
+import {
+  DreamRaffle9WithClips,
+  WITH_CLIPS_DURATION,
+} from "./DreamRaffle9/WithClips";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -38,6 +42,14 @@ export const RemotionRoot: React.FC = () => {
         id="DreamRaffle9"
         component={DreamRaffle9}
         durationInFrames={DREAM9_DURATION}
+        fps={DREAM9_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamRaffle9WithClips"
+        component={DreamRaffle9WithClips}
+        durationInFrames={WITH_CLIPS_DURATION}
         fps={DREAM9_FPS}
         width={1080}
         height={1920}
