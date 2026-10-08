@@ -43,13 +43,11 @@ const PLAQUE_FRAMES = PLAQUE_Z.map(plaqueFrame);
 const CUES = [
   { sfx: "impact", at: 0, volume: 0.6 },
   ...PLAQUE_FRAMES.map((f) => ({ sfx: "ting", at: f, volume: 0.4 })),
-  { sfx: "creak", at: SC.door + 50, volume: 0.6 },
   { sfx: "impact", at: SC.bonus, volume: 0.55 },
   { sfx: "pop", at: SC.bonus + 6, volume: 0.6 },
   { sfx: "coins", at: SC.bonus + 8, volume: 0.45 },
   { sfx: "pop", at: SC.bonus + 30, volume: 0.6 },
   { sfx: "pop", at: SC.bonus + 54, volume: 0.6 },
-  { sfx: "creak", at: SC.reveal - 4, volume: 0.6 },
   { sfx: "impact", at: SC.reveal + 14, volume: 0.7 },
   { sfx: "shimmer", at: SC.reveal + 20, volume: 0.5 },
   { sfx: "whoosh", at: SC.end - 6, volume: 0.5 },
