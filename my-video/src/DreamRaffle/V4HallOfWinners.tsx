@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Img, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { EarlyBird, OnePlusOne, SuperTicket } from "./badges";
-import { clamp, Fade, Flash, GoldTitle, Headline, Particles, Photo, Shade, Stack, Spotlight, useSpring } from "./components";
+import { clamp, Fade, Flash, GoldTitle, Headline, Particles, Photo, Pill, Shade, Stack, Spotlight, useSpring } from "./components";
 import { Endcard } from "./Endcard";
 import SCRIPT from "./script.json";
 import { VersionShell } from "./Shell";
@@ -342,11 +342,18 @@ const Reveal: React.FC = () => {
       <Flash at={0} dur={22} peak={1} />
       <Particles count={40} seed="v4r" />
       <Stack>
-        <GoldTitle size={150} delay={16}>
+        {/* The gallery photos are of last year's prize apartment. */}
+        <Pill size={42} delay={12} bg={COLORS.navy}>
+          זוהי הדירה של שנה שעברה
+        </Pill>
+        <GoldTitle size={150} delay={22}>
           {OFFER.prize}
         </GoldTitle>
-        <Headline size={64} delay={30}>
+        <Headline size={64} delay={34}>
           דירת יוקרה בירושלים
+        </Headline>
+        <Headline size={60} delay={48} color={COLORS.goldLight}>
+          הדירה שלכם עדיין מחכה
         </Headline>
       </Stack>
     </AbsoluteFill>
