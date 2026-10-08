@@ -144,3 +144,14 @@ Four video ad scripts, each with a timecoded production table and post-productio
 - [ ] **After 11/11:** remove the Early Bird tag and its VO line (V2: 00:12–00:17, V4: badge 1) and swap in the Super Ticket or packages. Re-export.
 - [ ] Get written approval from Am Yisrael Chai for (a) the winner names and likenesses (Arieh Lurie, plaque names), (b) the Hebrew spelling of each name, and (c) any overhead or endorsement claim before adding it.
 - [ ] Check local legal requirements for raffle advertising (terms link and disclaimer on the endcard, if required).
+
+---
+
+## Build (Remotion)
+
+All four scripts are built in `src/DreamRaffle/`, with 12 compositions: `DreamRaffle-V{1..4}-{9x16,1x1,16x9}`.
+
+- **Images:** taken from thedreamraffle.co.il (apartment gallery, winners page, campaign mascot, Year 9 logo), stored in `public/raffle/`.
+- **Music and SFX:** original, synthesized by `npm run raffle-audio` and stored in `public/raffle/audio/`.
+- **Voiceover:** the lines live in `src/DreamRaffle/script.json` and are also burned in as captions. Run `ELEVENLABS_API_KEY=sk_... npm run raffle-voiceover`, then re-render with `npm run raffle-render`. Once the clips exist, the music ducks under them automatically.
+- **Arieh Lurie:** the site has no photo of the 2025 winner, so V1 shows a gold nameplate and V4 shows a gold "8" plaque.

@@ -31,7 +31,10 @@
     "music": "node scripts/generate-music.mjs scripts/promo-beat.wav && remotion ffmpeg -y -loglevel error -i scripts/promo-beat.wav -c:a libmp3lame -b:a 192k public/music/promo-beat.mp3 && rm scripts/promo-beat.wav",
     "zohar-audio": "node scripts/generate-zohar-audio.mjs scripts/zohar-wav && for f in music rumble heartbeat riser chime pop; do remotion ffmpeg -y -loglevel error -i scripts/zohar-wav/$f.wav -c:a libmp3lame -b:a 192k public/zohar/audio/$f.mp3; done && rm -r scripts/zohar-wav",
     "voiceover": "NODE_USE_ENV_PROXY=1 node scripts/generate-voiceover.mjs",
-    "kardan-music": "node scripts/generate-kardan-music.mjs scripts/kardan.wav && remotion ffmpeg -y -loglevel error -i scripts/kardan.wav -c:a libmp3lame -b:a 192k public/kardan/music.mp3 && rm scripts/kardan.wav"
+    "kardan-music": "node scripts/generate-kardan-music.mjs scripts/kardan.wav && remotion ffmpeg -y -loglevel error -i scripts/kardan.wav -c:a libmp3lame -b:a 192k public/kardan/music.mp3 && rm scripts/kardan.wav",
+    "raffle-audio": "node scripts/generate-raffle-audio.mjs scripts/raffle-wav && for f in scripts/raffle-wav/*.wav; do remotion ffmpeg -y -loglevel error -i $f -c:a libmp3lame -b:a 192k public/raffle/audio/$(basename ${f%.wav}).mp3; done && rm -r scripts/raffle-wav",
+    "raffle-voiceover": "NODE_USE_ENV_PROXY=1 node scripts/generate-raffle-voiceover.mjs",
+    "raffle-render": "for v in V1 V2 V3 V4; do for f in 9x16 1x1 16x9; do remotion render DreamRaffle-$v-$f out/dream-raffle/DreamRaffle-$v-$f.mp4; done; done"
   },
   "sideEffects": [
     "*.css"
