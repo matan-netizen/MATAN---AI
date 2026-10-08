@@ -1,7 +1,10 @@
 // Synthesizes the original 120 BPM score and the sound effects for
 // DreamRaffle9, so there are no licensing concerns. No dependencies.
 //
-//   node scripts/generate-dream9-audio.mjs <out-dir>
+//   node scripts/generate-dream9-audio.mjs <out-dir> [--anim]
+//
+// --anim writes only music-anim.wav: a 45s version of the same groove with
+// no breakdown or countdown, used under the voiceover in DreamRaffle9Anim.
 //
 // Writes: music.wav, bassdrop.wav, swoosh.wav, cash.wav, pop.wav, ticker.wav,
 //         stamp.wav, ticktock.wav, click.wav, riser.wav
@@ -20,12 +23,14 @@ const SR = 44100;
 const outDir = process.argv[2] ?? ".";
 mkdirSync(outDir, { recursive: true });
 
-const TOTAL = 35;
+const ANIM = process.argv.includes("--anim");
+const TOTAL = ANIM ? 45 : 35;
 const BEAT = 0.5; // 120 BPM
 const BAR = BEAT * 4;
-const BREAK_START = 20;
-const BREAK_END = 23;
-const LEAD_START = 10;
+const BREAK_START = ANIM ? Infinity : 20;
+const BREAK_END = ANIM ? Infinity : 23;
+const COUNTDOWN_END = ANIM ? -Infinity : 26;
+const LEAD_START = ANIM ? 3 : 10;
 
 let seed = 246813579;
 const noise = () => {
@@ -284,7 +289,7 @@ const pluck = (tr, start, note, gain) => {
     for (let b = 0; b < 4; b++) {
       const t = t0 + b * BEAT;
       if (t >= BREAK_START && t < BREAK_END) continue;
-      const countdown = t >= BREAK_END && t < 26;
+      const countdown = t >= BREAK_END && t < COUNTDOWN_END;
       kick(tr, t, 0.9);
       if (!countdown && b % 2 === 0) kick(tr, t + BEAT * 0.75, 0.5);
       if (b % 2 === 1) clap(tr, t, countdown ? 0.25 : 0.4);
@@ -311,8 +316,9 @@ const pluck = (tr, start, note, gain) => {
     }
   }
   reverb(tr, 0.18, 1.0);
-  writeWav(tr, "music.wav", { fadeOut: 2 });
+  writeWav(tr, ANIM ? "music-anim.wav" : "music.wav", { fadeOut: 2 });
 }
+if (ANIM) process.exit(0);
 
 // ---------------------------------------------------------------------------
 // SFX

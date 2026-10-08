@@ -9,6 +9,11 @@ import {
   DreamRaffle9WithClips,
   WITH_CLIPS_DURATION,
 } from "./DreamRaffle9/WithClips";
+import {
+  DREAM9_ANIM_DURATION,
+  DREAM9_ANIM_FPS,
+  DreamRaffle9Anim,
+} from "./DreamRaffle9Anim";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -51,6 +56,14 @@ export const RemotionRoot: React.FC = () => {
         component={DreamRaffle9WithClips}
         durationInFrames={WITH_CLIPS_DURATION}
         fps={DREAM9_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamRaffle9Anim"
+        component={DreamRaffle9Anim}
+        durationInFrames={DREAM9_ANIM_DURATION}
+        fps={DREAM9_ANIM_FPS}
         width={1080}
         height={1920}
       />
