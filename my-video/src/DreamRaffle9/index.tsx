@@ -8,7 +8,6 @@ import {
 } from "remotion";
 import {
   SceneApartment,
-  SceneCash,
   SceneCause,
   SceneCTA,
   SceneEnd,
@@ -25,7 +24,6 @@ const TIMELINE = [
   { name: "Hook", Component: SceneHook, ...SCENES.hook },
   { name: "Surprise", Component: SceneSurprise, ...SCENES.surprise },
   { name: "Apartment", Component: SceneApartment, ...SCENES.apartment },
-  { name: "Cash", Component: SceneCash, ...SCENES.cash },
   { name: "1+1 offer", Component: SceneOffer, ...SCENES.offer },
   { name: "Cause", Component: SceneCause, ...SCENES.cause },
   { name: "Urgency", Component: SceneUrgency, ...SCENES.urgency },
@@ -57,9 +55,8 @@ const SFX: { file: string; at: number; volume: number; length?: number }[] = [
   { file: "swoosh", at: 328, volume: 0.35 },
   { file: "swoosh", at: 358, volume: 0.35 },
   { file: "bassdrop", at: 390, volume: 0.8 },
-  { file: "swoosh", at: 417, volume: 0.6 },
-  { file: "cash", at: 430, volume: 0.9 },
-  { file: "stamp", at: 440, volume: 0.8 },
+  { file: "swoosh", at: 418, volume: 0.35 },
+  { file: "swoosh", at: 448, volume: 0.35 },
   { file: "swoosh", at: 477, volume: 0.6 },
   { file: "swoosh", at: 508, volume: 0.6 },
   { file: "pop", at: 516, volume: 0.7 },

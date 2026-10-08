@@ -8,7 +8,7 @@
 //
 // Score layout (seconds, must match SCENES in src/DreamRaffle9/theme.ts):
 //   0 → 10   groove: kick, clap, hats, sub bass, chord stabs
-//   10 → 20  full: adds a plucked lead (apartment, cash and 1+1 scenes)
+//   10 → 20  full: adds a plucked lead (apartment and 1+1 scenes)
 //   20 → 23  breakdown: soft piano and pads only (the fund's cause)
 //   23 → 26  drums return under the countdown
 //   26 → 35  full again, 2s fade-out

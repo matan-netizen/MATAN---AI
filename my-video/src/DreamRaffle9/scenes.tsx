@@ -15,6 +15,7 @@ import {
   CtaButton,
   DownArrows,
   FinePrint,
+  LastYearNote,
   Flash,
   Ltr,
   Mascot,
@@ -75,6 +76,7 @@ export const SceneHook: React.FC = () => (
       <Whip>
         <Photo src={IMG.view} position="40% 50%" from={1.35} to={1.1} />
       </Whip>
+      <LastYearNote />
     </Sequence>
     <Sequence durationInFrames={48} layout="none">
       <Stack top={230}>
@@ -105,7 +107,7 @@ export const SceneHook: React.FC = () => (
           שלך
         </Pop>
       </Stack>
-      <FinePrint>התמונות להמחשה בלבד</FinePrint>
+      <LastYearNote />
     </Sequence>
   </AbsoluteFill>
 );
@@ -180,6 +182,7 @@ export const SceneSurprise: React.FC = () => {
         <Sequence from={62} layout="none">
           <Equation />
         </Sequence>
+        <LastYearNote />
       </Sequence>
     </AbsoluteFill>
   );
@@ -242,10 +245,12 @@ const TOUR = [
   { src: IMG.kitchen, pos: "50% 50%" },
   { src: IMG.bedroom, pos: "45% 50%" },
   { src: IMG.balcony, pos: "60% 50%" },
+  { src: IMG.dining, pos: "40% 50%" },
+  { src: IMG.view, pos: "40% 50%" },
 ];
 const SHOT = 30;
 
-// 10–14s — The prize: speed-ramped tour with the value counter.
+// 10–16s — The prize: speed-ramped tour with the value counter.
 export const SceneApartment: React.FC = () => (
   <AbsoluteFill>
     {TOUR.map((shot, i) => (
@@ -275,61 +280,9 @@ export const SceneApartment: React.FC = () => (
       </Pop>
       <Counter from={0} to={1300000} start={10} end={90} size={170} />
     </Stack>
-    <FinePrint />
+    <LastYearNote />
   </AbsoluteFill>
 );
-
-// 14–16s — Or the cash alternative.
-export const SceneCash: React.FC = () => {
-  const frame = useCurrentFrame();
-  const drop = interpolate(frame, [2, 10], [-700, 0], {
-    ...clamp,
-    easing: Easing.in(Easing.quad),
-  });
-  const shake = frame > 10 && frame < 18 ? Math.sin(frame * 3) * 14 : 0;
-  return (
-    <AbsoluteFill style={{ transform: `translateY(${shake}px)` }}>
-      <DarkGold />
-      {[
-        { x: -120, y: 260, r: -25, d: 4 },
-        { x: 640, y: 1180, r: 20, d: 8 },
-        { x: 620, y: 200, r: 15, d: 12 },
-        { x: -80, y: 1250, r: -12, d: 16 },
-      ].map(({ x, y, r, d }) => {
-        const p = interpolate(frame, [d, d + 12], [0, 1], clamp);
-        return (
-          <Img
-            key={`${x}-${y}`}
-            src={staticFile(IMG.cash)}
-            style={{
-              position: "absolute",
-              left: x,
-              top: y,
-              width: 560,
-              opacity: p,
-              transform: `scale(${0.4 + 0.6 * p}) rotate(${r}deg)`,
-            }}
-          />
-        );
-      })}
-      <Particles at={10} count={70} />
-      <Stack justify="center" gap={10}>
-        <Pop delay={0} size={110}>
-          או
-        </Pop>
-        <div style={{ transform: `translateY(${drop}px)` }}>
-          <Pop delay={2} size={210} color={COLORS.yellow}>
-            <Ltr>$700,000</Ltr>
-          </Pop>
-        </div>
-        <div style={{ height: 30 }} />
-        <Stamp delay={20} size={110}>
-          במזומן!
-        </Stamp>
-      </Stack>
-    </AbsoluteFill>
-  );
-};
 
 // 16–20s — The 1+1 offer: one ticket slot becomes two.
 export const SceneOffer: React.FC = () => {
@@ -773,6 +726,7 @@ export const SceneCTA: React.FC = () => (
       </Pop>
     </Stack>
     <Phone tapAt={36} />
+    <LastYearNote />
     <Mascot
       src={IMG.mascotPoint}
       delay={16}
@@ -843,7 +797,7 @@ export const SceneEnd: React.FC = () => {
           כל כרטיס תומך ב״עם ישראל חי״
         </div>
       </Stack>
-      <FinePrint>בכפוף לתקנון ההגרלה · התמונות להמחשה בלבד</FinePrint>
+      <FinePrint />
     </AbsoluteFill>
   );
 };

@@ -475,8 +475,36 @@ export const DownArrows: React.FC<{ delay?: number; color?: string }> = ({
   );
 };
 
+// Shown on every shot of the apartment: the gallery is last year's apartment.
+export const LastYearNote: React.FC = () => (
+  <div
+    style={{
+      position: "absolute",
+      bottom: 40,
+      left: 0,
+      right: 0,
+      textAlign: "center",
+    }}
+  >
+    <span
+      style={{
+        fontFamily: FONT,
+        fontWeight: 700,
+        fontSize: 36,
+        color: COLORS.white,
+        background: "rgba(13,10,7,0.72)",
+        border: `2px solid ${COLORS.goldLight}`,
+        padding: "8px 26px",
+        borderRadius: 999,
+      }}
+    >
+      התמונות מהדירה של שנה שעברה!
+    </span>
+  </div>
+);
+
 export const FinePrint: React.FC<{ children?: React.ReactNode }> = ({
-  children = "התמונות להמחשה בלבד · בכפוף לתקנון ההגרלה",
+  children = "בכפוף לתקנון ההגרלה",
 }) => (
   <div
     style={{

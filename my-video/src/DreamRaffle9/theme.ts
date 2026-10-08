@@ -33,8 +33,7 @@ export const DURATION = 1050;
 export const SCENES = {
   hook: { from: 0, duration: 90 },
   surprise: { from: 90, duration: 210 },
-  apartment: { from: 300, duration: 120 },
-  cash: { from: 420, duration: 60 },
+  apartment: { from: 300, duration: 180 },
   offer: { from: 480, duration: 120 },
   cause: { from: 600, duration: 90 },
   urgency: { from: 690, duration: 90 },
