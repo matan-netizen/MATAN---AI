@@ -39,3 +39,21 @@ is normalised to -14 LUFS.
 At a normal speaking pace, line 2 (≈8s of speech for a 5s slot) and line 3 run
 over. If the script reports overruns, shorten those lines in `VO_LINES` or
 lengthen the slots.
+
+## Motion-graphics version (Remotion)
+
+The full promo with motion graphics lives in `my-video` as the `DreamRaffle` composition
+(`src/DreamRaffle/`). It uses the same footage (`public/dreamraffle/footage.mp4`, rotated
+to 1080x1920), plus the logo, mascot and cause photos from thedreamraffle.co.il. It also
+has its own score and sound effects.
+
+```bash
+cd my-video
+npm run dreamraffle-audio                         # regenerate score + SFX (optional, already committed)
+ELEVENLABS_API_KEY=... npm run dreamraffle-vo     # Hebrew voiceover → src/DreamRaffle/voiceover.json
+npx remotion render DreamRaffle out/dream-raffle.mp4
+```
+
+Until the voiceover has been generated, the video renders with music and SFX only.
+Set `ELEVENLABS_VOICE_ID` to a native Hebrew voice from the ElevenLabs library for the
+best accent, or use `GOOGLE_TTS_API_KEY=... npm run dreamraffle-vo -- google`.
