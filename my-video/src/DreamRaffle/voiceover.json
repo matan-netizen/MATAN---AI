@@ -2,6 +2,6 @@
   "engine": "recording",
   "voice": "Sarra (supplied recording)",
   "lines": [
-    { "file": "dreamraffle/vo/narration.mp3", "from": 0, "frames": 765 }
+    { "file": "dreamraffle/vo/narration.mp3", "from": 0, "frames": 704 }
   ]
 }

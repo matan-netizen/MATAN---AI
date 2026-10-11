@@ -263,7 +263,7 @@ export const SceneCTA: React.FC = () => {
       <LightLeak intensity={0.3} seed={7} />
       <Vignette strength={0.7} />
       <div style={{ position: "absolute", top: 170, left: 50 }}>
-        <Countdown delay={18} seconds={4} size={200} />
+        <Countdown delay={18} seconds={2} size={200} />
       </div>
       <SmallLogo delay={6} width={180} style={{ top: 160, right: 60 }} />
       <Positioned top={440}>
