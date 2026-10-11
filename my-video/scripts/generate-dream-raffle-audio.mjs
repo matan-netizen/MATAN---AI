@@ -3,7 +3,8 @@
 //
 //   node scripts/generate-dream-raffle-audio.mjs <out-dir>
 //
-// Writes: music.wav, whoosh.wav, chime.wav, click.wav, impact.wav, riser.wav
+// Writes: music.wav, whoosh.wav, chime.wav, click.wav, impact.wav, riser.wav,
+// outro.wav
 //
 // Uplifting orchestral-pop in D major at 120 BPM (one beat = 0.5s), so every
 // section change lands on a beat and on the scene cuts in src/DreamRaffle/theme.ts.
@@ -450,4 +451,26 @@ writeWav(music, "music.wav", { fadeOut: 0.5 });
     add(tr, j, Math.sin(2 * Math.PI * p) * t * t * 0.25);
   }
   writeWav(tr, "riser.wav", { peakTarget: 0.6 });
+}
+
+// Outro: closing sound for the logo card. A bell arpeggio rising through
+// D major (D–F#–A–D) over a soft low chord, ringing out.
+{
+  const tr = makeTrack(2.6);
+  const bell = (start, note, gain) => {
+    const f = midiToHz(note);
+    const s0 = Math.floor(start * SR);
+    for (const [ratio, amp, decay] of [[1, 1, 2.2], [2.76, 0.35, 5], [5.4, 0.15, 9], [8.9, 0.07, 13]]) {
+      for (let j = 0; j < tr.n - s0; j++) {
+        const t = j / SR;
+        const x = Math.sin(2 * Math.PI * f * ratio * t) * amp * Math.exp(-t * decay) * Math.min(1, t / 0.002);
+        add(tr, s0 + j, x * gain * (note % 2 ? 0.8 : 1), x * gain * (note % 2 ? 1 : 0.8));
+      }
+    }
+  };
+  [[0, 74], [0.1, 78], [0.2, 81], [0.3, 86]].forEach(([at, note], k) => bell(at, note, 0.22 + k * 0.04));
+  bell(0.3, 74, 0.15); // the octave below rings under the top note
+  strings(tr, 0.28, 1.1, [50, 57, 62, 66], 0.05, 0.07, 0.06);
+  reverb(tr, 0.35, 1.3);
+  writeWav(tr, "outro.wav", { fadeOut: 0.6, peakTarget: 0.8 });
 }

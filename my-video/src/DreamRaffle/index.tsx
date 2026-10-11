@@ -7,7 +7,7 @@ import { COLORS, FONT, OVERLAP, SCENES } from "./theme";
 
 export { DURATION as DREAM_RAFFLE_DURATION, FPS as DREAM_RAFFLE_FPS } from "./theme";
 
-// 25.5s 9:16 promo for thedreamraffle.co.il: hook → offer → cause → CTA.
+// 26s 9:16 promo for thedreamraffle.co.il: hook → offer → cause → CTA.
 export const DreamRaffle: React.FC = () => (
   <AbsoluteFill style={{ backgroundColor: COLORS.brown, direction: "rtl", fontFamily: FONT }}>
     <AudioLayer />

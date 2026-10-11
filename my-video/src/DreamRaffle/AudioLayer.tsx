@@ -18,7 +18,8 @@ const SFX: { file: string; from: number; volume: number }[] = [
   { file: "impact", from: SCENES.cta.from, volume: 0.7 },
   { file: "chime", from: SCENES.cta.from + 22, volume: 0.3 },
   { file: "click", from: SCENES.cta.from + CTA_PRESS, volume: 0.9 },
-  { file: "chime", from: SCENES.cta.from + END_CARD + 4, volume: 0.4 },
+  // Closing sound on the logo card, right after the narration's last word.
+  { file: "outro", from: SCENES.cta.from + END_CARD, volume: 0.65 },
 ];
 
 export const AudioLayer: React.FC = () => (
