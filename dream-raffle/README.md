@@ -50,10 +50,12 @@ has its own score and sound effects.
 ```bash
 cd my-video
 npm run dreamraffle-audio                         # regenerate score + SFX (optional, already committed)
-ELEVENLABS_API_KEY=... npm run dreamraffle-vo     # Hebrew voiceover → src/DreamRaffle/voiceover.json
+ELEVENLABS_API_KEY=... npm run dreamraffle-vo     # optional: TTS voiceover instead of the recording
 npx remotion render DreamRaffle out/dream-raffle.mp4
 ```
 
-Until the voiceover has been generated, the video renders with music and SFX only.
+The video uses the supplied narration recording (`public/dreamraffle/vo/narration.mp3`,
+27.5s video); the scene cuts and the score's sections follow its sentence breaks. Running
+`dreamraffle-vo` replaces it with a TTS voiceover (then retime `SCENES` in `theme.ts`).
 Set `ELEVENLABS_VOICE_ID` to a native Hebrew voice from the ElevenLabs library for the
 best accent, or use `GOOGLE_TTS_API_KEY=... npm run dreamraffle-vo -- google`.

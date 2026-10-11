@@ -6,11 +6,14 @@
 // Writes: music.wav, whoosh.wav, chime.wav, click.wav, impact.wav, riser.wav
 //
 // Uplifting orchestral-pop in D major at 120 BPM (one beat = 0.5s), so every
-// section change lands on a beat and on the scene cuts in src/DreamRaffle/theme.ts:
-//   0 → 3s    hook:  strings pad + piano arpeggio, riser into the drop
-//   3 → 7s    offer: drums, bass and plucks enter
-//   7 → 13s   cause: half-time drums, warm horn melody over strings
-//   13 → 20s  CTA:   full band, brass stabs, tambourine, final hit at 19s
+// section change lands on a beat and on the scene cuts in src/DreamRaffle/theme.ts.
+// It sits under continuous narration, so it stays out of the voice's range:
+// the piano plays low, drums and horn are light, and the band hits between lines.
+//   0 → 5s       hook:  strings pad + piano arpeggio, riser into the drop
+//   5 → 12s      offer: drums, bass and plucks enter
+//   12 → 21s     cause: half-time drums, warm horn melody over strings
+//   21 → 25.5s   CTA:   full band, brass stabs, tambourine
+//   25.5 → 27.5s final hit on the closing logo card, ringing out
 
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -20,11 +23,11 @@ const outDir = process.argv[2] ?? ".";
 mkdirSync(outDir, { recursive: true });
 
 // Must match SCENES in src/DreamRaffle/theme.ts (seconds).
-const OFFER = 3;
-const CAUSE = 7;
-const CTA = 13;
-const FINAL_HIT = 19;
-const TOTAL = 20;
+const OFFER = 5;
+const CAUSE = 12;
+const CTA = 21;
+const FINAL_HIT = 25.5;
+const TOTAL = 27.5;
 const BEAT = 0.5;
 
 let seed = 20261008;
@@ -300,7 +303,7 @@ const chordAt = (t) => CHORDS[Math.floor(t + 1e-6) % 4];
 
 const music = makeTrack(TOTAL + 0.5);
 
-for (let t = 0; t < FINAL_HIT; t += 1) {
+for (let t = 0; t + 1 <= FINAL_HIT; t += 1) {
   const c = chordAt(t);
   const section = t < OFFER ? 0 : t < CAUSE ? 1 : t < CTA ? 2 : 3;
 
@@ -311,7 +314,7 @@ for (let t = 0; t < FINAL_HIT; t += 1) {
   // Piano arpeggio, 8ths, through every section.
   const arp = [c.notes[0], c.notes[1], c.notes[2], c.notes[1] + 12];
   for (let k = 0; k < 4; k++) {
-    pluck(music, t + k * 0.25, arp[k] + 12, section === 2 ? 0.07 : 0.09, 4, k % 2 ? 0.3 : -0.3);
+    pluck(music, t + k * 0.25, arp[k], section === 2 ? 0.06 : 0.08, 4, k % 2 ? 0.3 : -0.3);
   }
 
   if (section >= 1) {
@@ -322,9 +325,9 @@ for (let t = 0; t < FINAL_HIT; t += 1) {
     // Four-on-the-floor with claps on 2 and 4, hats on the off-beats.
     for (let b = 0; b < 2; b++) {
       const beat = t + b * BEAT;
-      kick(music, beat, 0.75);
-      hat(music, beat + 0.25, 0.22);
-      if (b === 1) clap(music, beat, 0.4);
+      kick(music, beat, 0.7);
+      hat(music, beat + 0.25, 0.16);
+      if (b === 1) clap(music, beat, 0.3);
     }
   }
   if (section === 2) {
@@ -346,8 +349,13 @@ const MELODY = [
   [0, 1.0, 78], [1, 0.5, 76], [1.5, 0.5, 74], [2, 1.0, 76], [3, 1.0, 74],
   [4, 0.5, 78], [4.5, 0.5, 81], [5, 1.0, 79],
 ];
-for (const [at, dur, note] of MELODY) horn(music, CAUSE + at, dur * 0.95, note - 12, 0.09);
-for (const [at, dur, note] of MELODY.slice(0, 6)) horn(music, CTA + at, dur * 0.9, note, 0.06);
+// The cause melody plays twice to fill the longer scene.
+for (const rep of [0, 6]) {
+  for (const [at, dur, note] of MELODY) {
+    if (CAUSE + rep + at + dur <= CTA) horn(music, CAUSE + rep + at, dur * 0.95, note - 12, 0.055);
+  }
+}
+for (const [at, dur, note] of MELODY.slice(0, 5)) horn(music, CTA + at, dur * 0.9, note, 0.04);
 
 // Section accents.
 noiseRise(music, OFFER - 1, 1, 0.25);

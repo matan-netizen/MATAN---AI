@@ -27,23 +27,27 @@ export const COLORS = {
 export const GOLD_GRADIENT = `linear-gradient(180deg, ${COLORS.goldLight} 0%, ${COLORS.gold} 45%, ${COLORS.goldDeep} 100%)`;
 
 export const FPS = 30;
-export const DURATION = 600;
+export const DURATION = 825;
 
-// Scene start frames; the score's sections change on the same frames
+// Scene start frames, cut on the sentence breaks of the narration
+// (public/dreamraffle/vo/narration.mp3, speech from 0.3s):
+//   line 1  0.30–4.93s   line 2  5.30–11.57s
+//   line 3 11.92–20.71s  line 4 21.04–25.45s
+// The score's sections change on the same frames
 // (scripts/generate-dream-raffle-audio.mjs, 120 BPM).
 export const SCENES = {
-  hook: { from: 0, duration: 90 },
-  offer: { from: 90, duration: 120 },
-  cause: { from: 210, duration: 180 },
-  cta: { from: 390, duration: 210 },
+  hook: { from: 0, duration: 150 },
+  offer: { from: 150, duration: 210 },
+  cause: { from: 360, duration: 270 },
+  cta: { from: 630, duration: 195 },
 };
 // Frames each scene keeps running underneath the next one's entrance.
 export const OVERLAP = 10;
 
-// Within the CTA scene: button press and the closing logo card (19s, the
-// score's final hit).
-export const CTA_PRESS = 120;
-export const END_CARD = 180;
+// Within the CTA scene: button press (as the site address is read) and the
+// closing logo card (25.5s, right after the narration, on the final hit).
+export const CTA_PRESS = 75;
+export const END_CARD = 135;
 
 // Shots in public/dreamraffle/footage.mp4 (the walkthrough, rotated to
 // 1080x1920), in source seconds. 05.8–07.77 (the unmade bed) is never used.
@@ -51,10 +55,10 @@ export const SHOTS = {
   dining: 0.1,
   coffee: 2.6,
   nightstand: 4.3,
-  mirror: 7.8,
-  mezuzah: 11.8,
+  mirror: 7.78,
+  mezuzah: 11.82,
   sofa: 13.5,
-  livingWide: 16.0,
+  livingWide: 17.3,
   chess: 19.85,
 };
 

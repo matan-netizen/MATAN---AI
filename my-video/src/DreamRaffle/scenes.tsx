@@ -75,12 +75,12 @@ const SmallLogo: React.FC<{ delay?: number; width?: number; style?: React.CSSPro
 // 00:00–00:03 — dining table and coffee machine, push-in, light leak, glow.
 export const SceneHook: React.FC = () => (
   <AbsoluteFill>
-    <Sequence durationInFrames={60} layout="none">
-      <Shot at={SHOTS.dining} zoom={[1.0, 1.2]} origin="45% 55%" />
+    <Sequence durationInFrames={90} layout="none">
+      <Shot at={SHOTS.dining} rate={0.8} zoom={[1.0, 1.2]} origin="45% 55%" />
     </Sequence>
-    <Sequence from={56} layout="none">
+    <Sequence from={86} layout="none">
       <FadeIn frames={4}>
-        <Shot at={SHOTS.coffee} zoom={[1.08, 1.22]} origin="50% 40%" />
+        <Shot at={SHOTS.coffee} rate={0.7} zoom={[1.08, 1.22]} origin="50% 40%" />
       </FadeIn>
     </Sequence>
     <LightLeak intensity={0.5} seed={1} />
@@ -108,12 +108,13 @@ export const SceneOffer: React.FC = () => {
     <AbsoluteFill style={{ background: `radial-gradient(circle at 50% 75%, ${COLORS.brownMid}, ${COLORS.brown} 70%)` }}>
       <Particles count={45} seed="offer" area={{ top: seam, height: 920 }} size={12} />
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: seam, overflow: "hidden", borderBottomLeftRadius: 60, borderBottomRightRadius: 60 }}>
-        <Sequence durationInFrames={45} layout="none">
-          <Shot at={SHOTS.nightstand} zoom={[1.1, 1.2]} />
+        {/* Slowed so the shots fill the scene; the nightstand stops before the bed (5.8s). */}
+        <Sequence durationInFrames={76} layout="none">
+          <Shot at={SHOTS.nightstand} rate={0.55} zoom={[1.1, 1.2]} />
         </Sequence>
-        <Sequence from={42} layout="none">
+        <Sequence from={72} layout="none">
           <FadeIn frames={4}>
-            <Shot at={SHOTS.mirror} zoom={[1.05, 1.18]} />
+            <Shot at={SHOTS.mirror} rate={0.5} zoom={[1.05, 1.18]} />
           </FadeIn>
         </Sequence>
         <LightLeak intensity={0.35} seed={4} />
@@ -181,12 +182,12 @@ const PhotoCard: React.FC<{ src: string; label: string; delay: number; tilt: num
 // 00:07–00:13 — mezuzah and living room, flag badge, warm gold flare, the cause photos.
 export const SceneCause: React.FC = () => (
   <AbsoluteFill>
-    <Sequence durationInFrames={70} layout="none">
-      <Shot at={SHOTS.mezuzah} rate={0.75} zoom={[1.05, 1.16]} origin="40% 40%" />
+    <Sequence durationInFrames={95} layout="none">
+      <Shot at={SHOTS.mezuzah} rate={0.5} zoom={[1.05, 1.16]} origin="40% 40%" />
     </Sequence>
-    <Sequence from={64} layout="none">
+    <Sequence from={89} layout="none">
       <FadeIn frames={6}>
-        <Shot at={SHOTS.sofa} zoom={[1.15, 1.02]} />
+        <Shot at={SHOTS.sofa} rate={0.7} zoom={[1.15, 1.02]} />
       </FadeIn>
     </Sequence>
     {/* Warm gold grade */}
@@ -198,10 +199,10 @@ export const SceneCause: React.FC = () => (
       <FlagBadge delay={10} size={330} label='תומכים בצה"ל' />
     </Positioned>
     <div style={{ position: "absolute", top: 560, left: 30 }}>
-      <PhotoCard src={IMG.soldiers} label='חיילי צה"ל' delay={78} tilt={-5} from="left" />
+      <PhotoCard src={IMG.soldiers} label='חיילי צה"ל' delay={150} tilt={-5} from="left" />
     </div>
     <div style={{ position: "absolute", top: 640, right: 30 }}>
-      <PhotoCard src={IMG.emergency} label="ציוד חירום לחזית" delay={92} tilt={4} from="right" />
+      <PhotoCard src={IMG.emergency} label="ציוד חירום לחזית" delay={166} tilt={4} from="right" />
     </div>
     <Positioned top={1210}>
       <KineticText
@@ -250,10 +251,10 @@ export const SceneCTA: React.FC = () => {
   const endLogo = spring({ frame: frame - END_CARD - 2, fps, config: { damping: 10 } });
   return (
     <AbsoluteFill>
-      <Sequence durationInFrames={118} layout="none">
-        <Shot at={SHOTS.livingWide} zoom={[1.0, 1.12]} />
+      <Sequence durationInFrames={100} layout="none">
+        <Shot at={SHOTS.livingWide} rate={0.75} zoom={[1.0, 1.12]} />
       </Sequence>
-      <Sequence from={114} layout="none">
+      <Sequence from={96} layout="none">
         <FadeIn frames={5}>
           <Shot at={SHOTS.chess} rate={0.9} zoom={[1.05, 1.2]} />
         </FadeIn>
@@ -262,7 +263,7 @@ export const SceneCTA: React.FC = () => {
       <LightLeak intensity={0.3} seed={7} />
       <Vignette strength={0.7} />
       <div style={{ position: "absolute", top: 170, left: 50 }}>
-        <Countdown delay={18} seconds={6} size={200} />
+        <Countdown delay={18} seconds={4} size={200} />
       </div>
       <SmallLogo delay={6} width={180} style={{ top: 160, right: 60 }} />
       <Positioned top={440}>

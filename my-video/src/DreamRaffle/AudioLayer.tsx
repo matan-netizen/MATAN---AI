@@ -4,7 +4,7 @@ import { CTA_PRESS, DURATION, END_CARD, SCENES, VOICEOVER } from "./theme";
 
 const MUSIC_LEVEL = 0.75;
 // Music drops to this share of its level while a voiceover line plays.
-const VOICEOVER_DUCK = 0.38;
+const VOICEOVER_DUCK = 0.3;
 const DUCK_RAMP = 6;
 
 // 0 → 1 over DUCK_RAMP frames around each voiceover line.
