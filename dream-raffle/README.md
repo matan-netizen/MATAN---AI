@@ -60,3 +60,33 @@ background music; the scene cuts follow its sentence breaks. Running
 `dreamraffle-vo` replaces it with a TTS voiceover (then retime `SCENES` in `theme.ts`).
 Set `ELEVENLABS_VOICE_ID` to a native Hebrew voice from the ElevenLabs library for the
 best accent, or use `GOOGLE_TTS_API_KEY=... npm run dreamraffle-vo -- google`.
+
+## Market video fixes (`DreamRaffleMarket`)
+
+`my-video/src/DreamRaffleMarket/` fixes the Machane Yehuda market video
+(`public/dreamraffle/market/main.mp4`, 720x1280) and outputs it at 1080x1920.
+The original video plays underneath, sound included, so speech and captions keep their timing.
+
+```bash
+cd my-video && npx remotion render DreamRaffleMarket out/dream-raffle-market.mp4
+```
+
+1. **Logo:** the logo in the header tile (x 511–679, y 44–166 in source pixels)
+   was cropped at the bottom, hiding "שנה תשיעית ברציפות". A patch redraws the tile
+   with the whole logo, scaled to fit with even padding. It appears only while the
+   header is settled on screen (source frames 78–283, 400–516, 524–573). These
+   ranges were measured frame by frame from the video.
+2. **Opening (frames 0–75):** the illustrated building is replaced with apartment
+   footage in the style of the `DreamRaffle` promo: a push-in on the dining table,
+   a dissolve to the living room, warm light leaks, a light sweep, a vignette and
+   gold sparkles. "דירה חדשה בירושלים" builds word by word, then "במתנה?" in large
+   gold letters with the key icon. A gold flash leads into the market footage.
+3. **Price window (frames 279–407):** the illustrated window with the counter is
+   replaced with a whip-pan into the living room and mirror shots. It keeps the gold
+   "דירה יוקרתית חדשה בירושלים" label and a glass card counting $800,000 → $1,300,000,
+   which pulses and glows when it lands. The segment slides out to the left, back
+   into the market footage, where the original header slides in.
+
+Style taken from the `DreamRaffle` promo: gold #D4AF37 / #F6DFA0 on dark
+brown #291A11, Heebo 900 headlines that spring in word by word, warm screen-blended
+light leaks, diagonal light sweeps, gold particles, whip-pan and flash transitions.

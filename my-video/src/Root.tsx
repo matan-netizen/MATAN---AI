@@ -9,6 +9,11 @@ import {
   DREAM_RAFFLE_FPS,
   DreamRaffle,
 } from "./DreamRaffle";
+import {
+  DreamRaffleMarket,
+  MARKET_DURATION,
+  MARKET_FPS,
+} from "./DreamRaffleMarket";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -43,6 +48,14 @@ export const RemotionRoot: React.FC = () => {
         component={DreamRaffle}
         durationInFrames={DREAM_RAFFLE_DURATION}
         fps={DREAM_RAFFLE_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamRaffleMarket"
+        component={DreamRaffleMarket}
+        durationInFrames={MARKET_DURATION}
+        fps={MARKET_FPS}
         width={1080}
         height={1920}
       />
