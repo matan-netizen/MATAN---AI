@@ -27,12 +27,12 @@ export const COLORS = {
 export const GOLD_GRADIENT = `linear-gradient(180deg, ${COLORS.goldLight} 0%, ${COLORS.gold} 45%, ${COLORS.goldDeep} 100%)`;
 
 export const FPS = 30;
-export const DURATION = 780;
+export const DURATION = 812;
 
 // Scene start frames, cut on the sentence breaks of the narration
 // (public/dreamraffle/vo/narration.mp3, speech from 0.3s):
 //   line 1  0.30–4.93s   line 2  5.30–11.57s
-//   line 3 11.92–20.71s  line 4 21.04–23.80s, ending on "והבטיחו את הכרטיס שלכם"
+//   line 3 11.92–20.71s  line 4 21.04–24.89s, ending on "והבטיחו את הכרטיס שלכם"
 //   (the rest of the recording is cut)
 // The score's sections change on the same frames
 // (scripts/generate-dream-raffle-audio.mjs, 120 BPM).
@@ -40,15 +40,15 @@ export const SCENES = {
   hook: { from: 0, duration: 150 },
   offer: { from: 150, duration: 210 },
   cause: { from: 360, duration: 270 },
-  cta: { from: 630, duration: 150 },
+  cta: { from: 630, duration: 182 },
 };
 // Frames each scene keeps running underneath the next one's entrance.
 export const OVERLAP = 10;
 
 // Within the CTA scene: button press (as the site address is read) and the
-// closing logo card with the closing sound (23.9s, right after "שלכם").
-export const CTA_PRESS = 60;
-export const END_CARD = 87;
+// closing logo card with the closing sound (24.95s, right after "שלכם").
+export const CTA_PRESS = 70;
+export const END_CARD = 119;
 
 // Shots in public/dreamraffle/footage.mp4 (the walkthrough, rotated to
 // 1080x1920), in source seconds. 05.8–07.77 (the unmade bed) is never used.

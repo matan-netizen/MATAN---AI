@@ -55,7 +55,7 @@ npx remotion render DreamRaffle out/dream-raffle.mp4
 ```
 
 The video uses the supplied narration recording (`public/dreamraffle/vo/narration.mp3`,
-cut to end on "והבטיחו את הכרטיס שלכם", then a closing sound; 26s video) with sound effects and no
+cut to end on "והבטיחו את הכרטיס שלכם", then a closing sound; 27s video) with sound effects and no
 background music; the scene cuts follow its sentence breaks. Running
 `dreamraffle-vo` replaces it with a TTS voiceover (then retime `SCENES` in `theme.ts`).
 Set `ELEVENLABS_VOICE_ID` to a native Hebrew voice from the ElevenLabs library for the
