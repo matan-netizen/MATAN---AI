@@ -14,6 +14,11 @@ import {
   MARKET_DURATION,
   MARKET_FPS,
 } from "./DreamRaffleMarket";
+import {
+  POLITICAL_DURATION,
+  POLITICAL_FPS,
+  PoliticalAnimation,
+} from "./PoliticalAnimation";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -58,6 +63,14 @@ export const RemotionRoot: React.FC = () => {
         fps={MARKET_FPS}
         width={1080}
         height={1920}
+      />
+      <Composition
+        id="PoliticalAnimation"
+        component={PoliticalAnimation}
+        durationInFrames={POLITICAL_DURATION}
+        fps={POLITICAL_FPS}
+        width={1280}
+        height={720}
       />
     </>
   );
