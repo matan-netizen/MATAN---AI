@@ -24,6 +24,11 @@ import {
   CINEMATIC_FPS,
   PoliticalCinematic,
 } from "./PoliticalAnimation/cinematic";
+import {
+  DreamRaffleWinner,
+  WINNER_DURATION,
+  WINNER_FPS,
+} from "./DreamRaffleWinner";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -58,6 +63,14 @@ export const RemotionRoot: React.FC = () => {
         component={DreamRaffle}
         durationInFrames={DREAM_RAFFLE_DURATION}
         fps={DREAM_RAFFLE_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamRaffleWinner"
+        component={DreamRaffleWinner}
+        durationInFrames={WINNER_DURATION}
+        fps={WINNER_FPS}
         width={1080}
         height={1920}
       />
