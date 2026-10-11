@@ -27,31 +27,31 @@ const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const easeInOut = (p: number) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
 
 // The staircase: cube centre x and top y, bottom-left to top-right.
-const STEPS = [
+export const STEPS = [
   { x: 190, top: 495, name: "יאיר לפיד", year: "2013", photo: "political/lapid.jpg" },
   { x: 470, top: 385, name: "בני גנץ", year: "2019", photo: "political/gantz.jpg" },
   { x: 750, top: 275, name: "גדי איזנקוט", year: "2022", photo: "political/eisenkot.jpg" },
   { x: 1060, top: 218 }, // the golden cube
 ];
-const CUBE = { w: 210, h: 210 };
+export const CUBE = { w: 210, h: 210 };
 const GOLD = { w: 270, h: 200 };
 
 // Hops: [start frame, to step, arc height]. Each takes HOP frames (one beat).
-const HOP = 15;
-const HOPS: [number, number, number][] = [
+export const HOP = 15;
+export const HOPS: [number, number, number][] = [
   [45, 1, 110],
   [90, 2, 110],
   [225, 3, 52],
 ];
 const DROP_IN = 12; // falls onto the first cube
-const THOUGHT = { from: 150, to: 210 };
-const GOLDEN = 210;
-const LANDED = HOPS[2][0] + HOP; // 240, the "ta-da" in the score
+export const THOUGHT = { from: 150, to: 210 };
+export const GOLDEN = 210;
+export const LANDED = HOPS[2][0] + HOP; // 240, the "ta-da" in the score
 
-const CHARACTER = { src: "political/character.png", h: 158, w: 158 * (219 / 631) };
+export const CHARACTER = { src: "political/character.png", h: 158, w: 158 * (219 / 631) };
 
 // Where the character's feet are, how high he is in the air, and his squash.
-const characterState = (frame: number) => {
+export const characterState = (frame: number) => {
   let step = 0;
   let x = STEPS[0].x;
   let y = STEPS[0].top - interpolate(frame, [0, DROP_IN], [520, 0], { ...clamp, easing: (t) => t * t });
@@ -86,7 +86,7 @@ const characterState = (frame: number) => {
   return { step, x, y, airborne, dir, scaleY };
 };
 
-const Cube: React.FC<{ index: number }> = ({ index }) => {
+export const Cube: React.FC<{ index: number }> = ({ index }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = STEPS[index];
@@ -144,7 +144,7 @@ const Cube: React.FC<{ index: number }> = ({ index }) => {
   );
 };
 
-const Character: React.FC = () => {
+export const Character: React.FC = () => {
   const frame = useCurrentFrame();
   const { x, y, airborne, dir, scaleY } = characterState(frame);
   const thinking = frame >= THOUGHT.from && frame < GOLDEN;
@@ -233,7 +233,7 @@ const ThoughtBubble: React.FC = () => {
   );
 };
 
-const GoldenCube: React.FC = () => {
+export const GoldenCube: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   if (frame < GOLDEN - 2) return null;
@@ -315,7 +315,7 @@ const GoldenCube: React.FC = () => {
 };
 
 // Gold sparkles bursting out when he lands on the golden cube.
-const Sparkles: React.FC = () => {
+export const Sparkles: React.FC = () => {
   const frame = useCurrentFrame();
   const local = frame - LANDED;
   if (local < 0) return null;

@@ -19,6 +19,11 @@ import {
   POLITICAL_FPS,
   PoliticalAnimation,
 } from "./PoliticalAnimation";
+import {
+  CINEMATIC_DURATION,
+  CINEMATIC_FPS,
+  PoliticalCinematic,
+} from "./PoliticalAnimation/cinematic";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -71,6 +76,14 @@ export const RemotionRoot: React.FC = () => {
         fps={POLITICAL_FPS}
         width={1280}
         height={720}
+      />
+      <Composition
+        id="PoliticalCinematic"
+        component={PoliticalCinematic}
+        durationInFrames={CINEMATIC_DURATION}
+        fps={CINEMATIC_FPS}
+        width={1920}
+        height={1080}
       />
     </>
   );
