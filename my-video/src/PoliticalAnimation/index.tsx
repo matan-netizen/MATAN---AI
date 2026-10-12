@@ -28,9 +28,9 @@ const easeInOut = (p: number) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2,
 
 // The staircase: cube centre x and top y, bottom-left to top-right.
 export const STEPS = [
-  { x: 190, top: 495, name: "יאיר לפיד", year: "2013", photo: "political/lapid.jpg" },
-  { x: 470, top: 385, name: "בני גנץ", year: "2019", photo: "political/gantz.jpg" },
-  { x: 750, top: 275, name: "גדי איזנקוט", year: "2026", photo: "political/eisenkot.jpg" },
+  { x: 190, top: 495, name: "לפיד", year: "2013", photo: "political/lapid.jpg" },
+  { x: 470, top: 385, name: "גנץ", year: "2019", photo: "political/gantz.jpg" },
+  { x: 750, top: 275, name: "אייזנ-קוט", year: "2026", photo: "political/eisenkot.jpg" },
   { x: 1060, top: 218 }, // the golden cube
 ];
 export const CUBE = { w: 210, h: 210 };
