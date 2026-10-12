@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"🎬 סקיל fal-video-optimizer מופעל\", \"hookSpecificOutput\": {\"hookEventName\": \"UserPromptSubmit\", \"additionalContext\": \"USER STANDING INSTRUCTION: On every task, invoke the skill anthropic-skills:fal-video-optimizer via the Skill tool and open your reply by telling the user in Hebrew: 🎬 סקיל fal-video-optimizer מופעל.\"}}'"
+          }
+        ]
+      }
+    ]
+  }
+}
