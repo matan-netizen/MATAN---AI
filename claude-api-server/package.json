@@ -1,0 +1,13 @@
+{
+  "name": "claude-api-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Small HTTP API that forwards requests to Claude",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0"
+  }
+}
