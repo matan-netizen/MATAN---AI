@@ -4,6 +4,13 @@ import { MyComposition } from "./Composition";
 import { FPS, PROMO_DURATION, RealEstatePromo } from "./RealEstatePromo";
 import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
 import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
+import {
+  DREAM_DURATION,
+  DREAM_FEED,
+  DREAM_FPS,
+  DREAM_STORY,
+  DreamRaffle,
+} from "./DreamRaffle";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -32,6 +39,20 @@ export const RemotionRoot: React.FC = () => {
         fps={KARDAN_FPS}
         width={1080}
         height={1920}
+      />
+      <Composition
+        id="DreamRaffle"
+        component={DreamRaffle}
+        durationInFrames={DREAM_DURATION}
+        fps={DREAM_FPS}
+        {...DREAM_FEED}
+      />
+      <Composition
+        id="DreamRaffleStory"
+        component={DreamRaffle}
+        durationInFrames={DREAM_DURATION}
+        fps={DREAM_FPS}
+        {...DREAM_STORY}
       />
     </>
   );
