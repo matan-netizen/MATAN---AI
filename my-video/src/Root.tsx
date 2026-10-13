@@ -4,6 +4,13 @@ import { MyComposition } from "./Composition";
 import { FPS, PROMO_DURATION, RealEstatePromo } from "./RealEstatePromo";
 import { ZOHAR_DURATION, ZOHAR_FPS, ZoharCampaign } from "./ZoharCampaign";
 import { KARDAN_DURATION, KARDAN_FPS, KardanUziel } from "./KardanUziel";
+import {
+  DIGITAL_FPS,
+  DIGITAL_LONG_DURATION,
+  DIGITAL_SHORT_DURATION,
+  DigitalMarketing15,
+  DigitalMarketing45,
+} from "./DigitalMarketing";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -30,6 +37,22 @@ export const RemotionRoot: React.FC = () => {
         component={KardanUziel}
         durationInFrames={KARDAN_DURATION}
         fps={KARDAN_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DigitalMarketing45"
+        component={DigitalMarketing45}
+        durationInFrames={DIGITAL_LONG_DURATION}
+        fps={DIGITAL_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DigitalMarketing15"
+        component={DigitalMarketing15}
+        durationInFrames={DIGITAL_SHORT_DURATION}
+        fps={DIGITAL_FPS}
         width={1080}
         height={1920}
       />
