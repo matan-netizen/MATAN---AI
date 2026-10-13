@@ -27,4 +27,4 @@ When asked to write prompts for AI video/audio generators:
 ## Production Notes
 - AI video models render Hebrew text unreliably. Keep on-screen text out of the generated clips, and add the logo, prices and CTA as an end card in Remotion (`my-video/`).
 - Use one hero object, the golden ticket or key, across all scenes to keep continuity between separately generated clips.
-- fal.ai is connected in cloud sessions. Before any paid generation run, give a cost estimate and get explicit approval.
+- fal.ai: as of 2026-10-13, `fal.run` is blocked by the environment network policy, and `queue.fal.run` rejects requests because no API key is attached. Generation needs a `FAL_KEY` secret in the environment settings. Before any paid generation run, give a cost estimate and get explicit approval.
