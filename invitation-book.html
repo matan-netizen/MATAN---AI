@@ -26,8 +26,8 @@ body{background:var(--night);margin:0;overflow:hidden;font-family:var(--body)}
 .s{position:absolute;border-radius:50%;background:radial-gradient(circle,#fff6d0,rgba(255,210,120,0) 70%)}
 #title{position:absolute;top:150px;width:100%;text-align:center;font:700 64px var(--body);color:var(--gold);
  text-shadow:0 0 20px rgba(255,200,100,.6)}
-/* the real RSVP link sits exactly over the button printed on the page */
-#rsvp{position:absolute;left:33.6%;top:81.6%;width:32.8%;height:4.6%;border-radius:999px;display:block;
+/* the real RSVP link sits outside the 3D book, over the printed button in the final zoomed view */
+#rsvp{position:absolute;left:366px;top:1384px;width:348px;height:82px;z-index:4;border-radius:999px;display:block;
  opacity:0;pointer-events:none;transition:opacity .6s;outline-offset:4px}
 #rsvp.on{opacity:1;pointer-events:auto;animation:pulse 1.8s ease-in-out infinite}
 #rsvp:focus-visible{outline:3px solid var(--gold)}
@@ -46,11 +46,11 @@ body{background:var(--night);margin:0;overflow:hidden;font-family:var(--body)}
  <div id="title" dir="rtl">בר מצווה</div>
  <div id="stage"><div id="book">
   <div id="stack"></div>
-  <div class="pg" id="inside"><div id="inshade"></div>
-   <a id="rsvp" href="https://forms.gle/yXqLgRvJbTeDD5Nu7" target="_blank" rel="noopener" aria-label="לאישור הגעה לחץ כאן" tabindex="-1"></a></div>
+  <div class="pg" id="inside"><div id="inshade"></div></div>
   <div id="cover"><div class="pg" id="front"><div id="coverShade"></div></div><div class="pg" id="back"></div></div>
  </div></div>
  <div id="spark"></div>
+ <a id="rsvp" href="https://forms.gle/yXqLgRvJbTeDD5Nu7" target="_blank" rel="noopener" aria-label="לאישור הגעה לחץ כאן" tabindex="-1"></a>
  <button id="start" type="button" dir="rtl">לפתיחת ההזמנה ♪</button>
  <button id="replay" type="button" dir="rtl" hidden>לצפייה חוזרת</button>
 </div></div>
