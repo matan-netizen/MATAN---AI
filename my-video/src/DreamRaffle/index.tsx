@@ -11,6 +11,7 @@ import {
   Scene2018,
   Scene2019,
   Scene2020,
+  SceneBonus,
   SceneCTA,
   SceneDouble,
   SceneHook,
@@ -32,12 +33,13 @@ const TIMELINE = [
   { name: "2019", Component: Scene2019, ...SCENES.y2019 },
   { name: "2020", Component: Scene2020, ...SCENES.y2020 },
   { name: "2021-2025", Component: SceneMore, ...SCENES.more },
+  { name: "Bonus winners", Component: SceneBonus, ...SCENES.bonus },
   { name: "9th year", Component: SceneNinth, ...SCENES.ninth },
   { name: "1+1", Component: SceneDouble, ...SCENES.double },
   { name: "CTA", Component: SceneCTA, ...SCENES.cta },
 ];
 
-// 25s Facebook ad: the winners' story year by year, then the offer.
+// 28s Facebook ad: the winners' story year by year, then the offer.
 // Rendered as DreamRaffle (4:5 feed) and DreamRaffleStory (9:16).
 export const DreamRaffle: React.FC = () => (
   <AbsoluteFill

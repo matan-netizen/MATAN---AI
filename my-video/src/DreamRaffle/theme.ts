@@ -23,7 +23,7 @@ export const COLORS = {
 export const GOLD_GRADIENT = `linear-gradient(90deg, ${COLORS.goldLight}, ${COLORS.gold} 50%, ${COLORS.goldDark})`;
 
 export const FPS = 30;
-export const DURATION = 750; // 25s
+export const DURATION = 840; // 28s
 export const CROSSFADE = 10;
 
 // Feed (4:5) is the primary Facebook placement; Story (9:16) reuses the
@@ -37,7 +37,48 @@ export const SCENES = {
   y2019: { from: 180, duration: 90 },
   y2020: { from: 270, duration: 90 },
   more: { from: 360, duration: 120 },
-  ninth: { from: 480, duration: 90 },
-  double: { from: 570, duration: 90 },
-  cta: { from: 660, duration: 90 },
+  bonus: { from: 480, duration: 90 },
+  ninth: { from: 570, duration: 90 },
+  double: { from: 660, duration: 90 },
+  cta: { from: 750, duration: 90 },
+};
+
+// Photos and logo from thedreamraffle.co.il/pages/זוכים
+export const SITE = {
+  logo: "dreamraffle/site/logo.png",
+  don: "dreamraffle/site/2018-don-wisniewski.jpg",
+  friedman: "dreamraffle/site/2023-meir-friedman.jpg",
+  nisanian: "dreamraffle/site/2024-nisanian.jpg",
+  bonus: [
+    {
+      name: "ג׳ורג׳ שוורץ",
+      place: "ארה״ב",
+      year: "2024",
+      photo: "dreamraffle/site/bonus-george-schwartz.webp",
+    },
+    {
+      name: "דוד קריטי",
+      place: "בני ברק",
+      year: "2023",
+      photo: "dreamraffle/site/bonus-david-kriti.jpg",
+    },
+    {
+      name: "אברהם ישראל",
+      place: "פנמה",
+      year: "2023",
+      photo: "dreamraffle/site/bonus-avraham-israel.webp",
+    },
+    {
+      name: "שמואל גולדנברג",
+      place: "לייקווד",
+      year: "2022",
+      photo: "dreamraffle/site/bonus-shmuel-goldenberg.webp",
+    },
+    {
+      name: "ד״ר פרי ויינר",
+      place: "ניו יורק",
+      year: "2022",
+      photo: "dreamraffle/site/bonus-perry-weiner.jpg",
+    },
+  ],
 };

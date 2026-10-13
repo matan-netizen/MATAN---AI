@@ -10,10 +10,14 @@ import {
   useVideoConfig,
 } from "remotion";
 import clips from "./clips.json";
+import siteVideos from "./site-videos.json";
 import { COLORS, CROSSFADE, FONT, GOLD_GRADIENT } from "./theme";
 
 type ClipEntry = { image?: string; clip?: string };
 const CLIPS = clips as Record<string, ClipEntry>;
+// Winner videos from the site, by shot id, e.g. { "03": "dreamraffle/site/videos/2019.mp4" }.
+// When a shot has one it replaces the AI footage for that scene.
+const SITE_VIDEOS = siteVideos as Record<string, string>;
 
 // Fades a scene in on top of the previous one (crossfade).
 export const SceneFade: React.FC<{
@@ -34,7 +38,8 @@ export const Shot: React.FC<{ id: string }> = ({ id }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const scale = interpolate(frame, [0, durationInFrames], [1.0, 1.08]);
-  const { clip, image } = CLIPS[id] ?? {};
+  const { image } = CLIPS[id] ?? {};
+  const clip = SITE_VIDEOS[id] ?? CLIPS[id]?.clip;
   const fill: React.CSSProperties = {
     width: "100%",
     height: "100%",
@@ -140,13 +145,58 @@ export const GoldPill: React.FC<{
   );
 };
 
+// Round winner photo with a gold ring.
+export const Photo: React.FC<{
+  src: string;
+  size?: number;
+  delay?: number;
+  position?: string;
+}> = ({ src, size = 220, delay = 0, position = "50% 30%" }) => {
+  const s = useEnter(delay, 12);
+  return (
+    <Img
+      src={staticFile(src)}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        objectFit: "cover",
+        objectPosition: position,
+        border: `6px solid ${COLORS.gold}`,
+        boxShadow: "0 16px 40px rgba(0,0,0,0.5)",
+        transform: `scale(${s})`,
+        flexShrink: 0,
+      }}
+    />
+  );
+};
+
+export const Logo: React.FC<{ size?: number; delay?: number }> = ({
+  size = 260,
+  delay = 0,
+}) => {
+  const s = useEnter(delay, 11);
+  return (
+    <Img
+      src={staticFile("dreamraffle/site/logo.png")}
+      style={{
+        width: size,
+        height: size * (850 / 795),
+        transform: `scale(${s})`,
+        filter: "drop-shadow(0 12px 30px rgba(0,0,0,0.55))",
+      }}
+    />
+  );
+};
+
 // A winner's year, name and quote.
 export const WinnerCard: React.FC<{
   year: string;
   name: string;
   place: string;
   quote: string;
-}> = ({ year, name, place, quote }) => (
+  photo?: string;
+}> = ({ year, name, place, quote, photo }) => (
   <AbsoluteFill
     style={{
       justifyContent: "flex-end",
@@ -155,6 +205,7 @@ export const WinnerCard: React.FC<{
       gap: 22,
     }}
   >
+    {photo ? <Photo src={photo} size={300} delay={0} /> : null}
     <GoldPill delay={4} size={70}>
       {year}
     </GoldPill>

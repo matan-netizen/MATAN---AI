@@ -9,12 +9,14 @@ import {
 import {
   Disclaimer,
   GoldPill,
+  Logo,
+  Photo,
   Rise,
   Shade,
   Shot,
   WinnerCard,
 } from "./components";
-import { COLORS, FONT, GOLD_GRADIENT } from "./theme";
+import { COLORS, FONT, GOLD_GRADIENT, SITE } from "./theme";
 
 // Winners and quotes from thedreamraffle.co.il/pages/זוכים
 
@@ -58,6 +60,7 @@ export const Scene2018: React.FC = () => (
       name="דון ויזנבסקי"
       place="הוואי, ארה״ב"
       quote="נדהמתי! לא ידעתי מה לומר!"
+      photo={SITE.don}
     />
   </AbsoluteFill>
 );
@@ -91,8 +94,18 @@ export const Scene2020: React.FC = () => (
 const MORE = [
   { year: "2021", name: "מיכאל כהן", place: "סן דייגו" },
   { year: "2022", name: "אסף כהן", place: "שבי דרום" },
-  { year: "2023", name: "מאיר פרידמן", place: "ביתר עילית" },
-  { year: "2024", name: "משפחת ניסניאן", place: "ניו יורק" },
+  {
+    year: "2023",
+    name: "מאיר פרידמן",
+    place: "ביתר עילית",
+    photo: SITE.friedman,
+  },
+  {
+    year: "2024",
+    name: "משפחת ניסניאן",
+    place: "ניו יורק",
+    photo: SITE.nisanian,
+  },
   { year: "2025", name: "אריה לוריא", place: "ירושלים" },
 ];
 
@@ -100,8 +113,9 @@ const WinnerRow: React.FC<{
   year: string;
   name: string;
   place: string;
+  photo?: string;
   delay: number;
-}> = ({ year, name, place, delay }) => {
+}> = ({ year, name, place, photo, delay }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const s = spring({ frame: frame - delay, fps, config: { damping: 16 } });
@@ -133,6 +147,7 @@ const WinnerRow: React.FC<{
       >
         {year}
       </div>
+      {photo ? <Photo src={photo} size={84} delay={delay} /> : null}
       <div style={{ fontSize: 50, fontWeight: 700, color: COLORS.white }}>
         {name}
       </div>
@@ -168,6 +183,56 @@ export const SceneMore: React.FC = () => (
   </AbsoluteFill>
 );
 
+// 6 — Bonus-draw winners, with their photos from the site.
+export const SceneBonus: React.FC = () => (
+  <AbsoluteFill>
+    <Shot id="06" />
+    <AbsoluteFill style={{ backgroundColor: "rgba(6,17,31,0.7)" }} />
+    <AbsoluteFill
+      style={{ justifyContent: "center", alignItems: "center", gap: 40 }}
+    >
+      <Rise delay={0} size={66} weight={900}>
+        ועוד זוכים בהגרלות הבונוס
+      </Rise>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "36px 40px",
+          width: 980,
+        }}
+      >
+        {SITE.bonus.map((w, i) => (
+          <div
+            key={w.name}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 10,
+              width: 280,
+            }}
+          >
+            <Photo src={w.photo} size={200} delay={8 + i * 7} />
+            <Rise delay={12 + i * 7} size={38} weight={700}>
+              {w.name}
+            </Rise>
+            <Rise
+              delay={14 + i * 7}
+              size={28}
+              weight={400}
+              color={COLORS.goldLight}
+            >
+              {w.place} · {w.year}
+            </Rise>
+          </div>
+        ))}
+      </div>
+    </AbsoluteFill>
+  </AbsoluteFill>
+);
+
 export const SceneNinth: React.FC = () => (
   <AbsoluteFill>
     <Shot id="06" />
@@ -180,7 +245,8 @@ export const SceneNinth: React.FC = () => (
         gap: 24,
       }}
     >
-      <GoldPill delay={4} size={80}>
+      <Logo size={300} delay={0} />
+      <GoldPill delay={8} size={80}>
         השנה ה-9 שלנו!
       </GoldPill>
       <Rise delay={14} size={70} weight={900}>
@@ -235,6 +301,7 @@ export const SceneCTA: React.FC = () => {
           gap: 24,
         }}
       >
+        <Logo size={170} delay={0} />
         <Rise delay={0} size={60} weight={700} color={COLORS.goldLight}>
           הגרלת בונוס למצטרפים מוקדם
         </Rise>
