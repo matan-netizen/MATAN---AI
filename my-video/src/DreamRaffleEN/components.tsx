@@ -185,6 +185,7 @@ export const Subtitle: React.FC<{ text: string }> = ({ text }) => (
       padding: "10px 22px",
       borderRadius: 10,
       textAlign: "center",
+      textWrap: "balance",
       maxWidth: 880,
     }}
   >

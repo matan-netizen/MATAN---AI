@@ -51,8 +51,7 @@ const SUBTITLES: [number, number, string][] = [
   [19.9, 21.6, "I got the phone call — and my life changed."],
   [21.6, 22.87, "Everything changed."],
   [23.0, 24.8, "Look — here it is, the apartment."],
-  [26.1, 28.5, "Aryeh Luria won this apartment"],
-  [28.5, 31.0, "in the 8th Dream Raffle."],
+  [26.1, 31.0, "Aryeh Luria won this apartment in the 8th Dream Raffle."],
   [31.4, 35.2, "Who will be the winner of the 9th Dream Raffle?"],
 ];
 
@@ -113,7 +112,7 @@ const FrameLayer: React.FC = () => {
       <LowerThird />
       {watermark > 0 ? (
         // Masks the burned-in "TheDreamRaffle.com" (the official domain is .co.il).
-        <div style={{ position: "absolute", left: 0, top: 1046 - FRAME.y, width: 470, height: FRAME.h - (1046 - FRAME.y), background: "rgba(24,17,11,0.96)", borderTopRightRadius: 10, display: "flex", alignItems: "center", paddingLeft: 22, opacity: watermark, fontFamily: FONT_FAMILY, fontWeight: 700, fontSize: 36, color: COLORS.cream }}>
+        <div style={{ position: "absolute", left: 0, top: 1046 - FRAME.y, width: 470, height: FRAME.h - (1046 - FRAME.y), background: "#18110B", borderTopRightRadius: 10, display: "flex", alignItems: "center", paddingLeft: 22, opacity: watermark, fontFamily: FONT_FAMILY, fontWeight: 700, fontSize: 36, color: COLORS.cream }}>
           thedreamraffle.co.il
         </div>
       ) : null}
@@ -206,12 +205,12 @@ const Offer: React.FC = () => {
         </div>
       </div>
       <div style={{ position: "absolute", right: 1080 - 640, top: 1226, textAlign: "right", fontFamily: FONT_FAMILY, fontWeight: 900, fontSize: 52, lineHeight: 1.12, color: COLORS.white, opacity: textPop, transform: `translateX(${(1 - textPop) * -30}px)` }}>
-        Buy one ticket,
+        Buy 1, Get 1 <span style={{ color: COLORS.goldLight }}>FREE</span>
         <br />
-        get one <span style={{ color: COLORS.goldLight }}>FREE!</span>
+        on All Orders!
       </div>
       <div style={{ position: "absolute", right: 1080 - 640, top: 1390, opacity: pillPop > 0.02 ? 1 : 0, transform: `scale(${pillPop})`, transformOrigin: "right center" }}>
-        <GoldPill fontSize={36} padding="10px 30px">All Orders Doubled!</GoldPill>
+        <GoldPill fontSize={27} padding="10px 24px">1+1 FREE Ticket with Every Purchase!</GoldPill>
       </div>
     </AbsoluteFill>
   );
@@ -286,7 +285,7 @@ const EndCard: React.FC = () => {
         <Logo size={540} />
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 1110, display: "flex", justifyContent: "center", transform: `scale(${pill1})` }}>
-        <GoldPill fontSize={44} padding="14px 40px">1+1 Free Ticket on All Orders!</GoldPill>
+        <GoldPill fontSize={44} padding="14px 40px">Buy 1, Get 1 FREE on All Orders!</GoldPill>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: 1250, display: "flex", justifyContent: "center", transform: `scale(${pill2})` }}>
         <CreamPill fontSize={56}>thedreamraffle.co.il</CreamPill>

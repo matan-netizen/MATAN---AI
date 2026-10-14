@@ -22,11 +22,11 @@ I reviewed the uploaded reference cut frame by frame. The English headline capti
 | 2 | 0:06–0:15 | Winner lower-third "אריה לוריא – הזוכה בהגרלת החלומות 8" is in Hebrew | **"Aryeh Luria – Winner of Dream Raffle 8"** |
 | 3 | 0:06–0:15 | Prize card "הפרס הגדול / דירת יוקרה בירושלים / בשווי 1.3 מיליון דולר" is in Hebrew | **"Grand Prize: Luxury Jerusalem Apartment Valued at $1.3M"** |
 | 4 | 0:06–0:36 | **Interview subtitles sit at the bottom of the outer canvas**, below the frame | Move every subtitle **inside the video frame container** (§2B) |
-| 5 | 0:15–0:24 | 1+1 badge copy "קונים כרטיס אחד ומקבלים עוד אחד במתנה / כל ההזמנות מוכפלות" is in Hebrew | **"1+1 Free Ticket!"** / **"All Orders Doubled!"** |
+| 5 | 0:15–0:24 | 1+1 badge copy "קונים כרטיס אחד ומקבלים עוד אחד במתנה / כל ההזמנות מוכפלות" is in Hebrew | **"Buy 1, Get 1 FREE on All Orders!"** / **"1+1 FREE Ticket with Every Purchase!"** |
 | 6 | 0:24–0:36 | Impact badges "מוסדות תורה / ציוד חירום להצלת חיים / חיילי צה״ל" are in Hebrew | **"Torah Institutions" / "Lifesaving Emergency Equipment" / "IDF Soldiers"** |
 | 7 | 0:24–0:36 | The burned-in watermark in the frame reads **TheDreamRaffle.com**, but the official domain is **.co.il** | Mask it and replace it with `thedreamraffle.co.il`, or crop it out |
 | 8 | 0:36–0:39 | CTA button "כניסה להגרלה ←" is in Hebrew | **"Enter the Raffle →"** (the arrow flips for LTR) |
-| 9 | 0:39–0:42 | End card logo and "1+1 מתנה על כל הכרטיסים" are in Hebrew | English logo, plus **"1+1 Free Ticket on All Orders!"** |
+| 9 | 0:39–0:42 | End card logo and "1+1 מתנה על כל הכרטיסים" are in Hebrew | English logo, plus **"Buy 1, Get 1 FREE on All Orders!"** |
 
 ---
 
@@ -58,7 +58,7 @@ A gold dust particle layer runs the whole time at 20% opacity. Cards enter with 
 | Element | Hebrew source | English final |
 |---|---|---|
 | Main logo | הגרלת החלומות – שנה תשיעית ברציפות | **The Dream Raffle – 9th Consecutive Year** |
-| Deal badge (gold seal) | 1+1 כרטיס במתנה! / כל ההזמנות מוכפלות! | **1+1 Free Ticket!** / **All Orders Doubled!** |
+| Deal badge (gold seal) | 1+1 כרטיס במתנה! / כל ההזמנות מוכפלות! | Main: **Buy 1, Get 1 FREE on All Orders!** · Secondary: **1+1 FREE Ticket with Every Purchase!** |
 | CTA button | כניסה להגרלה ← | **Enter the Raffle →** |
 
 **Logo lockup:** keep the Jerusalem-skyline crest. Set "THE DREAM RAFFLE" on the dark band in two lines, "THE DREAM" over "RAFFLE", and run the arc text "9th Consecutive Year" around the bottom of the medallion.
@@ -162,9 +162,11 @@ Rules:
 **Interview subtitles (inside the frame, bottom-center):**
 | In | Out | Speaker | Subtitle |
 |---|---|---|---|
-| 0:07.0 | 0:09.0 | Aryeh | I sit and learn Torah all day. |
-| 0:09.2 | 0:10.8 | Interviewer | How do you feel? |
-| 0:11.0 | 0:14.6 | Aryeh | Overjoyed. Nobody is happier than me! |
+| 0:04.6 | 0:06.9 | Aryeh | I chose to do the will of Hashem — |
+| 0:06.9 | 0:08.4 | Aryeh | I sit and learn Torah all day. |
+| 0:08.4 | 0:10.3 | Interviewer | You won this apartment. |
+| 0:10.3 | 0:12.0 | Interviewer | How do you feel? |
+| 0:12.0 | 0:13.9 | Aryeh | Overjoyed. Nobody is happier than me! |
 
 **Source:** the real interview footage from Drive only. Keep the original audio and play no VO over it.
 **Graphic asset (Ideogram V3,** `style: DESIGN`, transparent PNG**):**
@@ -177,16 +179,17 @@ Rules:
 ### SCENE 4: THE OFFER (0:15–0:24 · 270 frames)
 **Layout:** the interview continues in the frame. Below it, the **1+1 gold seal** spins in, with offer copy beside it.
 **Headline:** "This time – it could be **you!**"
-**Seal:** **1+1** · "Free Ticket!"
-**Offer copy (beside the seal):** "Buy one ticket, get one **free!**"
-**Pill under the copy:** **All Orders Doubled!**
+**Seal:** **1+1** · "FREE TICKET"
+**Offer copy (beside the seal, main option):** "Buy 1, Get 1 **FREE** on All Orders!"
+**Pill under the copy (secondary badge):** **1+1 FREE Ticket with Every Purchase!**
 
 **Interview subtitles (inside the frame):**
 | In | Out | Subtitle |
 |---|---|---|
-| 0:16.0 | 0:19.0 | Did you expect to win? *(interviewer: verify against transcript)* |
-| 0:19.2 | 0:21.6 | Honestly, no. I didn't think I'd win. |
-| 0:22.0 | 0:23.8 | Everything changed. |
+| 0:14.0 | 0:16.0 | Did you think you would win? |
+| 0:16.6 | 0:19.5 | Honestly, no. I didn't think I'd win. |
+| 0:19.9 | 0:21.6 | I got the phone call — and my life changed. |
+| 0:21.6 | 0:22.9 | Everything changed. |
 
 **VO (ducked under interview, enters at 0:22.5):** "And right now, every ticket comes with a free one."
 
@@ -206,9 +209,9 @@ Rules:
 **Subtitles (inside the frame):**
 | In | Out | Subtitle |
 |---|---|---|
-| 0:25.0 | 0:28.5 | Aryeh Luria won this apartment… |
-| 0:29.0 | 0:32.5 | *(transcribe actual balcony dialogue)* |
-| 0:33.0 | 0:35.8 | Who will be the winner of the 9th Dream Raffle? |
+| 0:23.0 | 0:24.8 | Look — here it is, the apartment. |
+| 0:26.1 | 0:31.0 | **Aryeh Luria won this apartment in the 8th Dream Raffle.** *(one unified line, not split across two subtitles)* |
+| 0:31.4 | 0:35.2 | Who will be the winner of the 9th Dream Raffle? |
 
 **VO (0:24–0:28, before the balcony audio):** "Every ticket supports Torah institutions, lifesaving emergency equipment, and IDF soldiers."
 
@@ -235,7 +238,7 @@ Rules:
 ### SCENE 7: END CARD (0:39–0:42 · 90 frames)
 **Visual:** espresso background with gold particles. The large English logo lockup scales in.
 **Logo:** **The Dream Raffle – 9th Consecutive Year**
-**Pill 1 (gold):** **1+1 Free Ticket on All Orders!**
+**Pill 1 (gold):** **Buy 1, Get 1 FREE on All Orders!**
 **Pill 2 (cream):** `thedreamraffle.co.il`
 **VO:** "The Dream Raffle. Ninth year running."
 **SFX:** a soft chime on the logo landing.
@@ -277,7 +280,7 @@ const out = await fal.subscribe("fal-ai/elevenlabs/text-to-speech", {
 |---|---|
 | 0:00–0:02 | Scene 1 hook: "He won an apartment in Jerusalem." |
 | 0:02–0:07 | Scene 3, compressed: winner frame + lower third + "$1.3M" card; subtitle "Overjoyed. Nobody is happier than me!" (inside the frame) |
-| 0:07–0:11 | Scene 4 seal: "1+1 Free Ticket! · All Orders Doubled!" |
+| 0:07–0:11 | Scene 4 seal: "Buy 1, Get 1 FREE on All Orders!" · "1+1 FREE Ticket with Every Purchase!" |
 | 0:11–0:15 | Scene 6 CTA + URL + "Enter the Raffle →" |
 
 Render drafts with **Wan 2.5** for speed, then finalize from the master assets.
