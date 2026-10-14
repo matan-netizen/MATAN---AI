@@ -343,11 +343,12 @@ export const Photo: React.FC<{
   src: string;
   aspect: number;
   zoom?: [number, number];
-}> = ({ src, aspect, zoom = [1.02, 1.1] }) => {
+  dir?: string;
+}> = ({ src, aspect, zoom = [1.02, 1.1], dir = "dreamraffle/site" }) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   const scale = interpolate(frame, [0, durationInFrames], zoom);
-  const file = staticFile(`dreamraffle/site/${src}`);
+  const file = staticFile(`${dir}/${src}`);
   if (aspect >= 1.45) {
     return (
       <AbsoluteFill style={{ overflow: "hidden" }}>
