@@ -304,7 +304,8 @@ export const Ticket: React.FC<{ style?: React.CSSProperties }> = ({
   </div>
 );
 
-// The 9th-edition logo on a cream badge (its curved tagline is dark brown).
+// The English 9th-edition logo (scripts/build-dreamraffle-logo.py) on a
+// cream badge, since its curved tagline is dark brown.
 export const LogoBadge: React.FC<{
   size: number;
   style?: React.CSSProperties;
@@ -324,7 +325,7 @@ export const LogoBadge: React.FC<{
     }}
   >
     <Img
-      src={staticFile("dreamraffle/site/logo-9.png")}
+      src={staticFile("dreamraffle/site/logo-9-en.png")}
       style={{ width: "86%", height: "86%", objectFit: "contain" }}
     />
   </div>
