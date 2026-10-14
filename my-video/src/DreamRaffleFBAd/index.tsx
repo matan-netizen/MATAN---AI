@@ -8,6 +8,7 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
+  Freeze,
   Img,
   interpolate,
   OffthreadVideo,
@@ -52,6 +53,9 @@ type Shot = {
   // Seconds the shot keeps playing under the next one's fade-in (default
   // XFADE). Shortened where the source runs into Hebrew signage.
   tail?: number;
+  // Jump cuts inside the source take (seconds, from scene detection). Each is
+  // softened with a short dissolve from the last frame before the cut.
+  cuts?: number[];
 };
 
 // Figures follow the official site (thedreamraffle.co.il): a brand-new $1.3M
@@ -63,27 +67,26 @@ const SHOTS: Shot[] = [
   // "Do you have a ticket yet? Hello. Do you have a ticket? Excuse me. Do you
   // have a ticket over there? Now's the time to buy tickets to the Dream
   // Raffle. What's the Dream Raffle?"
-  { src: "balcony", from: 5.0, to: 13.1, crop: true },
+  { src: "balcony", from: 5.0, to: 13.1, crop: true, cuts: [6.18, 6.82, 7.7, 9.32, 10.37, 12.1] },
   { src: "balcony", from: 13.1, to: 16.6, crop: true, card: true }, // answered by the prize card
-  { src: "office-tour", from: 19.4, to: 22.05, old: true }, // "One bedroom, second bedroom, beautiful bedroom, look at over here"
-  { src: "office-tour", from: 27.65, to: 31.0, old: true, tail: 0.1 }, // "Look at this beautiful dining room, this fantastic living room"
-  { src: "apartment-2026", from: 0.1, to: 2.2, rate: 0.65, gallery: true }, // this year's apartment: set table
-  { src: "apartment-2026", from: 2.4, to: 4.05, rate: 0.65, gallery: true }, // this year's apartment: dining area
-  { src: "street", from: 24.15, to: 27.45 }, // "Now is the time. This is the beautiful city, and you could be the winner."
-  { src: "office-tour", from: 38.65, to: 40.55, old: true }, // "Do me a favor, buy a ticket, win the raffle"
+  { src: "office-tour", from: 19.4, to: 22.05, old: true, cuts: [20.17] }, // "One bedroom, second bedroom, beautiful bedroom, look at over here"
+  { src: "office-tour", from: 27.65, to: 31.0, old: true, tail: 0.1, cuts: [28.8] }, // "Look at this beautiful dining room, this fantastic living room"
+  { src: "apartment-2026", from: 0.1, to: 2.2, rate: 0.55, gallery: true }, // this year's apartment: set table
+  { src: "apartment-2026", from: 2.4, to: 4.05, rate: 0.55, gallery: true }, // this year's apartment: dining area
   // "But you have to click on the link and fill out your information.
   // Otherwise, we won't know who to give the apartment to. Buy a ticket, but hurry."
-  { src: "street", from: 14.25, to: 20.65 },
-  { src: "balcony", from: 20.95, to: 22.1, crop: true }, // "What are you waiting for?"
+  { src: "street", from: 14.3, to: 20.65, cuts: [19.63] },
+  { src: "street", from: 24.15, to: 27.45, cuts: [25.2, 26.5] }, // "Now is the time. This is the beautiful city, and you could be the winner."
 ];
 const CARD = SHOTS.findIndex((s) => s.card);
 const GALLERY = SHOTS.findIndex((s) => s.gallery);
 const GALLERY_END = GALLERY + SHOTS.filter((s) => s.gallery).length;
-const STREET_WIN = SHOTS.findIndex((s) => s.src === "street");
+const STREET_WIN = SHOTS.length - 1;
 
 // Each shot keeps playing (silently) for XFADE frames past its cut while the
 // next shot fades in on top: soft crossfades without overlapping dialogue.
-const XFADE = f(0.5);
+const XFADE = f(0.7);
+const SOFT_CUT = f(0.35);
 const shotLen = (s: Shot) => f((s.to - s.from) / (s.rate ?? 1));
 const tailLen = (s: Shot) => (s.tail === undefined ? XFADE : f(s.tail));
 
@@ -94,7 +97,7 @@ SHOTS.reduce((acc, s) => {
 }, 0);
 starts.push(starts[starts.length - 1] + shotLen(SHOTS[SHOTS.length - 1]));
 const VIDEO_END = starts[SHOTS.length];
-const END_CARD = f(4.5);
+const END_CARD = f(5);
 export const FB_DURATION = VIDEO_END + END_CARD;
 
 const useFadeIn = (first: boolean) => {
@@ -127,6 +130,28 @@ const ShotView: React.FC<{ shot: Shot; first: boolean }> = ({ shot, first }) => 
           filter: blur > 0 ? `blur(${blur * 60}px) brightness(${1 - blur * 0.5})` : undefined,
         }}
       />
+      {(shot.cuts ?? []).map((c) => {
+        const at = f((c - shot.from) / (shot.rate ?? 1));
+        const o = interpolate(frame, [at, at + SOFT_CUT], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+        if (frame < at || o <= 0) return null;
+        return (
+          <Freeze key={c} frame={at - 1}>
+            <AbsoluteFill style={{ opacity: o }}>
+              <OffthreadVideo
+                src={staticFile(`fb-ad/${shot.src}.mp4`)}
+                startFrom={f(shot.from)}
+                muted
+                style={{
+                  width: 1080,
+                  height: 1920,
+                  transform: `scale(${base * push})`,
+                  transformOrigin: shot.crop ? "50% 0%" : "50% 50%",
+                }}
+              />
+            </AbsoluteFill>
+          </Freeze>
+        );
+      })}
       {shot.card ? <PrizeCard /> : null}
       {shot.old ? <OldFootageTag /> : null}
     </AbsoluteFill>
