@@ -6,7 +6,7 @@ import {
   Sequence,
   staticFile,
 } from "remotion";
-import { SceneFade } from "./components";
+import { SceneFade, Watermark } from "./components";
 import {
   SceneCTA,
   SceneEarlyBird,
@@ -68,5 +68,9 @@ export const DreamRaffle: React.FC = () => (
         </Sequence>
       );
     })}
+    {/* Logo badge until the end card, which carries its own */}
+    <Sequence durationInFrames={SCENES.cta.from + 70} layout="none">
+      <Watermark />
+    </Sequence>
   </AbsoluteFill>
 );

@@ -17,7 +17,9 @@ import {
   SceneFade,
   Shade,
   Ticket,
-  Watermark,
+  LogoBadge,
+  Mascot,
+  Photo,
 } from "./components";
 import { COLORS, GOLD_GRADIENT, SANS, SERIF } from "./theme";
 
@@ -50,7 +52,6 @@ export const SceneJerusalem: React.FC = () => (
   <AbsoluteFill>
     <Footage shot="s2-jerusalem" zoom={[1.02, 1.1]} pan={[-30, 0]} />
     <Shade strength={0.8} />
-    <Watermark />
     <Bottom>
       <Label size={32} delay={10} color={COLORS.goldLight}>
         Win a luxury apartment in
@@ -62,19 +63,25 @@ export const SceneJerusalem: React.FC = () => (
   </AbsoluteFill>
 );
 
-// 0:09 Inside the apartment.
+// 0:09 Inside the apartment — real photos from thedreamraffle.co.il.
 export const SceneInterior: React.FC = () => (
   <AbsoluteFill>
-    <Footage shot="s3-interior" zoom={[1.0, 1.1]} pan={[20, 0]} />
-    <Shade strength={0.75} />
-    <Watermark />
+    <Sequence durationInFrames={68}>
+      <Photo src="apt-living-1.jpg" aspect={1.5} />
+    </Sequence>
+    <Sequence from={58}>
+      <SceneFade fadeIn frames={10}>
+        <Photo src="apt-living-2.jpg" aspect={1.5} zoom={[1.08, 1.02]} />
+      </SceneFade>
+    </Sequence>
+    <Shade strength={0.8} />
     <Bottom>
       <div style={{ display: "flex", alignItems: "baseline", gap: 36 }}>
         <GoldText size={110} delay={8}>
           $1.3M
         </GoldText>
-        <Label size={40} delay={20}>
-          Panoramic Views
+        <Label size={36} delay={20}>
+          Furniture &amp; Appliances Included
         </Label>
       </div>
     </Bottom>
@@ -165,6 +172,7 @@ export const SceneOffer: React.FC = () => {
           Twice the chance to win
         </Label>
       </AbsoluteFill>
+      <Mascot pose="thumbs-up" height={640} delay={128} style={{ left: 40 }} />
       <AbsoluteFill
         style={{ backgroundColor: COLORS.goldLight, opacity: flash }}
       />
@@ -230,34 +238,62 @@ const MissionCard: React.FC<{ index: number; title: string }> = ({
   </Bottom>
 );
 
-// 0:26 The mission — Torah, medical equipment, IDF soldiers.
+// 0:26 The mission — real activity photos from thedreamraffle.co.il.
 export const SceneMission: React.FC = () => {
-  const shots = [
-    { shot: "s6a-torah", from: 0, dur: 120, title: "Torah Institutions" },
+  const groups = [
     {
-      shot: "s6b-medic",
-      from: 120,
-      dur: 70,
-      title: "Emergency Medical Equipment",
+      from: 0,
+      dur: 100,
+      title: "Torah Institutions",
+      photos: [
+        { src: "torah-1.jpg", aspect: 1.78 },
+        { src: "torah-2.jpg", aspect: 1.5 },
+      ],
     },
-    { shot: "s6c-idf", from: 190, dur: 96, title: "IDF Soldiers" },
-  ] as const;
+    {
+      from: 100,
+      dur: 90,
+      title: "Emergency Medical Equipment",
+      photos: [
+        { src: "medical-1.jpg", aspect: 1.33 },
+        { src: "medical-2.jpg", aspect: 1.33 },
+      ],
+    },
+    {
+      from: 190,
+      dur: 96,
+      title: "IDF Soldiers",
+      photos: [
+        { src: "idf-1.jpg", aspect: 1.5 },
+        { src: "idf-2.jpg", aspect: 0.92 },
+      ],
+    },
+  ];
   return (
     <AbsoluteFill>
-      {shots.map((s, i) => (
-        <Sequence
-          key={s.shot}
-          from={s.from}
-          durationInFrames={i === shots.length - 1 ? s.dur : s.dur + 8}
-        >
-          <SceneFade fadeIn={i > 0} frames={8}>
-            <Footage shot={s.shot} zoom={[1.02, 1.1]} />
-            <Shade strength={0.85} />
-            <Watermark />
-            <MissionCard index={i + 1} title={s.title} />
-          </SceneFade>
-        </Sequence>
-      ))}
+      {groups.map((g, i) => {
+        const half = Math.round(g.dur / 2);
+        return (
+          <Sequence
+            key={g.title}
+            from={g.from}
+            durationInFrames={i === groups.length - 1 ? g.dur : g.dur + 8}
+          >
+            <SceneFade fadeIn={i > 0} frames={8}>
+              <Sequence durationInFrames={half + 8}>
+                <Photo {...g.photos[0]} />
+              </Sequence>
+              <Sequence from={half}>
+                <SceneFade fadeIn frames={8}>
+                  <Photo {...g.photos[1]} />
+                </SceneFade>
+              </Sequence>
+              <Shade strength={0.9} />
+              <MissionCard index={i + 1} title={g.title} />
+            </SceneFade>
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };
@@ -278,10 +314,16 @@ const EndCard: React.FC = () => {
           textAlign: "center",
         }}
       >
-        <Label size={28} delay={0} color={COLORS.goldLight}>
+        <LogoBadge size={210} style={useEnterStyle(0)} />
+        <Label
+          size={24}
+          delay={8}
+          color={COLORS.goldLight}
+          style={{ marginTop: 22 }}
+        >
           The Dream Raffle · 9th Annual Edition
         </Label>
-        <GoldRule delay={6} width={300} />
+        <GoldRule delay={12} width={300} />
         <GoldText size={96} delay={20}>
           Two Tickets. One Dream.
         </GoldText>
@@ -321,24 +363,30 @@ const EndCard: React.FC = () => {
           GET YOUR TICKETS NOW
         </div>
       </AbsoluteFill>
+      <Mascot pose="pointing" height={760} delay={120} style={{ left: 90 }} />
       <AbsoluteFill
         style={{
           justifyContent: "flex-end",
           alignItems: "center",
           paddingBottom: 40,
+          paddingLeft: 460,
+          paddingRight: 60,
         }}
       >
         <div
           style={{
             fontFamily: SANS,
             fontSize: 20,
+            textAlign: "center",
+            lineHeight: 1.5,
             color: "rgba(232,220,196,0.75)",
             letterSpacing: 1,
             ...useEnterStyle(150),
           }}
         >
-          Grand Prize: $1.3M Jerusalem apartment · Early Bird Draw: $15,000 ·
-          Terms and conditions apply. See website for official rules.
+          Presented by the Am Yisrael Chai Foundation · Grand Prize: $1.3M
+          Jerusalem apartment · Early Bird Draw: $15,000 · Terms and conditions
+          apply. See website for official rules.
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

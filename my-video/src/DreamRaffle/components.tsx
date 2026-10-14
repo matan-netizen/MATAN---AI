@@ -304,24 +304,115 @@ export const Ticket: React.FC<{ style?: React.CSSProperties }> = ({
   </div>
 );
 
-// Small brand mark in the corner of the footage scenes.
-export const Watermark: React.FC = () => (
+// The 9th-edition logo on a cream badge (its curved tagline is dark brown).
+export const LogoBadge: React.FC<{
+  size: number;
+  style?: React.CSSProperties;
+}> = ({ size, style }) => (
   <div
     style={{
-      position: "absolute",
-      top: 48,
-      right: 64,
-      fontFamily: SERIF,
-      fontWeight: 700,
-      fontSize: 30,
-      color: COLORS.goldLight,
-      letterSpacing: 2,
-      padding: "8px 22px",
-      borderRadius: 999,
-      background: "rgba(6,18,42,0.55)",
-      border: "1px solid rgba(243,222,156,0.35)",
+      width: size,
+      height: size,
+      borderRadius: size * 0.18,
+      background: `linear-gradient(180deg, #FFF8E8 0%, ${COLORS.stone} 100%)`,
+      boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
+      border: `${Math.max(2, size / 60)}px solid ${COLORS.gold}`,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      ...style,
     }}
   >
-    The Dream Raffle
+    <Img
+      src={staticFile("dreamraffle/site/logo-9.png")}
+      style={{ width: "86%", height: "86%", objectFit: "contain" }}
+    />
   </div>
 );
+
+// Brand mark in the top corner of every scene before the end card.
+export const Watermark: React.FC = () => (
+  <LogoBadge size={128} style={{ position: "absolute", top: 36, right: 48 }} />
+);
+
+// A real photo from thedreamraffle.co.il with a slow push-in. Photos much
+// narrower than 16:9 sit on a blurred copy of themselves instead of being
+// cropped.
+export const Photo: React.FC<{
+  src: string;
+  aspect: number;
+  zoom?: [number, number];
+}> = ({ src, aspect, zoom = [1.02, 1.1] }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const scale = interpolate(frame, [0, durationInFrames], zoom);
+  const file = staticFile(`dreamraffle/site/${src}`);
+  if (aspect >= 1.45) {
+    return (
+      <AbsoluteFill style={{ overflow: "hidden" }}>
+        <Img
+          src={file}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transform: `scale(${scale})`,
+          }}
+        />
+      </AbsoluteFill>
+    );
+  }
+  return (
+    <AbsoluteFill
+      style={{ overflow: "hidden", backgroundColor: COLORS.navyDeep }}
+    >
+      <Img
+        src={file}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          filter: "blur(40px) brightness(0.55)",
+          transform: "scale(1.2)",
+        }}
+      />
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+        <Img
+          src={file}
+          style={{
+            height: "92%",
+            borderRadius: 18,
+            boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+            transform: `scale(${scale})`,
+          }}
+        />
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+// The raffle's mascot (cut-out PNG from the site) rising in from below.
+export const Mascot: React.FC<{
+  pose: "pointing" | "thumbs-up" | "ayc";
+  height: number;
+  delay: number;
+  style?: React.CSSProperties;
+}> = ({ pose, height, delay, style }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const s = spring({ frame: frame - delay, fps, config: { damping: 13 } });
+  return (
+    <Img
+      src={staticFile(`dreamraffle/site/mascot-${pose}.png`)}
+      style={{
+        position: "absolute",
+        bottom: 0,
+        height,
+        opacity: s,
+        transform: `translateY(${interpolate(s, [0, 1], [height * 0.35, 0])}px)`,
+        filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.55))",
+        ...style,
+      }}
+    />
+  );
+};
