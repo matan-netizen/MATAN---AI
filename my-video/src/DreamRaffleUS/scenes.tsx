@@ -1,9 +1,11 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Img,
   interpolate,
   Sequence,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
@@ -27,11 +29,73 @@ import { IMG } from "./theme";
 
 const Bottom: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <AbsoluteFill
-    style={{ justifyContent: "flex-end", padding: "0 120px 100px" }}
+    style={{ justifyContent: "flex-end", padding: "0 120px 190px" }}
   >
     {children}
   </AbsoluteFill>
 );
+
+// Gold headline with a light sweep passing across it after it lands.
+const SheenText: React.FC<React.ComponentProps<typeof GoldText>> = (props) => {
+  const frame = useCurrentFrame();
+  const start = (props.delay ?? 0) + 14;
+  const pos = interpolate(frame, [start, start + 26], [130, -30], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  return (
+    <GoldText
+      {...props}
+      style={{
+        ...props.style,
+        backgroundImage: `linear-gradient(105deg, rgba(255,255,255,0) 40%, rgba(255,250,235,0.95) 50%, rgba(255,255,255,0) 60%), ${GOLD_GRADIENT}`,
+        backgroundSize: "250% 100%, 100% 100%",
+        backgroundPosition: `${pos}% 0, 0 0`,
+        backgroundRepeat: "no-repeat",
+      }}
+    />
+  );
+};
+
+// 2.5D move: the people (cut out with BiRefNet) push in faster than the
+// softened photo behind them.
+const Parallax: React.FC<{ src: string; layer: string; focus: string }> = ({
+  src,
+  layer,
+  focus,
+}) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const p = frame / durationInFrames;
+  const cover: React.CSSProperties = {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    objectPosition: focus,
+  };
+  return (
+    <AbsoluteFill style={{ overflow: "hidden" }}>
+      <Img
+        src={staticFile(`${IMG}/${src}`)}
+        style={{
+          ...cover,
+          transform: `scale(${interpolate(p, [0, 1], [1.08, 1.12])})`,
+          filter: "blur(5px) brightness(0.8)",
+        }}
+      />
+      <Img
+        src={staticFile(`dreamraffle-us/layers/${layer}`)}
+        style={{
+          ...cover,
+          transform: `scale(${interpolate(p, [0, 1], [1.0, 1.1])}) translateY(${interpolate(p, [0, 1], [10, -6])}px)`,
+          filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.45))",
+        }}
+      />
+    </AbsoluteFill>
+  );
+};
 
 const Glow: React.FC<{ from: number; to: number }> = ({ from, to }) => {
   const frame = useCurrentFrame();
@@ -69,9 +133,9 @@ export const SceneHook: React.FC = () => (
       <Photo dir={IMG} src="apt-2.jpg" aspect={1.5} zoom={[1.12, 1.04]} />
       <Shade strength={0.85} />
       <Bottom>
-        <GoldText size={120} delay={8}>
+        <SheenText size={120} delay={8}>
           Your home in Jerusalem?
-        </GoldText>
+        </SheenText>
       </Bottom>
     </Sequence>
     <Flash at={100} />
@@ -94,9 +158,9 @@ export const ScenePrize: React.FC = () => (
       <Label size={30} delay={6} color={COLORS.goldLight}>
         Brand-new · Grand prize
       </Label>
-      <GoldText size={128} delay={14} style={{ marginTop: 6 }}>
+      <SheenText size={128} delay={14} style={{ marginTop: 6 }}>
         $1.3 Million
-      </GoldText>
+      </SheenText>
       <Label size={42} delay={24} style={{ marginTop: 6 }}>
         Jerusalem Apartment
       </Label>
@@ -137,9 +201,9 @@ export const SceneOffer: React.FC = () => {
         <Label size={34} delay={6} color={COLORS.goldLight}>
           Every order doubled
         </Label>
-        <GoldText size={128} delay={58} style={{ marginTop: 18 }}>
+        <SheenText size={128} delay={58} style={{ marginTop: 18 }}>
           1+1 FREE
-        </GoldText>
+        </SheenText>
       </AbsoluteFill>
       <AbsoluteFill
         style={{
@@ -188,17 +252,6 @@ export const SceneOffer: React.FC = () => {
           FREE
         </div>
       </AbsoluteFill>
-      <AbsoluteFill
-        style={{
-          alignItems: "center",
-          justifyContent: "flex-end",
-          paddingBottom: 110,
-        }}
-      >
-        <Label size={40} delay={70}>
-          Buy one ticket, get one free
-        </Label>
-      </AbsoluteFill>
       <Mascot pose="thumbs-up" height={620} delay={30} style={{ left: 40 }} />
       <AbsoluteFill
         style={{ backgroundColor: COLORS.goldLight, opacity: flash }}
@@ -226,13 +279,13 @@ export const SceneEarlyBird: React.FC = () => {
           Early Bird Bonus
         </Label>
         <GoldRule delay={10} width={260} />
-        <GoldText
+        <SheenText
           size={230}
           delay={12}
           style={{ fontVariantNumeric: "tabular-nums" }}
         >
           ${value.toLocaleString("en-US")}
-        </GoldText>
+        </SheenText>
         <Label size={52} delay={50} style={{ marginTop: 6 }}>
           Cash Draw
         </Label>
@@ -319,11 +372,19 @@ const CauseCard: React.FC<{ title: string }> = ({ title }) => (
 
 // 0:30 The heart of it — the foundation's work, then the tagline.
 export const SceneMission: React.FC = () => {
-  const shots = [
+  const shots: {
+    from: number;
+    dur: number;
+    src: string;
+    aspect: number;
+    title: string;
+    layer?: string;
+    focus?: string;
+  }[] = [
     {
       from: 0,
       dur: 125,
-      src: "torah-idf.jpg",
+      src: "torah-idf-hd.png",
       aspect: 0.92,
       title: "Torah Scrolls for IDF Bases",
     },
@@ -332,6 +393,8 @@ export const SceneMission: React.FC = () => {
       dur: 75,
       src: "ambulance.jpg",
       aspect: 1.33,
+      layer: "ambulance.png",
+      focus: "50% 0%",
       title: "Armored Ambulance for Sderot",
     },
     {
@@ -339,6 +402,8 @@ export const SceneMission: React.FC = () => {
       dur: 72,
       src: "lone-soldiers.jpg",
       aspect: 1.5,
+      layer: "lone-soldiers.png",
+      focus: "50% 30%",
       title: "Help for Lone Soldiers",
     },
   ];
@@ -347,7 +412,15 @@ export const SceneMission: React.FC = () => {
       {shots.map((s, i) => (
         <Sequence key={s.src} from={s.from} durationInFrames={s.dur + 8}>
           <SceneFade fadeIn={i > 0} frames={8}>
-            <Photo dir={IMG} src={s.src} aspect={s.aspect} />
+            {s.layer ? (
+              <Parallax
+                src={s.src}
+                layer={s.layer}
+                focus={s.focus ?? "50% 50%"}
+              />
+            ) : (
+              <Photo dir={IMG} src={s.src} aspect={s.aspect} />
+            )}
             <Shade strength={0.9} />
             <CauseCard title={s.title} />
           </SceneFade>
@@ -364,9 +437,9 @@ export const SceneMission: React.FC = () => {
               textAlign: "center",
             }}
           >
-            <GoldText size={150} delay={4}>
+            <SheenText size={150} delay={4}>
               One ticket.
-            </GoldText>
+            </SheenText>
             <GoldRule delay={24} width={320} />
             <Label size={50} delay={34} style={{ letterSpacing: 6 }}>
               A hundred ways to build
