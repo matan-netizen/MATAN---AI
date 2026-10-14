@@ -33,27 +33,6 @@ const Bottom: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </AbsoluteFill>
 );
 
-// The site says this year's apartment photos are still to come, so the
-// interiors (from its gallery) are labeled as the Dream Raffle 8 apartment.
-const PicturedNote: React.FC = () => (
-  <div
-    style={{
-      position: "absolute",
-      top: 48,
-      left: 56,
-      fontFamily: SANS,
-      fontSize: 20,
-      letterSpacing: 1,
-      color: COLORS.white,
-      padding: "6px 14px",
-      borderRadius: 8,
-      background: "rgba(6,18,42,0.55)",
-    }}
-  >
-    Pictured: Dream Raffle 8 apartment
-  </div>
-);
-
 const Glow: React.FC<{ from: number; to: number }> = ({ from, to }) => {
   const frame = useCurrentFrame();
   const glow = interpolate(frame, [from, to], [0, 1], {
@@ -89,7 +68,6 @@ export const SceneHook: React.FC = () => (
     <Sequence from={98}>
       <Photo dir={IMG} src="apt-2.jpg" aspect={1.5} zoom={[1.12, 1.04]} />
       <Shade strength={0.85} />
-      <PicturedNote />
       <Bottom>
         <GoldText size={120} delay={8}>
           Your home in Jerusalem?
@@ -112,7 +90,6 @@ export const ScenePrize: React.FC = () => (
       </SceneFade>
     </Sequence>
     <Shade strength={0.85} />
-    <PicturedNote />
     <Bottom>
       <Label size={30} delay={6} color={COLORS.goldLight}>
         Brand-new · Grand prize
@@ -289,7 +266,6 @@ export const SceneSuperTicket: React.FC = () => {
     <AbsoluteFill>
       <Photo dir={IMG} src="apt-4.jpg" aspect={0.67} zoom={[1.0, 1.06]} />
       <Shade strength={0.9} />
-      <PicturedNote />
       <div
         style={{
           position: "absolute",
