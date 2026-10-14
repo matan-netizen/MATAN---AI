@@ -26,7 +26,17 @@ import {
   Sparkles,
   useEnter,
 } from "./components";
-import { CLIP, COLORS, CROP, FONT, GOLD_GRADIENT, PHOTO, SERIF } from "./theme";
+import {
+  CLIP,
+  COLORS,
+  CROP,
+  FONT,
+  GOLD_GRADIENT,
+  PHOTO,
+  SERIF,
+  INTERVIEW,
+  QUOTE_CAPTIONS,
+} from "./theme";
 
 const Column: React.FC<{
   children: React.ReactNode;
@@ -216,35 +226,86 @@ export const SceneHook: React.FC = () => {
 };
 
 // 2 + 3. Last year's winner, in the gold frame over a blurred copy.
+const VIDEO_W = 1000;
+
 const WinnerLayout: React.FC<{
   at: number;
   volume?: (f: number) => number;
+  captions?: typeof QUOTE_CAPTIONS;
   children: React.ReactNode;
-}> = ({ at, volume, children }) => (
-  <AbsoluteFill>
-    <BlurredBackdrop crop={CROP.box} at={at} />
-    <Sparkles count={20} />
-    <Column top={70}>
-      <Logo size={170} />
-    </Column>
-    <Column top={330} gap={8}>
-      {children}
-    </Column>
-    <Column top={640}>
-      <Frame>
-        <CropVideo crop={CROP.box} width={1000} at={at} volume={volume} />
-      </Frame>
-    </Column>
-    <Column top={1300}>
-      <Pill size={40} delay={8}>
-        BORN IN NEW YORK · MADE ALIYAH TO JERUSALEM
-      </Pill>
-    </Column>
-  </AbsoluteFill>
-);
+}> = ({ at, volume, captions = [], children }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  const caption = captions.find((c) => t >= c.from && t < c.to);
+  return (
+    <AbsoluteFill>
+      <BlurredBackdrop
+        src={INTERVIEW.src}
+        srcSize={INTERVIEW.size}
+        crop={INTERVIEW.crop}
+        at={at}
+      />
+      <Sparkles count={20} />
+      <Column top={70}>
+        <Logo size={170} />
+      </Column>
+      <Column top={330} gap={8}>
+        {children}
+      </Column>
+      <Column top={660}>
+        <Frame>
+          <div style={{ position: "relative" }}>
+            <CropVideo
+              src={INTERVIEW.src}
+              srcSize={INTERVIEW.size}
+              crop={INTERVIEW.crop}
+              width={VIDEO_W}
+              at={at}
+              volume={volume}
+              zoom={[1.02, 1.08]}
+            />
+            {caption ? (
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: 26,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: FONT,
+                    fontWeight: 900,
+                    fontSize: 46,
+                    lineHeight: 1.2,
+                    color: COLORS.white,
+                    background: "rgba(26,18,12,0.82)",
+                    padding: "10px 26px",
+                    borderRadius: 14,
+                  }}
+                >
+                  {caption.text}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </Frame>
+      </Column>
+      <Column top={1250}>
+        <Pill size={40} delay={8}>
+          BORN IN NEW YORK · MADE ALIYAH TO JERUSALEM
+        </Pill>
+      </Column>
+    </AbsoluteFill>
+  );
+};
 
 export const SceneWinner: React.FC = () => (
-  <WinnerLayout at={CLIP.wonThis}>
+  <WinnerLayout at={INTERVIEW.intro}>
     <Rise
       size={46}
       weight={900}
@@ -263,15 +324,14 @@ export const SceneQuote: React.FC = () => {
   const { durationInFrames } = useVideoConfig();
   return (
     <WinnerLayout
-      at={CLIP.phoneCall}
+      at={INTERVIEW.quote}
+      captions={QUOTE_CAPTIONS}
       volume={(f) =>
         interpolate(
           f,
-          [0, 5, durationInFrames - 4, durationInFrames],
+          [0, 4, durationInFrames - 4, durationInFrames],
           [0, 1, 1, 0],
-          {
-            extrapolateRight: "clamp",
-          },
+          { extrapolateRight: "clamp" },
         )
       }
     >
@@ -284,7 +344,7 @@ export const SceneQuote: React.FC = () => {
         ARYEH LURIA · DREAM RAFFLE 8
       </Rise>
       <Rise size={96} weight={900} font={SERIF} delay={0}>
-        &ldquo;My life changed.&rdquo;
+        &ldquo;I&apos;m very happy!&rdquo;
       </Rise>
     </WinnerLayout>
   );

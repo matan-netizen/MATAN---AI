@@ -34,6 +34,8 @@ export const useEnter = (delay: number, damping = 14) => {
 
 // Shows one region of the source video, scaled to `width`, with a slow push-in.
 export const CropVideo: React.FC<{
+  src?: string;
+  srcSize?: { w: number; h: number };
   crop: Crop;
   width: number;
   at: number;
@@ -43,6 +45,8 @@ export const CropVideo: React.FC<{
   filter?: string;
   style?: React.CSSProperties;
 }> = ({
+  src = SOURCE,
+  srcSize = { w: 1080, h: 1920 },
   crop,
   width,
   at,
@@ -76,7 +80,7 @@ export const CropVideo: React.FC<{
         }}
       >
         <OffthreadVideo
-          src={staticFile(SOURCE)}
+          src={staticFile(src)}
           trimBefore={Math.round(at * fps)}
           playbackRate={playbackRate}
           volume={volume}
@@ -85,8 +89,8 @@ export const CropVideo: React.FC<{
             position: "absolute",
             left: -crop.x * s,
             top: -crop.y * s,
-            width: 1080 * s,
-            height: 1920 * s,
+            width: srcSize.w * s,
+            height: srcSize.h * s,
             maxWidth: "none",
             filter,
           }}
@@ -97,10 +101,12 @@ export const CropVideo: React.FC<{
 };
 
 // A blurred, darkened copy of a clip filling the whole frame.
-export const BlurredBackdrop: React.FC<{ crop: Crop; at: number }> = ({
-  crop,
-  at,
-}) => {
+export const BlurredBackdrop: React.FC<{
+  crop: Crop;
+  at: number;
+  src?: string;
+  srcSize?: { w: number; h: number };
+}> = ({ crop, at, src, srcSize }) => {
   const width = Math.max(1080, (1920 / crop.h) * crop.w);
   return (
     <AbsoluteFill
@@ -111,6 +117,8 @@ export const BlurredBackdrop: React.FC<{ crop: Crop; at: number }> = ({
       }}
     >
       <CropVideo
+        src={src}
+        srcSize={srcSize}
         crop={crop}
         width={width}
         at={at}

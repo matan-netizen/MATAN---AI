@@ -38,14 +38,14 @@ export const CROSSFADE = 8;
 // lengthened without retiming everything after it.
 const LENGTHS = {
   host: 156,
-  hook: 140,
-  winner: 72,
-  quote: 96,
-  turn: 54,
+  hook: 136,
+  winner: 68,
+  quote: 128,
+  turn: 46,
   prize: 294,
   offer: 246,
-  impact: 69,
-  cta: 213,
+  impact: 63,
+  cta: 199,
 };
 type SceneName = keyof typeof LENGTHS;
 let cursor = 0;
@@ -129,7 +129,25 @@ export const CROP = {
 
 // Source timestamps (seconds) of the moments we use.
 export const CLIP = {
-  wonThis: 8.55,
-  phoneCall: 19.85,
   balcony: 23.1,
 };
+
+// Aryeh Luria interview (supplied WhatsApp clip, 848x474), upscaled 2x with
+// Real-ESRGAN frame by frame. The crop drops the screen-recording border and
+// a cut-off watermark. Speech is in English.
+export const INTERVIEW = {
+  src: "dream/winner-interview.mp4",
+  size: { w: 1696, h: 948 },
+  crop: { x: 8, y: 26, w: 1610, h: 816 },
+  // Luria talking (muted under the narration).
+  intro: 2.4,
+  // "You won this apartment. How do you feel?" / "I'm very happy, very happy."
+  quote: 6.6,
+};
+
+// Captions for the quote, in seconds from INTERVIEW.quote.
+export const QUOTE_CAPTIONS = [
+  { from: 0.15, to: 1.9, text: "You won this apartment." },
+  { from: 1.9, to: 2.85, text: "How do you feel?" },
+  { from: 2.9, to: 4.27, text: "I'm very happy — very happy!" },
+];
