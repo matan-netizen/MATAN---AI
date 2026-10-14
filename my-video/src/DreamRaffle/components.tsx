@@ -1,0 +1,313 @@
+import React from "react";
+import {
+  AbsoluteFill,
+  Img,
+  interpolate,
+  OffthreadVideo,
+  random,
+  spring,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
+import { COLORS, CROSSFADE, FONT, GOLD_GRADIENT, SOURCE } from "./theme";
+
+type Crop = { x: number; y: number; w: number; h: number };
+
+// Fades a scene in on top of the previous one (crossfade).
+export const SceneFade: React.FC<{
+  children: React.ReactNode;
+  fadeIn?: boolean;
+}> = ({ children, fadeIn = true }) => {
+  const frame = useCurrentFrame();
+  const opacity = fadeIn
+    ? interpolate(frame, [0, CROSSFADE], [0, 1], { extrapolateRight: "clamp" })
+    : 1;
+  return <AbsoluteFill style={{ opacity }}>{children}</AbsoluteFill>;
+};
+
+export const useEnter = (delay: number, damping = 14) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  return spring({ frame: frame - delay, fps, config: { damping } });
+};
+
+// Shows one region of the source video, scaled to `width`, with a slow push-in.
+export const CropVideo: React.FC<{
+  crop: Crop;
+  width: number;
+  at: number;
+  playbackRate?: number;
+  volume?: number | ((f: number) => number);
+  zoom?: [number, number];
+  filter?: string;
+  style?: React.CSSProperties;
+}> = ({
+  crop,
+  width,
+  at,
+  playbackRate = 1,
+  volume = 0,
+  zoom = [1, 1.06],
+  filter,
+  style,
+}) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames, fps } = useVideoConfig();
+  const s = width / crop.w;
+  const z = interpolate(frame, [0, durationInFrames], zoom, {
+    extrapolateRight: "clamp",
+  });
+  return (
+    <div
+      style={{
+        width,
+        height: crop.h * s,
+        overflow: "hidden",
+        position: "relative",
+        ...style,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          transform: `scale(${z})`,
+        }}
+      >
+        <OffthreadVideo
+          src={staticFile(SOURCE)}
+          trimBefore={Math.round(at * fps)}
+          playbackRate={playbackRate}
+          volume={volume}
+          muted={volume === 0}
+          style={{
+            position: "absolute",
+            left: -crop.x * s,
+            top: -crop.y * s,
+            width: 1080 * s,
+            height: 1920 * s,
+            maxWidth: "none",
+            filter,
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// A blurred, darkened copy of a clip filling the whole frame.
+export const BlurredBackdrop: React.FC<{ crop: Crop; at: number }> = ({
+  crop,
+  at,
+}) => {
+  const width = Math.max(1080, (1920 / crop.h) * crop.w);
+  return (
+    <AbsoluteFill
+      style={{ alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+    >
+      <CropVideo
+        crop={crop}
+        width={width}
+        at={at}
+        zoom={[1.1, 1.15]}
+        filter="blur(28px) brightness(0.38) saturate(1.2)"
+      />
+    </AbsoluteFill>
+  );
+};
+
+// Brand background: deep cocoa with a warm glow and drifting gold specks.
+export const Backdrop: React.FC = () => (
+  <AbsoluteFill
+    style={{
+      background: `radial-gradient(ellipse at 50% 35%, #4A3424 0%, ${COLORS.cocoa} 55%, ${COLORS.ink} 100%)`,
+    }}
+  />
+);
+
+export const Sparkles: React.FC<{ count?: number }> = ({ count = 34 }) => {
+  const frame = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none" }}>
+      {new Array(count).fill(0).map((_, i) => {
+        const x = random(`x${i}`) * 1080;
+        const speed = 0.4 + random(`s${i}`) * 0.9;
+        const y = (random(`y${i}`) * 2100 - frame * speed) % 2100;
+        const size = 3 + random(`z${i}`) * 5;
+        const twinkle =
+          0.35 + 0.65 * Math.abs(Math.sin(frame / 12 + random(`t${i}`) * 6));
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: x,
+              top: y < 0 ? y + 2100 : y,
+              width: size,
+              height: size,
+              borderRadius: size,
+              background: COLORS.goldLight,
+              opacity: twinkle * 0.8,
+              boxShadow: `0 0 ${size * 3}px ${COLORS.gold}`,
+            }}
+          />
+        );
+      })}
+    </AbsoluteFill>
+  );
+};
+
+// Text that rises into place.
+export const Rise: React.FC<{
+  children: React.ReactNode;
+  delay?: number;
+  size?: number;
+  weight?: number;
+  color?: string;
+  font?: string;
+  style?: React.CSSProperties;
+}> = ({
+  children,
+  delay = 0,
+  size = 72,
+  weight = 700,
+  color = COLORS.white,
+  font = FONT,
+  style,
+}) => {
+  const s = useEnter(delay, 200);
+  return (
+    <div
+      style={{
+        fontFamily: font,
+        fontSize: size,
+        fontWeight: weight,
+        color,
+        lineHeight: 1.12,
+        textAlign: "center",
+        opacity: s,
+        transform: `translateY(${(1 - s) * 40}px)`,
+        textShadow: "0 4px 18px rgba(0,0,0,0.55)",
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const Gold: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span style={{ color: COLORS.gold }}>{children}</span>
+);
+
+export const Logo: React.FC<{ size?: number; delay?: number }> = ({
+  size = 220,
+  delay = 0,
+}) => {
+  const s = useEnter(delay, 12);
+  return (
+    <Img
+      src={staticFile("dream/logo.png")}
+      style={{
+        width: size,
+        transform: `scale(${s})`,
+        filter: "drop-shadow(0 12px 26px rgba(0,0,0,0.55))",
+      }}
+    />
+  );
+};
+
+// Gold-framed card around a clip or photo.
+export const Frame: React.FC<{
+  children: React.ReactNode;
+  delay?: number;
+  style?: React.CSSProperties;
+}> = ({ children, delay = 0, style }) => {
+  const s = useEnter(delay, 15);
+  return (
+    <div
+      style={{
+        padding: 6,
+        borderRadius: 26,
+        background: GOLD_GRADIENT,
+        boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
+        opacity: Math.min(1, s * 1.4),
+        transform: `scale(${0.92 + 0.08 * s})`,
+        ...style,
+      }}
+    >
+      <div style={{ borderRadius: 21, overflow: "hidden", lineHeight: 0 }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// Pill label.
+export const Pill: React.FC<{
+  children: React.ReactNode;
+  delay?: number;
+  size?: number;
+  gold?: boolean;
+  style?: React.CSSProperties;
+}> = ({ children, delay = 0, size = 40, gold = false, style }) => {
+  const s = useEnter(delay, 16);
+  return (
+    <div
+      style={{
+        display: "inline-block",
+        fontFamily: FONT,
+        fontWeight: 900,
+        fontSize: size,
+        letterSpacing: size * 0.04,
+        color: gold ? COLORS.ink : COLORS.goldLight,
+        background: gold ? GOLD_GRADIENT : "rgba(26,18,12,0.82)",
+        border: gold ? "none" : `2px solid ${COLORS.gold}`,
+        padding: `${size * 0.28}px ${size * 0.7}px`,
+        borderRadius: 999,
+        opacity: s,
+        transform: `scale(${0.8 + 0.2 * s})`,
+        boxShadow: "0 10px 26px rgba(0,0,0,0.4)",
+        whiteSpace: "nowrap",
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Small, always-legible note (photo credits, disclosures).
+export const Note: React.FC<{
+  children: React.ReactNode;
+  bottom?: number;
+  size?: number;
+}> = ({ children, bottom = 70, size = 30 }) => (
+  <div
+    style={{
+      position: "absolute",
+      left: 60,
+      right: 60,
+      bottom,
+      display: "flex",
+      justifyContent: "center",
+    }}
+  >
+    <div
+      style={{
+        fontFamily: FONT,
+        fontWeight: 400,
+        fontSize: size,
+        lineHeight: 1.3,
+        color: COLORS.cream,
+        textAlign: "center",
+        background: "rgba(26,18,12,0.85)",
+        padding: "12px 26px",
+        borderRadius: 16,
+      }}
+    >
+      {children}
+    </div>
+  </div>
+);

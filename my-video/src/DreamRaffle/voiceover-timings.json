@@ -1,0 +1,50 @@
+{
+  "voice": "Brian",
+  "lines": [
+    {
+      "id": "01",
+      "text": "Imagine winning a brand-new, one-point-three-million-dollar apartment in Jerusalem.",
+      "seconds": 4.676
+    },
+    {
+      "id": "02",
+      "text": "Last year, Aryeh Luria got the call.",
+      "seconds": 2.325
+    },
+    {
+      "id": "03",
+      "text": "This year, it could be you.",
+      "seconds": 1.515
+    },
+    {
+      "id": "04",
+      "text": "Dream Raffle Nine: a brand-new luxury apartment in Givat Mordechai, Jerusalem.",
+      "seconds": 4.258
+    },
+    {
+      "id": "05",
+      "text": "Two bedrooms, two full baths, a large balcony, private parking, and a Shabbat elevator.",
+      "seconds": 5.094
+    },
+    {
+      "id": "06",
+      "text": "Right now, every order is doubled. Buy one, get one free!",
+      "seconds": 3.422
+    },
+    {
+      "id": "07",
+      "text": "Order by November eleventh, and you're also in the fifteen-thousand-dollar cash bonus drawing.",
+      "seconds": 4.78
+    },
+    {
+      "id": "08",
+      "text": "Every ticket helps build the Land of Israel.",
+      "seconds": 2.273
+    },
+    {
+      "id": "09",
+      "text": "The grand prize drawing is March eleventh. Enter now at thedreamraffle.com.",
+      "seconds": 4.833
+    }
+  ]
+}
