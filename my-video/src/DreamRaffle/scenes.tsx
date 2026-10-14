@@ -3,7 +3,6 @@ import {
   AbsoluteFill,
   Img,
   interpolate,
-  OffthreadVideo,
   Sequence,
   spring,
   staticFile,
@@ -16,14 +15,17 @@ import {
   CropVideo,
   Frame,
   Gold,
+  GoldText,
   Logo,
   Note,
+  PhotoPan,
   Pill,
   Rise,
+  Shade,
   Sparkles,
   useEnter,
 } from "./components";
-import { CLIP, COLORS, CROP, FONT, GOLD_GRADIENT, SERIF, SOURCE } from "./theme";
+import { CLIP, COLORS, CROP, FONT, GOLD_GRADIENT, PHOTO, SERIF } from "./theme";
 
 const Column: React.FC<{
   children: React.ReactNode;
@@ -46,80 +48,133 @@ const Column: React.FC<{
   </div>
 );
 
+const PhotoBackdrop: React.FC<{ src: string }> = ({ src }) => (
+  <PhotoPan
+    src={src}
+    x={[0.35, 0.6]}
+    zoom={[1.15, 1.22]}
+    filter="blur(26px) brightness(0.32) saturate(1.2)"
+  />
+);
+
 const PHOTO_NOTE = "Pictured: last year's Dream Raffle 8 apartment";
 
-// 1. Hook: the apartment, full frame, and the prize counting up.
+// 1. Hook: an incoming call from The Dream Raffle over the balcony view,
+// then the prize lands.
+const REVEAL = 42;
+
 export const SceneHook: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const card = interpolate(frame, [0, 5], [0, 1], { extrapolateRight: "clamp" });
-  const pop = spring({ frame: frame - 8, fps, config: { damping: 9 } });
-  const zoom = interpolate(frame, [0, 150], [1, 1.08]);
+  const drop = spring({ frame, fps, config: { damping: 14 } });
+  const leave = spring({ frame: frame - REVEAL + 6, fps, config: { damping: 18 } });
+  const buzz = frame < REVEAL - 6 ? Math.sin(frame * 2.2) * 5 * (frame % 16 < 9 ? 1 : 0) : 0;
+  const card = spring({ frame: frame - REVEAL, fps, config: { damping: 12 } });
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <AbsoluteFill style={{ transform: `scale(${zoom})` }}>
-        <OffthreadVideo
-          src={staticFile(SOURCE)}
-          trimBefore={CLIP.roomOpen * fps}
-          playbackRate={0.82}
-          muted
-          style={{ width: 1080, height: 1920 }}
-        />
-      </AbsoluteFill>
-      {/* Hides the old logo burned into the source (y≈90–390). */}
-      <AbsoluteFill
-        style={{
-          background: `linear-gradient(180deg, ${COLORS.cocoa} 0px, ${COLORS.cocoa} 420px, rgba(43,31,23,0) 600px)`,
-        }}
-      />
-      <Column top={50}>
-        <Logo size={170} />
-      </Column>
-      <Sparkles count={18} />
-      {/* Covers the source's own caption band (y≈1040–1340). */}
+      <PhotoPan src={PHOTO.balconyView} x={[0.62, 0.38]} zoom={[1.12, 1.02]} />
+      <Shade top size={620} strength={0.75} />
+      <Shade size={900} strength={0.85} />
+      <Sparkles count={16} />
+      {/* Incoming call */}
       <div
         style={{
           position: "absolute",
-          top: 930,
-          left: 50,
-          right: 50,
-          padding: "40px 30px 46px",
-          borderRadius: 34,
-          background: "linear-gradient(180deg, rgba(43,31,23,0.97), rgba(26,18,12,0.97))",
-          border: `3px solid ${COLORS.gold}`,
-          boxShadow: "0 30px 70px rgba(0,0,0,0.6)",
-          opacity: card,
-          transform: `scale(${0.94 + 0.06 * card})`,
-          textAlign: "center",
+          top: 90,
+          left: 70,
+          right: 70,
+          transform: `translateY(${(1 - drop) * -260 - leave * 420}px) translateX(${buzz}px)`,
+          opacity: 1 - leave,
         }}
       >
-        <Rise size={54} weight={900} delay={2} style={{ letterSpacing: 3 }}>
-          IMAGINE WINNING A
-        </Rise>
         <div
           style={{
-            fontFamily: FONT,
-            fontWeight: 900,
-            fontSize: 150,
-            lineHeight: 1.05,
-            backgroundImage: GOLD_GRADIENT,
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            transform: `scale(${pop})`,
-            filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.5))",
+            display: "flex",
+            alignItems: "center",
+            gap: 30,
+            padding: "26px 34px",
+            borderRadius: 44,
+            background: "rgba(26,18,12,0.78)",
+            border: "1px solid rgba(246,216,138,0.35)",
+            boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+            backdropFilter: "blur(18px)",
           }}
         >
-          $1.3M
+          <Img
+            src={staticFile("dream/logo.png")}
+            style={{
+              width: 112,
+              height: 112,
+              objectFit: "contain",
+              background: COLORS.cream,
+              borderRadius: 112,
+              padding: 10,
+            }}
+          />
+          <div style={{ flex: 1, fontFamily: FONT, textAlign: "left" }}>
+            <div style={{ fontSize: 30, color: COLORS.goldLight, fontWeight: 700, letterSpacing: 2 }}>
+              INCOMING CALL…
+            </div>
+            <div style={{ fontSize: 50, color: COLORS.white, fontWeight: 900 }}>
+              The Dream Raffle
+            </div>
+          </div>
+          <div
+            style={{
+              width: 104,
+              height: 104,
+              borderRadius: 104,
+              background: "#2FBF71",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 54,
+              transform: `scale(${1 + 0.08 * Math.sin(frame / 3)})`,
+              boxShadow: `0 0 0 ${10 + 10 * Math.abs(Math.sin(frame / 6))}px rgba(47,191,113,0.25)`,
+            }}
+          >
+            ✆
+          </div>
         </div>
-        <Rise size={60} weight={900} delay={20} style={{ letterSpacing: 1 }}>
+      </div>
+      <Sequence from={REVEAL - 10} layout="none">
+        <Column top={70}>
+          <Logo size={170} />
+        </Column>
+      </Sequence>
+      <div
+        style={{
+          position: "absolute",
+          top: 1010,
+          left: 50,
+          right: 50,
+          padding: "38px 20px 44px",
+          borderRadius: 36,
+          background: "rgba(26,18,12,0.72)",
+          border: "2px solid rgba(226,176,74,0.7)",
+          backdropFilter: "blur(14px)",
+          boxShadow: "0 30px 70px rgba(0,0,0,0.55)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          opacity: Math.min(1, card * 1.5),
+          transform: `scale(${0.85 + 0.15 * card})`,
+        }}
+      >
+        <Rise size={58} weight={900} delay={REVEAL} style={{ letterSpacing: 4 }}>
+          IMAGINE WINNING A
+        </Rise>
+        <GoldText size={210} delay={REVEAL}>
+          $1.3M
+        </GoldText>
+        <Rise size={66} weight={900} delay={REVEAL + 14}>
           BRAND-NEW APARTMENT
         </Rise>
-        <Rise size={60} weight={900} delay={26}>
+        <Rise size={66} weight={900} delay={REVEAL + 20}>
           IN <Gold>JERUSALEM</Gold>
         </Rise>
       </div>
-      <Note bottom={90}>{PHOTO_NOTE}</Note>
+      <Note bottom={70} size={28}>{PHOTO_NOTE}</Note>
     </AbsoluteFill>
   );
 };
@@ -203,21 +258,10 @@ export const SceneTurn: React.FC = () => {
         <Rise size={110} weight={900} font={SERIF} delay={4}>
           it could be
         </Rise>
-        <div
-          style={{
-            fontFamily: FONT,
-            fontWeight: 900,
-            fontSize: 170,
-            lineHeight: 1,
-            backgroundImage: GOLD_GRADIENT,
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            transform: `scale(${punch})`,
-            filter: "drop-shadow(0 8px 18px rgba(0,0,0,0.6))",
-          }}
-        >
-          YOU!
+        <div style={{ transform: `scale(${punch})` }}>
+          <GoldText size={190} delay={10}>
+            YOU!
+          </GoldText>
         </div>
       </Column>
       <Column top={1010}>
@@ -229,120 +273,91 @@ export const SceneTurn: React.FC = () => {
   );
 };
 
-// 5. This year's grand prize, with apartment footage cycling in the frame.
-const PHOTO_W = 1000;
+// 5. This year's grand prize: full-bleed photos, each feature on its word.
+// Local frames: VO 04 starts at 9, VO 05 ("Two bedrooms…") at 138.
 const SHOTS = [
-  { crop: CROP.room, at: 2.4, rate: 0.5, len: 100 },
-  { crop: CROP.view, at: CLIP.balcony, rate: 0.8, len: 95 },
-  { crop: CROP.room, at: CLIP.roomOpen, rate: 0.8, len: 110 },
+  { src: PHOTO.livingRoom, from: 0, x: [0.2, 0.55] as [number, number] },
+  { src: PHOTO.livingDining, from: 62, x: [0.7, 0.4] as [number, number] },
+  { src: PHOTO.bedroom, from: 138, x: [0.35, 0.6] as [number, number] },
+  { src: PHOTO.bathroom, from: 165, x: [0.55, 0.3] as [number, number] },
+  { src: PHOTO.balcony, from: 195, x: [0.3, 0.6] as [number, number] },
+  { src: PHOTO.kitchen, from: 225, x: [0.6, 0.35] as [number, number] },
+  { src: PHOTO.lounge, from: 262, x: [0.25, 0.5] as [number, number] },
 ];
 const FEATURES = [
-  "2 Bedrooms",
-  "2 Full Baths",
-  "Large Balcony",
-  "Parking + Storage",
-  "Shabbat Elevator",
-  "Secure Safe Room",
+  { label: "2 Bedrooms", at: 140 },
+  { label: "2 Full Baths", at: 166 },
+  { label: "Large Balcony", at: 196 },
+  { label: "Parking + Storage", at: 218 },
+  { label: "Shabbat Elevator", at: 250 },
+  { label: "Secure Safe Room", at: 262 },
 ];
-// Matches "Two bedrooms, two full baths, a large balcony…" (starts at local 138).
-const FEATURE_AT = [140, 158, 176, 194, 222, 236];
 
-export const ScenePrize: React.FC = () => {
-  let start = 0;
-  return (
-    <AbsoluteFill>
-      <Backdrop />
-      <Sparkles />
-      <Column top={50}>
-        <Logo size={150} />
-      </Column>
-      <Column top={268} gap={10}>
-        <Pill gold size={36}>
-          DREAM RAFFLE 9 · GRAND PRIZE
+export const ScenePrize: React.FC = () => (
+  <AbsoluteFill style={{ background: COLORS.ink }}>
+    {SHOTS.map((shot, i) => {
+      const end = i === SHOTS.length - 1 ? 320 : SHOTS[i + 1].from + 8;
+      return (
+        <Sequence key={shot.src} from={shot.from} durationInFrames={end - shot.from}>
+          <ShotFade>
+            <PhotoPan src={shot.src} x={shot.x} zoom={[1.04, 1.12]} />
+          </ShotFade>
+        </Sequence>
+      );
+    })}
+    <Shade top size={700} strength={0.9} />
+    <Shade size={1000} strength={0.95} />
+    <Column top={50}>
+      <Logo size={150} />
+    </Column>
+    <Column top={270} gap={10}>
+      <Pill gold size={36}>
+        DREAM RAFFLE 9 · GRAND PRIZE
+      </Pill>
+      <Rise size={66} weight={900} font={SERIF} delay={6}>
+        Brand-New Luxury Apartment
+      </Rise>
+      <Rise size={50} weight={700} color={COLORS.goldLight} delay={60}>
+        Givat Mordechai, Jerusalem
+      </Rise>
+    </Column>
+    <Column top={1080}>
+      <ValuePlate />
+    </Column>
+    <div
+      style={{
+        position: "absolute",
+        top: 1290,
+        left: 60,
+        right: 60,
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        gap: 18,
+      }}
+    >
+      {FEATURES.map((f) => (
+        <Pill key={f.label} size={40} delay={f.at}>
+          ✓ {f.label}
         </Pill>
-        <Rise size={68} weight={900} font={SERIF} delay={6}>
-          Brand-New Luxury Apartment
-        </Rise>
-        <Rise size={48} weight={700} color={COLORS.goldLight} delay={12}>
-          Givat Mordechai, Jerusalem
-        </Rise>
-      </Column>
-      <Column top={560}>
-        <Frame delay={4}>
-          <div
-            style={{
-              position: "relative",
-              width: PHOTO_W,
-              height: (PHOTO_W * CROP.room.h) / CROP.room.w,
-            }}
-          >
-            {SHOTS.map((shot, i) => {
-              const from = start;
-              start += shot.len;
-              const isLast = i === SHOTS.length - 1;
-              return (
-                <Sequence
-                  key={i}
-                  from={from}
-                  durationInFrames={isLast ? 400 : shot.len + 10}
-                  layout="none"
-                >
-                  <ShotFade>
-                    <CropVideo
-                      crop={shot.crop}
-                      width={PHOTO_W}
-                      at={shot.at}
-                      playbackRate={shot.rate}
-                      zoom={[1.02, 1.1]}
-                      style={{ position: "absolute", top: 0, left: 0 }}
-                    />
-                  </ShotFade>
-                </Sequence>
-              );
-            })}
-          </div>
-        </Frame>
-      </Column>
-      <Column top={1200}>
-        <ValuePlate />
-      </Column>
-      <div
-        style={{
-          position: "absolute",
-          top: 1395,
-          left: 70,
-          right: 70,
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: 18,
-        }}
-      >
-        {FEATURES.map((f, i) => (
-          <Pill key={f} size={38} delay={FEATURE_AT[i]}>
-            ✓ {f}
-          </Pill>
-        ))}
-      </div>
-      <Note bottom={60} size={28}>
-        {PHOTO_NOTE}, shown furnished.
-        <br />
-        Furniture &amp; appliances included only with the Super Ticket upgrade.
-      </Note>
-    </AbsoluteFill>
-  );
-};
+      ))}
+    </div>
+    <Note bottom={60} size={28}>
+      {PHOTO_NOTE}, shown furnished.
+      <br />
+      Furniture &amp; appliances included only with the Super Ticket upgrade.
+    </Note>
+  </AbsoluteFill>
+);
 
 const ShotFade: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [0, 10], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-  return <div style={{ position: "absolute", inset: 0, opacity }}>{children}</div>;
+  const opacity = interpolate(frame, [0, 7], [0, 1], { extrapolateRight: "clamp" });
+  return <AbsoluteFill style={{ opacity }}>{children}</AbsoluteFill>;
 };
 
 const ValuePlate: React.FC = () => {
-  const s = useEnter(18, 10);
+  const s = useEnter(70, 10);
   return (
     <div
       style={{
@@ -351,36 +366,18 @@ const ValuePlate: React.FC = () => {
         gap: 24,
         padding: "16px 46px",
         borderRadius: 24,
-        background: "rgba(26,18,12,0.9)",
+        background: "rgba(26,18,12,0.88)",
         border: `3px solid ${COLORS.gold}`,
         transform: `scale(${s})`,
+        boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
       }}
     >
-      <div
-        style={{
-          fontFamily: FONT,
-          fontWeight: 700,
-          fontSize: 40,
-          color: COLORS.cream,
-          letterSpacing: 2,
-        }}
-      >
+      <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 40, color: COLORS.cream, letterSpacing: 2 }}>
         VALUED AT
       </div>
-      <div
-        style={{
-          fontFamily: FONT,
-          fontWeight: 900,
-          fontSize: 104,
-          lineHeight: 1,
-          backgroundImage: GOLD_GRADIENT,
-          WebkitBackgroundClip: "text",
-          backgroundClip: "text",
-          color: "transparent",
-        }}
-      >
+      <GoldText size={104} delay={70}>
         $1.3 MILLION
-      </div>
+      </GoldText>
     </div>
   );
 };
@@ -396,7 +393,7 @@ export const SceneOffer: React.FC = () => {
   const spin = interpolate(frame, [0, 250], [-8, 8]);
   return (
     <AbsoluteFill>
-      <BlurredBackdrop crop={CROP.room} at={CLIP.roomPan} />
+      <PhotoBackdrop src={PHOTO.livingRoom} />
       <Sparkles count={40} />
       <Column top={60}>
         <div style={{ opacity: 1 - move }}>
@@ -496,21 +493,9 @@ const BonusCard: React.FC = () => {
       <Pill gold size={40} delay={8}>
         EARLY-BIRD BONUS DRAWING
       </Pill>
-      <div
-        style={{
-          marginTop: 20,
-          fontFamily: FONT,
-          fontWeight: 900,
-          fontSize: 170,
-          lineHeight: 1,
-          backgroundImage: GOLD_GRADIENT,
-          WebkitBackgroundClip: "text",
-          backgroundClip: "text",
-          color: "transparent",
-        }}
-      >
+      <GoldText size={170} delay={4} style={{ marginTop: 20 }}>
         $15,000
-      </div>
+      </GoldText>
       <Rise size={64} weight={900} delay={12}>
         IN CASH
       </Rise>
@@ -531,6 +516,7 @@ const CAUSES = [
 export const SceneImpact: React.FC = () => (
   <AbsoluteFill>
     <Backdrop />
+    <PhotoBackdrop src={PHOTO.balcony} />
     <Sparkles />
     <Column top={60}>
       <Logo size={170} />
@@ -625,6 +611,7 @@ export const SceneCTA: React.FC = () => {
   return (
     <AbsoluteFill>
       <Backdrop />
+      <PhotoBackdrop src={PHOTO.balconyView} />
       <Sparkles count={44} />
       <Column top={50}>
         <Logo size={220} />

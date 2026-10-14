@@ -318,3 +318,138 @@ export const Note: React.FC<{
     </div>
   </div>
 );
+
+// Full-bleed landscape photo in the vertical frame: a slow camera move
+// across it (x from/to in 0..1 of the overflow) with a gentle push-in.
+export const PhotoPan: React.FC<{
+  src: string;
+  x?: [number, number];
+  zoom?: [number, number];
+  originY?: number;
+  filter?: string;
+}> = ({ src, x = [0.3, 0.7], zoom = [1, 1.08], originY = 0.5, filter }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const p = interpolate(frame, [0, durationInFrames], [0, 1], {
+    extrapolateRight: "clamp",
+    easing: (t) => t * (2 - t) * 0.5 + t * 0.5,
+  });
+  const z = zoom[0] + (zoom[1] - zoom[0]) * p;
+  const h = 1920 * z;
+  const w = (h * 16) / 9;
+  const left = -(w - 1080) * (x[0] + (x[1] - x[0]) * p);
+  const top = -(h - 1920) * originY;
+  return (
+    <AbsoluteFill style={{ overflow: "hidden" }}>
+      <Img
+        src={staticFile(src)}
+        style={{
+          position: "absolute",
+          left,
+          top,
+          width: w,
+          height: h,
+          maxWidth: "none",
+          filter: filter ?? "contrast(1.06) saturate(1.08)",
+        }}
+      />
+    </AbsoluteFill>
+  );
+};
+
+// Dark gradient behind text at the top or bottom of a photo.
+export const Shade: React.FC<{ top?: boolean; size?: number; strength?: number }> = ({
+  top = false,
+  size = 760,
+  strength = 0.92,
+}) => (
+  <div
+    style={{
+      position: "absolute",
+      left: 0,
+      right: 0,
+      [top ? "top" : "bottom"]: 0,
+      height: size,
+      background: `linear-gradient(${top ? "180deg" : "0deg"}, rgba(26,18,12,${strength}) 0%, rgba(26,18,12,${strength * 0.75}) 45%, rgba(26,18,12,0) 100%)`,
+    }}
+  />
+);
+
+// Gold text with a light sweep passing across it.
+export const GoldText: React.FC<{
+  children: React.ReactNode;
+  size: number;
+  delay?: number;
+  font?: string;
+  style?: React.CSSProperties;
+}> = ({ children, size, delay = 0, font = FONT, style }) => {
+  const frame = useCurrentFrame();
+  const sweep = interpolate((frame - delay - 10) % 75, [0, 30], [-60, 160], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  return (
+    <div
+      style={{
+        fontFamily: font,
+        fontWeight: 900,
+        fontSize: size,
+        lineHeight: 1.04,
+        backgroundImage: `linear-gradient(105deg, rgba(255,255,255,0) ${sweep - 12}%, rgba(255,250,230,0.95) ${sweep}%, rgba(255,255,255,0) ${sweep + 12}%), ${GOLD_GRADIENT}`,
+        WebkitBackgroundClip: "text",
+        backgroundClip: "text",
+        color: "transparent",
+        filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.55))",
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// Finishing layers that sit over every scene.
+export const Vignette: React.FC = () => (
+  <AbsoluteFill
+    style={{
+      pointerEvents: "none",
+      background:
+        "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.38) 100%)",
+    }}
+  />
+);
+
+export const FilmGrain: React.FC = () => {
+  const frame = useCurrentFrame();
+  const seed = Math.floor(frame / 2);
+  return (
+    <AbsoluteFill style={{ pointerEvents: "none", opacity: 0.07, mixBlendMode: "overlay" }}>
+      <svg width="1080" height="1920">
+        <filter id={`grain${seed}`}>
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={seed} />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="1080" height="1920" filter={`url(#grain${seed})`} />
+      </svg>
+    </AbsoluteFill>
+  );
+};
+
+// Warm light flash used on scene cuts (place it in a Sequence at the cut).
+export const LightLeak: React.FC = () => {
+  const frame = useCurrentFrame();
+  const o = interpolate(frame, [0, 4, 14], [0, 0.55, 0], {
+    extrapolateRight: "clamp",
+  });
+  const x = interpolate(frame, [0, 14], [20, 80]);
+  return (
+    <AbsoluteFill
+      style={{
+        pointerEvents: "none",
+        opacity: o,
+        mixBlendMode: "screen",
+        background: `radial-gradient(ellipse at ${x}% 30%, rgba(255,214,140,0.95) 0%, rgba(240,150,60,0.55) 30%, rgba(0,0,0,0) 70%)`,
+      }}
+    />
+  );
+};
