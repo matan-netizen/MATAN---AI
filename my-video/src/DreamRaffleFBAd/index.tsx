@@ -111,7 +111,10 @@ SHOTS.reduce((acc, s) => {
 }, 0);
 starts.push(starts[starts.length - 1] + shotLen(SHOTS[SHOTS.length - 1]));
 const VIDEO_END = starts[SHOTS.length];
-const END_CARD = f(5);
+const LOGO_CARD = f(5);
+// Dedicated call-to-action slide after the logo card.
+const CTA_CARD = f(5);
+const END_CARD = LOGO_CARD + CTA_CARD;
 export const FB_DURATION = VIDEO_END + END_CARD;
 
 const ShotView: React.FC<{ shot: Shot; first: boolean }> = ({ shot, first }) => {
@@ -500,6 +503,71 @@ const EndCard: React.FC = () => {
   );
 };
 
+// Closing call-to-action slide: the offer restated, one clear action.
+const CtaCard: React.FC = () => {
+  const frame = useCurrentFrame();
+  const a = usePop(6);
+  const b = usePop(14);
+  const c = usePop(22);
+  const d = usePop(30);
+  const btn = usePop(42);
+  const pulse = 1 + 0.035 * Math.max(0, Math.sin((frame - 50) / 5.7));
+  const arrow = 10 * Math.sin(frame / 6);
+  const pop = (p: number, from = 0.7) => ({ opacity: p, transform: `scale(${interpolate(p, [0, 1], [from, 1])})` });
+  return (
+    <AbsoluteFill
+      style={{
+        background: `radial-gradient(circle at 50% 42%, #6A4F35 0%, ${BROWN} 50%, #120D08 100%)`,
+        alignItems: "center",
+        fontFamily: FONT,
+        textAlign: "center",
+        opacity: interpolate(frame, [0, XFADE], [0, 1], { extrapolateRight: "clamp" }),
+      }}
+    >
+      <Img
+        src={staticFile("fb-ad/logo.png")}
+        style={{ position: "absolute", top: 250, width: 300, opacity: a, filter: "drop-shadow(0 12px 30px rgba(0,0,0,0.5))" }}
+      />
+      <div style={{ position: "absolute", top: 560, fontWeight: 900, fontSize: 84, lineHeight: 1.08, color: "white", textTransform: "uppercase", ...pop(b) }}>
+        Don&apos;t miss
+        <br />
+        your chance!
+      </div>
+      <div style={{ position: "absolute", top: 790, fontWeight: 900, fontSize: 170, lineHeight: 1, color: GOLD_LIGHT, textShadow: "0 10px 40px rgba(0,0,0,0.5)", ...pop(c, 0.5) }}>
+        1+1
+      </div>
+      <div style={{ position: "absolute", top: 975, fontWeight: 700, fontSize: 50, lineHeight: 1.2, color: "white", ...pop(d) }}>
+        Buy 1 ticket, get 1 <span style={{ color: GOLD_LIGHT, fontWeight: 900 }}>FREE</span>
+        <br />
+        on every order
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          top: 1180,
+          fontWeight: 900,
+          fontSize: 70,
+          color: INK,
+          background: `linear-gradient(180deg, ${GOLD_LIGHT}, ${GOLD})`,
+          padding: "30px 80px",
+          borderRadius: 999,
+          border: "4px solid #FFF0C2",
+          boxShadow: `0 14px 36px rgba(0,0,0,0.55), 0 0 50px ${GOLD}99`,
+          transform: `scale(${interpolate(btn, [0, 1], [0.5, 1]) * pulse})`,
+          opacity: btn,
+          whiteSpace: "nowrap",
+        }}
+      >
+        Get Your Ticket Now
+      </div>
+      <div style={{ position: "absolute", top: 1370, fontWeight: 700, fontSize: 40, color: "white", opacity: btn * 0.9 }}>
+        Tap the button below
+        <div style={{ fontSize: 64, color: GOLD_LIGHT, transform: `translateY(${arrow}px)` }}>↓</div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 export const DreamRaffleFBAd: React.FC = () => {
   const frame = useCurrentFrame();
   // Music sits under the dialogue and comes up on the end card.
@@ -572,8 +640,11 @@ export const DreamRaffleFBAd: React.FC = () => {
         <Headline lines={["9th year running", <Gold key="n">Will you be next?</Gold>]} top={260} />
       </Sequence>
 
-      <Sequence from={VIDEO_END}>
+      <Sequence from={VIDEO_END} durationInFrames={LOGO_CARD + XFADE}>
         <EndCard />
+      </Sequence>
+      <Sequence from={VIDEO_END + LOGO_CARD}>
+        <CtaCard />
       </Sequence>
 
       <Audio src={staticFile("fb-ad/music.mp3")} volume={musicVol} />
@@ -589,6 +660,12 @@ export const DreamRaffleFBAd: React.FC = () => {
         <Audio src={staticFile("fb-ad/sfx-impact.mp3")} volume={0.3} />
       </Sequence>
       <Sequence from={VIDEO_END + f(0.9)}>
+        <Audio src={staticFile("fb-ad/sfx-chime.mp3")} volume={0.16} />
+      </Sequence>
+      <Sequence from={VIDEO_END + LOGO_CARD + f(0.6)}>
+        <Audio src={staticFile("fb-ad/sfx-shimmer.mp3")} volume={0.16} />
+      </Sequence>
+      <Sequence from={VIDEO_END + LOGO_CARD + f(1.4)}>
         <Audio src={staticFile("fb-ad/sfx-chime.mp3")} volume={0.16} />
       </Sequence>
     </AbsoluteFill>
