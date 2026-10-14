@@ -32,59 +32,78 @@ export const COLORS = {
 export const GOLD_GRADIENT = `linear-gradient(180deg, ${COLORS.goldLight}, ${COLORS.gold} 55%, #B9832C)`;
 
 export const FPS = 30;
-export const DURATION = 1290;
 export const CROSSFADE = 8;
 
-// Scene start frames. The narration below is placed inside these windows.
-export const SCENES = {
-  hook: { from: 0, duration: 156 },
-  winner: { from: 156, duration: 72 },
-  quote: { from: 228, duration: 96 },
-  turn: { from: 324, duration: 66 },
-  prize: { from: 390, duration: 294 },
-  offer: { from: 684, duration: 246 },
-  impact: { from: 930, duration: 84 },
-  cta: { from: 1014, duration: 276 },
+// Scene lengths in frames; start frames are derived so a scene can be
+// lengthened without retiming everything after it.
+const LENGTHS = {
+  host: 156,
+  hook: 140,
+  winner: 72,
+  quote: 96,
+  turn: 54,
+  prize: 294,
+  offer: 246,
+  impact: 69,
+  cta: 213,
 };
+type SceneName = keyof typeof LENGTHS;
+let cursor = 0;
+export const SCENES = Object.fromEntries(
+  (Object.keys(LENGTHS) as SceneName[]).map((name) => {
+    const scene = { from: cursor, duration: LENGTHS[name] };
+    cursor += LENGTHS[name];
+    return [name, scene];
+  }),
+) as Record<SceneName, { from: number; duration: number }>;
+export const DURATION = cursor;
+
+const at = (scene: SceneName, offset: number) => SCENES[scene].from + offset;
 
 // Voiceover clips (public/dream/vo, made by scripts/generate-dream-voiceover.mjs)
 // and the frame each one starts on.
 export const VO = [
-  { file: "01", at: 10 },
-  { file: "02", at: 162 },
-  { file: "03", at: 330 },
-  { file: "04", at: 399 },
-  { file: "05", at: 528 },
-  { file: "06", at: 690 },
-  { file: "07", at: 789 },
-  { file: "08", at: 936 },
-  { file: "09", at: 1020 },
+  { file: "01", at: at("hook", 6) },
+  { file: "02", at: at("winner", 6) },
+  { file: "03", at: at("turn", 4) },
+  { file: "04", at: at("prize", 9) },
+  { file: "05", at: at("prize", 138) },
+  { file: "06", at: at("offer", 6) },
+  { file: "07", at: at("offer", 105) },
+  { file: "08", at: at("impact", 4) },
+  { file: "09", at: at("cta", 6) },
 ];
 
+// Music starts under the prize reveal, after the host's opening lines.
+export const MUSIC_FROM = SCENES.hook.from;
+
 // Sound effects (public/dream/audio, made by scripts/generate-dream-audio.mjs).
-const cut = (f: number) => ({ file: "whoosh", at: f - 9, volume: 0.45 });
+const cut = (scene: SceneName) => ({
+  file: "whoosh",
+  at: at(scene, -9),
+  volume: 0.45,
+});
 export const SFX = [
-  { file: "ring", at: 0, volume: 0.55 },
-  { file: "impact", at: 42, volume: 0.6 },
-  cut(SCENES.winner.from),
-  cut(SCENES.quote.from),
-  cut(SCENES.turn.from),
-  { file: "shimmer", at: 336, volume: 0.5 },
-  cut(SCENES.prize.from),
-  { file: "whoosh", at: 444, volume: 0.25 },
-  { file: "whoosh", at: 520, volume: 0.25 },
-  { file: "whoosh", at: 547, volume: 0.22 },
-  { file: "whoosh", at: 577, volume: 0.22 },
-  { file: "whoosh", at: 607, volume: 0.22 },
-  { file: "whoosh", at: 644, volume: 0.22 },
-  cut(SCENES.offer.from),
-  { file: "ding", at: 692, volume: 0.5 },
-  { file: "impact", at: 787, volume: 0.45 },
-  { file: "ding", at: 800, volume: 0.4 },
-  cut(SCENES.impact.from),
-  { file: "riser", at: SCENES.cta.from - 78, volume: 0.45 },
-  { file: "impact", at: SCENES.cta.from, volume: 0.7 },
-  { file: "shimmer", at: SCENES.cta.from + 12, volume: 0.45 },
+  cut("hook"),
+  { file: "impact", at: at("hook", 4), volume: 0.6 },
+  cut("winner"),
+  cut("quote"),
+  cut("turn"),
+  { file: "shimmer", at: at("turn", 6), volume: 0.5 },
+  cut("prize"),
+  ...[62, 138, 165, 195, 225, 262].map((f) => ({
+    file: "whoosh",
+    at: at("prize", f - 8),
+    volume: 0.22,
+  })),
+  cut("offer"),
+  { file: "ding", at: at("offer", 8), volume: 0.5 },
+  { file: "impact", at: at("offer", 103), volume: 0.45 },
+  { file: "ding", at: at("offer", 116), volume: 0.4 },
+  cut("impact"),
+  { file: "riser", at: at("cta", -78), volume: 0.45 },
+  { file: "impact", at: at("cta", 0), volume: 0.7 },
+  { file: "shimmer", at: at("cta", 12), volume: 0.45 },
 ];
 
 // Dream Raffle 8 apartment, from the gallery on thedreamraffle.co.il.

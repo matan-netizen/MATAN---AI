@@ -104,7 +104,11 @@ export const BlurredBackdrop: React.FC<{ crop: Crop; at: number }> = ({
   const width = Math.max(1080, (1920 / crop.h) * crop.w);
   return (
     <AbsoluteFill
-      style={{ alignItems: "center", justifyContent: "center", overflow: "hidden" }}
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
     >
       <CropVideo
         crop={crop}
@@ -358,11 +362,11 @@ export const PhotoPan: React.FC<{
 };
 
 // Dark gradient behind text at the top or bottom of a photo.
-export const Shade: React.FC<{ top?: boolean; size?: number; strength?: number }> = ({
-  top = false,
-  size = 760,
-  strength = 0.92,
-}) => (
+export const Shade: React.FC<{
+  top?: boolean;
+  size?: number;
+  strength?: number;
+}> = ({ top = false, size = 760, strength = 0.92 }) => (
   <div
     style={{
       position: "absolute",
@@ -423,10 +427,17 @@ export const FilmGrain: React.FC = () => {
   const frame = useCurrentFrame();
   const seed = Math.floor(frame / 2);
   return (
-    <AbsoluteFill style={{ pointerEvents: "none", opacity: 0.07, mixBlendMode: "overlay" }}>
+    <AbsoluteFill
+      style={{ pointerEvents: "none", opacity: 0.07, mixBlendMode: "overlay" }}
+    >
       <svg width="1080" height="1920">
         <filter id={`grain${seed}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves={2} seed={seed} />
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.85"
+            numOctaves={2}
+            seed={seed}
+          />
           <feColorMatrix type="saturate" values="0" />
         </filter>
         <rect width="1080" height="1920" filter={`url(#grain${seed})`} />

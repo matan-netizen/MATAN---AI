@@ -3,6 +3,7 @@ import {
   AbsoluteFill,
   Img,
   interpolate,
+  OffthreadVideo,
   Sequence,
   spring,
   staticFile,
@@ -59,89 +60,117 @@ const PhotoBackdrop: React.FC<{ src: string }> = ({ src }) => (
 
 const PHOTO_NOTE = "Pictured: last year's Dream Raffle 8 apartment";
 
-// 1. Hook: an incoming call from The Dream Raffle over the balcony view,
-// then the prize lands.
-const REVEAL = 42;
+// 0. Host: Shmuel shouting from a balcony (from the supplied campaign clip,
+// original audio). The building's unrelated for-sale banner is covered by a
+// tracked Dream Raffle banner. Keyframes are in source pixels/4 (270x480).
+const BANNER_KEYS: [number, number, number, number, number][] = [
+  // frame, x0, y0, x1, y1
+  [0, 98, 133, 158, 145],
+  [14, 80, 120, 160, 136],
+  [27, 72, 152, 178, 168],
+  [40, 58, 178, 175, 200],
+  [53, 33, 205, 220, 234],
+  [66, 10, 240, 243, 275],
+  [79, 2, 278, 270, 317],
+  [92, 0, 315, 238, 360],
+  [105, 0, 352, 270, 408],
+  [118, 0, 372, 270, 432],
+  [131, 0, 386, 270, 460],
+  [156, 0, 386, 270, 460],
+];
 
-export const SceneHook: React.FC = () => {
+export const SceneHost: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const drop = spring({ frame, fps, config: { damping: 14 } });
-  const leave = spring({ frame: frame - REVEAL + 6, fps, config: { damping: 18 } });
-  const buzz = frame < REVEAL - 6 ? Math.sin(frame * 2.2) * 5 * (frame % 16 < 9 ? 1 : 0) : 0;
-  const card = spring({ frame: frame - REVEAL, fps, config: { damping: 12 } });
+  const at = (k: number) =>
+    interpolate(
+      frame,
+      BANNER_KEYS.map((b) => b[0]),
+      BANNER_KEYS.map((b) => b[k] * 4),
+      { extrapolateRight: "clamp" },
+    );
+  const [x0, y0, x1, y1] = [at(1), at(2), at(3), at(4)];
+  const h = y1 - y0;
+  const padX = (x1 - x0) * 0.06 + 6;
+  const padY = h * 0.3 + 6;
+  const bh = h + padY * 2;
+  // Keep the banner (and so its lettering) inside the frame as it grows.
+  const left = Math.max(-4, x0 - padX);
+  const right = Math.min(1084, x1 + padX);
+  const bw = right - left;
+  const title = Math.min(bh * 0.42, (bw * 0.86) / 9.6);
   return (
     <AbsoluteFill style={{ background: COLORS.ink }}>
-      <PhotoPan src={PHOTO.balconyView} x={[0.62, 0.38]} zoom={[1.12, 1.02]} />
-      <Shade top size={620} strength={0.75} />
-      <Shade size={900} strength={0.85} />
-      <Sparkles count={16} />
-      {/* Incoming call */}
+      <OffthreadVideo
+        src={staticFile("dream/host-hey-you.mp4")}
+        style={{ width: 1080, height: 1920 }}
+      />
       <div
         style={{
           position: "absolute",
-          top: 90,
-          left: 70,
-          right: 70,
-          transform: `translateY(${(1 - drop) * -260 - leave * 420}px) translateX(${buzz}px)`,
-          opacity: 1 - leave,
+          left,
+          top: y0 - padY,
+          width: bw,
+          height: bh,
+          background: "linear-gradient(180deg, #FBF6EC, #EFE4CF)",
+          border: `${Math.max(2, bh * 0.05)}px solid ${COLORS.bronze}`,
+          boxShadow: "0 6px 18px rgba(0,0,0,0.25)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          overflow: "hidden",
         }}
       >
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 30,
-            padding: "26px 34px",
-            borderRadius: 44,
-            background: "rgba(26,18,12,0.78)",
-            border: "1px solid rgba(246,216,138,0.35)",
-            boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
-            backdropFilter: "blur(18px)",
+            fontFamily: FONT,
+            fontWeight: 900,
+            fontSize: title,
+            lineHeight: 1,
+            color: "#3A2416",
+            letterSpacing: bh * 0.02,
+            whiteSpace: "nowrap",
           }}
         >
-          <Img
-            src={staticFile("dream/logo.png")}
-            style={{
-              width: 112,
-              height: 112,
-              objectFit: "contain",
-              background: COLORS.cream,
-              borderRadius: 112,
-              padding: 10,
-            }}
-          />
-          <div style={{ flex: 1, fontFamily: FONT, textAlign: "left" }}>
-            <div style={{ fontSize: 30, color: COLORS.goldLight, fontWeight: 700, letterSpacing: 2 }}>
-              INCOMING CALL…
-            </div>
-            <div style={{ fontSize: 50, color: COLORS.white, fontWeight: 900 }}>
-              The Dream Raffle
-            </div>
-          </div>
-          <div
-            style={{
-              width: 104,
-              height: 104,
-              borderRadius: 104,
-              background: "#2FBF71",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 54,
-              transform: `scale(${1 + 0.08 * Math.sin(frame / 3)})`,
-              boxShadow: `0 0 0 ${10 + 10 * Math.abs(Math.sin(frame / 6))}px rgba(47,191,113,0.25)`,
-            }}
-          >
-            ✆
-          </div>
+          THE DREAM RAFFLE
+        </div>
+        <div
+          style={{
+            fontFamily: FONT,
+            fontWeight: 700,
+            fontSize: title * 0.48,
+            lineHeight: 1.2,
+            color: COLORS.bronze,
+            whiteSpace: "nowrap",
+          }}
+        >
+          thedreamraffle.com
         </div>
       </div>
-      <Sequence from={REVEAL - 10} layout="none">
-        <Column top={70}>
-          <Logo size={170} />
-        </Column>
-      </Sequence>
+      <Shade top size={360} strength={0.55} />
+      <div style={{ position: "absolute", top: 50, right: 50 }}>
+        <Logo size={150} />
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+// 1. Hook: the prize, over the Jerusalem view from the balcony.
+const REVEAL = 4;
+
+export const SceneHook: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const card = spring({ frame: frame - REVEAL, fps, config: { damping: 12 } });
+  return (
+    <AbsoluteFill style={{ background: COLORS.ink }}>
+      <PhotoPan src={PHOTO.balconyView} x={[0.62, 0.42]} zoom={[1.12, 1.03]} />
+      <Shade top size={620} strength={0.75} />
+      <Shade size={900} strength={0.85} />
+      <Sparkles count={16} />
+      <Column top={70}>
+        <Logo size={170} />
+      </Column>
       <div
         style={{
           position: "absolute",
@@ -161,7 +190,12 @@ export const SceneHook: React.FC = () => {
           transform: `scale(${0.85 + 0.15 * card})`,
         }}
       >
-        <Rise size={58} weight={900} delay={REVEAL} style={{ letterSpacing: 4 }}>
+        <Rise
+          size={58}
+          weight={900}
+          delay={REVEAL}
+          style={{ letterSpacing: 4 }}
+        >
           IMAGINE WINNING A
         </Rise>
         <GoldText size={210} delay={REVEAL}>
@@ -174,7 +208,9 @@ export const SceneHook: React.FC = () => {
           IN <Gold>JERUSALEM</Gold>
         </Rise>
       </div>
-      <Note bottom={70} size={28}>{PHOTO_NOTE}</Note>
+      <Note bottom={70} size={28}>
+        {PHOTO_NOTE}
+      </Note>
     </AbsoluteFill>
   );
 };
@@ -209,7 +245,12 @@ const WinnerLayout: React.FC<{
 
 export const SceneWinner: React.FC = () => (
   <WinnerLayout at={CLIP.wonThis}>
-    <Rise size={46} weight={900} color={COLORS.gold} style={{ letterSpacing: 4 }}>
+    <Rise
+      size={46}
+      weight={900}
+      color={COLORS.gold}
+      style={{ letterSpacing: 4 }}
+    >
       LAST YEAR&apos;S WINNER
     </Rise>
     <Rise size={96} weight={900} font={SERIF} delay={4}>
@@ -224,12 +265,22 @@ export const SceneQuote: React.FC = () => {
     <WinnerLayout
       at={CLIP.phoneCall}
       volume={(f) =>
-        interpolate(f, [0, 5, durationInFrames - 4, durationInFrames], [0, 1, 1, 0], {
-          extrapolateRight: "clamp",
-        })
+        interpolate(
+          f,
+          [0, 5, durationInFrames - 4, durationInFrames],
+          [0, 1, 1, 0],
+          {
+            extrapolateRight: "clamp",
+          },
+        )
       }
     >
-      <Rise size={46} weight={900} color={COLORS.gold} style={{ letterSpacing: 4 }}>
+      <Rise
+        size={46}
+        weight={900}
+        color={COLORS.gold}
+        style={{ letterSpacing: 4 }}
+      >
         ARYEH LURIA · DREAM RAFFLE 8
       </Rise>
       <Rise size={96} weight={900} font={SERIF} delay={0}>
@@ -298,7 +349,11 @@ export const ScenePrize: React.FC = () => (
     {SHOTS.map((shot, i) => {
       const end = i === SHOTS.length - 1 ? 320 : SHOTS[i + 1].from + 8;
       return (
-        <Sequence key={shot.src} from={shot.from} durationInFrames={end - shot.from}>
+        <Sequence
+          key={shot.src}
+          from={shot.from}
+          durationInFrames={end - shot.from}
+        >
           <ShotFade>
             <PhotoPan src={shot.src} x={shot.x} zoom={[1.04, 1.12]} />
           </ShotFade>
@@ -352,7 +407,9 @@ export const ScenePrize: React.FC = () => (
 
 const ShotFade: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [0, 7], [0, 1], { extrapolateRight: "clamp" });
+  const opacity = interpolate(frame, [0, 7], [0, 1], {
+    extrapolateRight: "clamp",
+  });
   return <AbsoluteFill style={{ opacity }}>{children}</AbsoluteFill>;
 };
 
@@ -372,7 +429,15 @@ const ValuePlate: React.FC = () => {
         boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
       }}
     >
-      <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 40, color: COLORS.cream, letterSpacing: 2 }}>
+      <div
+        style={{
+          fontFamily: FONT,
+          fontWeight: 700,
+          fontSize: 40,
+          color: COLORS.cream,
+          letterSpacing: 2,
+        }}
+      >
         VALUED AT
       </div>
       <GoldText size={104} delay={70}>
@@ -389,7 +454,11 @@ export const SceneOffer: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const seal = spring({ frame: frame - 4, fps, config: { damping: 10 } });
-  const move = spring({ frame: frame - BONUS_AT, fps, config: { damping: 16 } });
+  const move = spring({
+    frame: frame - BONUS_AT,
+    fps,
+    config: { damping: 16 },
+  });
   const spin = interpolate(frame, [0, 250], [-8, 8]);
   return (
     <AbsoluteFill>
@@ -411,7 +480,12 @@ export const SceneOffer: React.FC = () => {
         }}
       >
         <Column top={330}>
-          <Rise size={50} weight={900} color={COLORS.gold} style={{ letterSpacing: 5 }}>
+          <Rise
+            size={50}
+            weight={900}
+            color={COLORS.gold}
+            style={{ letterSpacing: 5 }}
+          >
             RIGHT NOW · ALL ORDERS
           </Rise>
         </Column>
@@ -482,7 +556,8 @@ const BonusCard: React.FC = () => {
         right: 60,
         padding: "44px 30px 50px",
         borderRadius: 34,
-        background: "linear-gradient(180deg, rgba(43,31,23,0.96), rgba(26,18,12,0.96))",
+        background:
+          "linear-gradient(180deg, rgba(43,31,23,0.96), rgba(26,18,12,0.96))",
         border: `4px solid ${COLORS.gold}`,
         boxShadow: "0 30px 70px rgba(0,0,0,0.6)",
         textAlign: "center",
@@ -499,7 +574,13 @@ const BonusCard: React.FC = () => {
       <Rise size={64} weight={900} delay={12}>
         IN CASH
       </Rise>
-      <Rise size={52} weight={700} color={COLORS.goldLight} delay={30} style={{ marginTop: 18 }}>
+      <Rise
+        size={52}
+        weight={700}
+        color={COLORS.goldLight}
+        delay={30}
+        style={{ marginTop: 18 }}
+      >
         Order by November 11
       </Rise>
     </div>
@@ -617,7 +698,12 @@ export const SceneCTA: React.FC = () => {
         <Logo size={220} />
       </Column>
       <Column top={355} gap={4}>
-        <Rise size={40} weight={900} color={COLORS.gold} style={{ letterSpacing: 5 }}>
+        <Rise
+          size={40}
+          weight={900}
+          color={COLORS.gold}
+          style={{ letterSpacing: 5 }}
+        >
           GRAND PRIZE DRAWING
         </Rise>
         <Rise size={92} weight={900} font={SERIF} delay={4}>
@@ -687,9 +773,9 @@ const Disclosures: React.FC = () => (
     }}
   >
     The Dream Raffle is a project of the Am Yisrael Chai Foundation, a 501(c)(3)
-    nonprofit. Raffle ticket purchases are not tax-deductible. The winner pays all
-    applicable taxes. Cash option: $700,000 (before taxes). The winner&apos;s name
-    and photo will be published. Apartment pictured is last year&apos;s prize.
-    Full details and FAQ: thedreamraffle.com
+    nonprofit. Raffle ticket purchases are not tax-deductible. The winner pays
+    all applicable taxes. Cash option: $700,000 (before taxes). The
+    winner&apos;s name and photo will be published. Apartment pictured is last
+    year&apos;s prize. Full details and FAQ: thedreamraffle.com
   </div>
 );
