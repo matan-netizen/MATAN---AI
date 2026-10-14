@@ -1,0 +1,70 @@
+{
+  "name": "לידים מ-Gmail → סיווג AI → דאשבורד",
+  "flow": [
+    {
+      "id": 1,
+      "module": "google-email:triggerWatchNewEmails",
+      "version": 4,
+      "parameters": {
+        "__IMTCONN__": 11929715,
+        "filterType": "simpleSearch",
+        "folder": "INBOX",
+        "criteria": "all",
+        "markSeen": false,
+        "limit": 10,
+        "format": "full",
+        "hasAttachment": false
+      },
+      "mapper": {},
+      "metadata": { "designer": { "x": 0, "y": 0 } }
+    },
+    {
+      "id": 2,
+      "module": "ai-tools:Extract",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "input": "From: {{1.fromName}} <{{1.fromEmail}}>\nSubject: {{1.subject}}\n\n{{substring(1.fullTextBody; 0; 4000)}}",
+        "fields": [
+          {
+            "name": "is_lead",
+            "type": "boolean",
+            "description": "true רק אם המייל הוא פנייה של לקוח פוטנציאלי (אדם או עסק) שמתעניין בשירותי שיווק דיגיטלי עבורו: קידום אורגני / SEO, ניהול קמפיינים ופרסום ממומן (גוגל, פייסבוק, אינסטגרם, טיקטוק), ניהול רשתות חברתיות, בניית אתר או דף נחיתה, שיווק בדיגיטל באופן כללי. false לכל השאר: ניוזלטרים, פרסומות, הודעות מערכת, חשבוניות, ספקים או סוכנויות שמציעים לנו שירותים, פניות שאינן קשורות לשיווק דיגיטלי, ספאם."
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "description": "שם הפונה (איש קשר או שם העסק). אם אין בגוף המייל – השם של השולח."
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "description": "מספר הטלפון של הפונה כפי שמופיע במייל, ספרות בלבד (למשל 0501234567). מחרוזת ריקה אם אין מספר טלפון."
+          },
+          {
+            "name": "summary",
+            "type": "string",
+            "description": "סיכום קצר בעברית (עד 2 משפטים): מה הפונה מבקש, איזה עסק, ופרטים חשובים."
+          }
+        ]
+      },
+      "metadata": { "designer": { "x": 300, "y": 0 } }
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": { "orphans": [] }
+  }
+}
