@@ -33,9 +33,11 @@ const BROWN = "#3B2E22";
 const INK = "#1B140D";
 
 type Shot = {
-  src: "balcony" | "office-tour" | "apartment-2026";
+  src: "balcony" | "office-tour" | "street" | "apartment-2026";
   from: number; // seconds into the source clip
   to: number;
+  // Playback speed (gallery shots run in slow motion).
+  rate?: number;
   // Balcony footage is cropped up to keep the Hebrew for-sale banner (and its
   // private phone number) out of frame.
   crop?: boolean;
@@ -47,57 +49,82 @@ type Shot = {
   // This year's apartment, shown in a frame cropped clear of the source
   // promo's logo and headline.
   gallery?: boolean;
+  // Seconds the shot keeps playing under the next one's fade-in (default
+  // XFADE). Shortened where the source runs into Hebrew signage.
+  tail?: number;
 };
 
 // Figures follow the official site (thedreamraffle.co.il): a brand-new $1.3M
 // luxury apartment in Jerusalem, 9th year, 1+1 on all orders. Cut points sit on
 // word boundaries from the Whisper transcript; lines stating last edition's
-// figures ("$1.2 million", "seven winners ... the eighth") are left out.
+// figures ("$1.2 million", "seven winners ... the eighth", "last day", "with
+// all the furniture", "eighth year", "after Purim") are left out.
 const SHOTS: Shot[] = [
-  { src: "balcony", from: 5.0, to: 6.1, crop: true }, // "Do you have a ticket yet?"
-  { src: "balcony", from: 12.0, to: 13.1, crop: true }, // "What's the Dream Raffle?"
-  { src: "balcony", from: 13.1, to: 15.4, crop: true, card: true }, // answered by the prize card
-  { src: "office-tour", from: 19.4, to: 21.5, old: true }, // "One bedroom, second bedroom, beautiful bedroom"
-  { src: "office-tour", from: 27.65, to: 31.0, old: true }, // "Look at this beautiful dining room, this fantastic living room" (stops before "with all the furniture": furnishing is an add-on this year)
-  { src: "apartment-2026", from: 0.1, to: 2.1, gallery: true }, // this year's apartment: set table
-  { src: "apartment-2026", from: 2.5, to: 4.2, gallery: true }, // this year's apartment: dining area
-  { src: "office-tour", from: 24.7, to: 26.25, old: true }, // "And you have a beautiful chance to win"
-  { src: "balcony", from: 20.0, to: 22.1, crop: true }, // "Now's the time. What are you waiting for?"
+  // "Do you have a ticket yet? Hello. Do you have a ticket? Excuse me. Do you
+  // have a ticket over there? Now's the time to buy tickets to the Dream
+  // Raffle. What's the Dream Raffle?"
+  { src: "balcony", from: 5.0, to: 13.1, crop: true },
+  { src: "balcony", from: 13.1, to: 16.6, crop: true, card: true }, // answered by the prize card
+  { src: "office-tour", from: 19.4, to: 22.05, old: true }, // "One bedroom, second bedroom, beautiful bedroom, look at over here"
+  { src: "office-tour", from: 27.65, to: 31.0, old: true, tail: 0.1 }, // "Look at this beautiful dining room, this fantastic living room"
+  { src: "apartment-2026", from: 0.1, to: 2.2, rate: 0.65, gallery: true }, // this year's apartment: set table
+  { src: "apartment-2026", from: 2.4, to: 4.05, rate: 0.65, gallery: true }, // this year's apartment: dining area
+  { src: "street", from: 24.15, to: 27.45 }, // "Now is the time. This is the beautiful city, and you could be the winner."
+  { src: "office-tour", from: 38.65, to: 40.55, old: true }, // "Do me a favor, buy a ticket, win the raffle"
+  // "But you have to click on the link and fill out your information.
+  // Otherwise, we won't know who to give the apartment to. Buy a ticket, but hurry."
+  { src: "street", from: 14.25, to: 20.65 },
+  { src: "balcony", from: 20.95, to: 22.1, crop: true }, // "What are you waiting for?"
 ];
 const CARD = SHOTS.findIndex((s) => s.card);
 const GALLERY = SHOTS.findIndex((s) => s.gallery);
 const GALLERY_END = GALLERY + SHOTS.filter((s) => s.gallery).length;
+const STREET_WIN = SHOTS.findIndex((s) => s.src === "street");
+
+// Each shot keeps playing (silently) for XFADE frames past its cut while the
+// next shot fades in on top: soft crossfades without overlapping dialogue.
+const XFADE = f(0.5);
+const shotLen = (s: Shot) => f((s.to - s.from) / (s.rate ?? 1));
+const tailLen = (s: Shot) => (s.tail === undefined ? XFADE : f(s.tail));
 
 const starts: number[] = [];
 SHOTS.reduce((acc, s) => {
   starts.push(acc);
-  return acc + f(s.to - s.from);
+  return acc + shotLen(s);
 }, 0);
-starts.push(starts[starts.length - 1] + f(SHOTS[SHOTS.length - 1].to - SHOTS[SHOTS.length - 1].from));
+starts.push(starts[starts.length - 1] + shotLen(SHOTS[SHOTS.length - 1]));
 const VIDEO_END = starts[SHOTS.length];
-const END_CARD = f(3.6);
+const END_CARD = f(4.5);
 export const FB_DURATION = VIDEO_END + END_CARD;
 
-const ShotView: React.FC<{ shot: Shot }> = ({ shot }) => {
+const useFadeIn = (first: boolean) => {
   const frame = useCurrentFrame();
-  const len = f(shot.to - shot.from);
+  return first ? 1 : interpolate(frame, [0, XFADE], [0, 1], { extrapolateRight: "clamp" });
+};
+
+const ShotView: React.FC<{ shot: Shot; first: boolean }> = ({ shot, first }) => {
+  const frame = useCurrentFrame();
+  const len = shotLen(shot);
+  const opacity = useFadeIn(first);
   // Slow punch-in keeps static talking shots moving.
-  const push = interpolate(frame, [0, len], [1, 1.05]);
+  const push = interpolate(frame, [0, len + XFADE], [1, 1.05]);
   const base = shot.crop ? 1.28 : 1;
-  const blur = shot.card ? interpolate(frame, [0, 5], [0, 1], { extrapolateRight: "clamp" }) : 0;
-  if (shot.gallery) return <GalleryView shot={shot} />;
+  const blur = shot.card ? 1 : 0;
+  if (shot.gallery) return <GalleryView shot={shot} opacity={opacity} />;
   return (
-    <AbsoluteFill style={{ overflow: "hidden", backgroundColor: "black" }}>
+    <AbsoluteFill style={{ overflow: "hidden", backgroundColor: "black", opacity }}>
       <OffthreadVideo
         src={staticFile(`fb-ad/${shot.src}.mp4`)}
         startFrom={f(shot.from)}
         muted={shot.card}
+        // Silent once past the cut, while the next shot fades in over it.
+        volume={(fr) => (fr < len ? 1 : 0)}
         style={{
           width: 1080,
           height: 1920,
           transform: `scale(${base * push})`,
           transformOrigin: shot.crop ? "50% 0%" : "50% 50%",
-          filter: blur > 0 ? `blur(${blur * 40}px) brightness(${1 - blur * 0.45})` : undefined,
+          filter: blur > 0 ? `blur(${blur * 60}px) brightness(${1 - blur * 0.5})` : undefined,
         }}
       />
       {shot.card ? <PrizeCard /> : null}
@@ -129,16 +156,17 @@ const OldFootageTag: React.FC = () => (
 // y=380) and headline (below y=1030).
 const WINDOW = { y: 380, h: 650 };
 const FRAME_W = 1000;
-const GalleryView: React.FC<{ shot: Shot }> = ({ shot }) => {
+const GalleryView: React.FC<{ shot: Shot; opacity: number }> = ({ shot, opacity }) => {
   const frame = useCurrentFrame();
   const k = FRAME_W / 1080;
-  const push = interpolate(frame, [0, f(shot.to - shot.from)], [1, 1.06]);
+  const push = interpolate(frame, [0, shotLen(shot) + XFADE], [1, 1.08]);
   const src = staticFile(`fb-ad/${shot.src}.mp4`);
   return (
-    <AbsoluteFill style={{ backgroundColor: "#140E09" }}>
+    <AbsoluteFill style={{ backgroundColor: "#140E09", opacity }}>
       <OffthreadVideo
         src={src}
         startFrom={f(shot.from)}
+        playbackRate={shot.rate}
         muted
         style={{ width: 1080, height: 1920, filter: "blur(36px) brightness(0.45)", transform: "scale(1.15)" }}
       />
@@ -158,6 +186,7 @@ const GalleryView: React.FC<{ shot: Shot }> = ({ shot }) => {
         <OffthreadVideo
           src={src}
           startFrom={f(shot.from)}
+          playbackRate={shot.rate}
           muted
           style={{
             position: "absolute",
@@ -308,7 +337,7 @@ const EndCard: React.FC = () => {
         background: `radial-gradient(circle at 50% 38%, #5A4532 0%, ${BROWN} 45%, #17110B 100%)`,
         alignItems: "center",
         fontFamily: FONT,
-        opacity: interpolate(frame, [0, 6], [0, 1], { extrapolateRight: "clamp" }),
+        opacity: interpolate(frame, [0, XFADE], [0, 1], { extrapolateRight: "clamp" }),
       }}
     >
       <Img
@@ -399,8 +428,10 @@ export const DreamRaffleFBAd: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "black" }}>
       {SHOTS.map((shot, i) => (
-        <Sequence key={i} from={starts[i]} durationInFrames={f(shot.to - shot.from)}>
-          <ShotView shot={shot} />
+        <Sequence key={i} from={starts[i]} durationInFrames={shotLen(shot) + tailLen(shot)}>
+          {/* The prize card cuts in already blurred, so the source's old
+              "$1,200,000" caption never shows through a crossfade. */}
+          <ShotView shot={shot} first={i === 0 || Boolean(shot.card)} />
         </Sequence>
       ))}
 
@@ -420,7 +451,7 @@ export const DreamRaffleFBAd: React.FC = () => {
       </Sequence>
       {/* The source's own caption still shows the previous line for a few
           frames here, so the opening question gets its own caption. */}
-      <Sequence durationInFrames={starts[1]}>
+      <Sequence durationInFrames={f(1.1)}>
         <AbsoluteFill style={{ alignItems: "center", top: 1320 }}>
           <div
             style={{
@@ -444,7 +475,7 @@ export const DreamRaffleFBAd: React.FC = () => {
       <Sequence from={starts[GALLERY]} durationInFrames={starts[GALLERY_END] - starts[GALLERY]}>
         <GalleryText />
       </Sequence>
-      <Sequence from={starts[GALLERY_END]} durationInFrames={starts[GALLERY_END + 1] - starts[GALLERY_END]}>
+      <Sequence from={starts[STREET_WIN]} durationInFrames={starts[STREET_WIN + 1] - starts[STREET_WIN]}>
         <Headline lines={["9th year running", <Gold key="n">Will you be next?</Gold>]} top={260} />
       </Sequence>
 

@@ -1,7 +1,7 @@
 # The Dream Raffle: U.S. Facebook / Instagram Reels Ad
 
 **File:** `out/DreamRaffle_FB_Ad_US.mp4` (rendered from the `DreamRaffleFBAd` Remotion composition)
-**Spec:** 1080 × 1920 (9:16), 30 fps, H.264 + AAC 48 kHz, 21.0 s, audio normalized to −14 LUFS, faststart
+**Spec:** 1080 × 1920 (9:16), 30 fps, H.264 + AAC 48 kHz, 40.7 s, audio normalized to −14 LUFS, faststart
 
 ## Source of truth for claims
 
@@ -16,39 +16,43 @@ All figures come from the official site, [thedreamraffle.co.il](https://thedream
 
 ## Concept: "Do you have a ticket yet?"
 
-1. A cold open on the host shouting from a balcony, with the headline on screen from frame 0.
+The pacing is relaxed: longer takes and 0.5-second crossfades between shots. During a crossfade the outgoing shot goes silent, so no dialogue overlaps. The structure:
+
+1. The host on the balcony asks "Do you have a ticket yet?" for the full take.
 2. A $1.3M prize card answers "What's the Dream Raffle?"
-3. Footage of a **previous** raffle apartment, clearly labelled as such.
-4. **This year's** $1.3M apartment, with the line "This year it's even more luxurious."
-5. 9th-year urgency, then the logo end card with the 1+1 offer.
+3. Footage of a **previous** raffle apartment, labelled as such.
+4. **This year's** $1.3M apartment in slow motion, with "This year it's even more luxurious."
+5. The street take and calls to action.
+6. The logo end card with the 1+1 offer.
 
 ## Edit decision list
 
 | Ad time | Source | Source in/out | Spoken (captioned) | On-screen text added |
 |---|---|---|---|---|
-| 0:00.0–0:01.1 | Balcony clip | 5.00–6.10 | "Do you have a ticket yet?" | Hook: **WIN A $1.3M APARTMENT IN JERUSALEM** + caption plate |
-| 0:01.1–0:02.2 | Balcony clip | 12.00–13.10 | "What's the Dream Raffle?" | Hook headline stays |
-| 0:02.2–0:04.5 | Balcony clip (muted, blurred) | 13.10–15.40 | (music) | Prize card: **A $1.3M BRAND-NEW LUXURY APARTMENT IN JERUSALEM** |
-| 0:04.5–0:06.6 | Apartment-tour clip (previous raffle) | 19.40–21.50 | "One bedroom, second bedroom, beautiful bedroom" | **Footage from previous raffles** |
-| 0:06.6–0:09.9 | Apartment-tour clip (previous raffle) | 27.65–31.00 | "Look at this beautiful dining room, this fantastic living room" | **Footage from previous raffles** |
-| 0:09.9–0:13.6 | Dream Raffle 9 promo (this year's apartment), framed crop | 0.10–2.10, 2.50–4.20 | (music) | **THIS YEAR'S APARTMENT · $1.3M** · **This year it's even more luxurious** |
-| 0:13.6–0:15.2 | Apartment-tour clip (previous raffle) | 24.70–26.25 | "And you have a beautiful chance to win" | **9TH YEAR RUNNING · WILL YOU BE NEXT?** + **Footage from previous raffles** |
-| 0:15.2–0:17.3 | Balcony clip | 20.00–22.10 | "Now's the time. What are you waiting for?" | (none) |
-| 0:17.3–0:21.0 | End card | (none) | Music | Logo · **WIN A $1.3M LUXURY APARTMENT IN JERUSALEM** · **1+1 · All Orders Doubled** · **Get Your Ticket →** |
+| 0:00.0–0:08.1 | Balcony clip | 5.00–13.10 | "Do you have a ticket yet? Hello. Do you have a ticket? Excuse me. Do you have a ticket over there? Now's the time to buy tickets to the Dream Raffle. What's the Dream Raffle?" | Hook: **WIN A $1.3M APARTMENT IN JERUSALEM** (+ caption plate for the first line) |
+| 0:08.1–0:11.6 | Balcony clip (muted, blurred) | 13.10–16.60 | (music) | **A $1.3M BRAND-NEW LUXURY APARTMENT IN JERUSALEM** |
+| 0:11.6–0:14.3 | Apartment tour (previous raffle) | 19.40–22.05 | "One bedroom, second bedroom, beautiful bedroom, look at over here" | **Footage from previous raffles** |
+| 0:14.3–0:17.6 | Apartment tour (previous raffle) | 27.65–31.00 | "Look at this beautiful dining room, this fantastic living room" | **Footage from previous raffles** |
+| 0:17.6–0:23.4 | This year's apartment (Dream Raffle 9 promo), framed, 0.65× slow motion | 0.10–2.20, 2.40–4.05 | (music) | **THIS YEAR'S APARTMENT · $1.3M** · **This year it's even more luxurious** |
+| 0:23.4–0:26.7 | Street clip | 24.15–27.45 | "Now is the time. This is the beautiful city, and you could be the winner." | **9TH YEAR RUNNING · WILL YOU BE NEXT?** |
+| 0:26.7–0:28.6 | Kitchen (previous raffle) | 38.65–40.55 | "Do me a favor, buy a ticket, win the raffle" | **Footage from previous raffles** |
+| 0:28.6–0:35.0 | Street clip | 14.25–20.65 | "But you have to click on the link and fill out your information. Otherwise, we won't know who to give the apartment to. Buy a ticket, but hurry." | (none) |
+| 0:35.0–0:36.2 | Balcony clip | 20.95–22.10 | "What are you waiting for?" | (none) |
+| 0:36.2–0:40.7 | End card | (none) | Music | Logo · **WIN A $1.3M LUXURY APARTMENT IN JERUSALEM** · **1+1 · All Orders Doubled** · **Get Your Ticket →** |
 
-**Captions:** every spoken line has English captions. These are the burned-in captions from the source edits, plus a dedicated caption for the opening question.
+**Captions:** every spoken line has English captions. These are the burned-in captions from the source edits, plus a caption plate for the opening line.
 
-**Music:** an original, license-free upbeat instrumental (generated with Stable Audio). It sits under the dialogue and lifts on the prize card, the gallery and the end card.
+**Music:** an original, license-free instrumental. It sits under the dialogue and lifts on the prize card, the gallery and the end card.
 
 ## Key editing choices
 
-- **Removed lines:** spoken lines stating last edition's figures were cut, so no outdated claim is heard or captioned. These are "$1.2 million," "seven winners… you can be the eighth," "today's the last day" and "with all the furniture."
-- **Prize card:** the "$1.2 million" line is replaced by a card with the current $1.3M figure over muted, blurred footage.
+- **Removed lines:** spoken lines with last edition's or time-bound claims are cut: "$1.2 million," "seven winners… the eighth," "last day," "with all the furniture," "now in its eighth year" and "after Purim."
+- **Prize card:** the "$1.2 million" line is replaced by a card with the current figure. The card cuts in already blurred, so last year's caption never shows through.
 - **Previous-raffle footage:** labelled "Footage from previous raffles."
-- **This year's apartment:** shown in a gold frame cropped from the Dream Raffle 9 promo, clear of that promo's logo and headline.
-- **Balcony shots:** cropped in 1.28× to keep a Hebrew for-sale banner with a private phone number out of frame.
+- **This year's apartment:** framed and slowed down for a premium feel.
+- **Balcony shots:** cropped in 1.28× to keep a Hebrew for-sale banner with a private phone number out of frame. The living-room shot's crossfade tail is shortened so a background Hebrew sign never appears.
 - **Logo:** cut from the footage. Replace `public/fb-ad/logo.png` with the original file when available.
-- **Footage left out:** the Trump-mask clip (impersonating a public figure in a paid ad) and the market clip (conflicting URL).
+- **Footage left out:** the Trump-mask clip, and the market section of the street clip (it names a conflicting URL).
 
 ## Ad copy (English)
 
