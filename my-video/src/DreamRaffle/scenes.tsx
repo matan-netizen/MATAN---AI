@@ -66,6 +66,15 @@ export const SceneHook: React.FC = () => {
           style={{ width: 1080, height: 1920 }}
         />
       </AbsoluteFill>
+      {/* Hides the old logo burned into the source (y≈90–390). */}
+      <AbsoluteFill
+        style={{
+          background: `linear-gradient(180deg, ${COLORS.cocoa} 0px, ${COLORS.cocoa} 420px, rgba(43,31,23,0) 600px)`,
+        }}
+      />
+      <Column top={50}>
+        <Logo size={170} />
+      </Column>
       <Sparkles count={18} />
       {/* Covers the source's own caption band (y≈1040–1340). */}
       <div
@@ -125,7 +134,7 @@ const WinnerLayout: React.FC<{
     <BlurredBackdrop crop={CROP.box} at={at} />
     <Sparkles count={20} />
     <Column top={70}>
-      <Logo size={190} />
+      <Logo size={170} />
     </Column>
     <Column top={330} gap={8}>
       {children}
@@ -185,7 +194,7 @@ export const SceneTurn: React.FC = () => {
       <BlurredBackdrop crop={CROP.box} at={CLIP.balcony} />
       <Sparkles count={26} />
       <Column top={70}>
-        <Logo size={190} />
+        <Logo size={170} />
       </Column>
       <Column top={330}>
         <Rise size={110} weight={900} font={SERIF}>
@@ -245,7 +254,7 @@ export const ScenePrize: React.FC = () => {
       <Backdrop />
       <Sparkles />
       <Column top={50}>
-        <Logo size={170} />
+        <Logo size={150} />
       </Column>
       <Column top={268} gap={10}>
         <Pill gold size={36}>
@@ -618,7 +627,7 @@ export const SceneCTA: React.FC = () => {
       <Backdrop />
       <Sparkles count={44} />
       <Column top={50}>
-        <Logo size={250} />
+        <Logo size={220} />
       </Column>
       <Column top={355} gap={4}>
         <Rise size={40} weight={900} color={COLORS.gold} style={{ letterSpacing: 5 }}>

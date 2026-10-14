@@ -201,20 +201,27 @@ export const Gold: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span style={{ color: COLORS.gold }}>{children}</span>
 );
 
+// Official 9th-year logo (public/dream/logo.png) on a cream badge, so its
+// dark lettering stays readable over the dark video.
 export const Logo: React.FC<{ size?: number; delay?: number }> = ({
   size = 220,
   delay = 0,
 }) => {
   const s = useEnter(delay, 12);
   return (
-    <Img
-      src={staticFile("dream/logo.png")}
+    <div
       style={{
-        width: size,
+        padding: size * 0.08,
+        borderRadius: size * 0.14,
+        background: COLORS.cream,
+        border: `3px solid ${COLORS.gold}`,
+        boxShadow: "0 12px 30px rgba(0,0,0,0.5)",
         transform: `scale(${s})`,
-        filter: "drop-shadow(0 12px 26px rgba(0,0,0,0.55))",
+        lineHeight: 0,
       }}
-    />
+    >
+      <Img src={staticFile("dream/logo.png")} style={{ width: size }} />
+    </div>
   );
 };
 
