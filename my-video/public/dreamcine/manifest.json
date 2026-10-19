@@ -2,5 +2,10 @@
   "still:rent": true,
   "still:key": true,
   "still:couch": true,
-  "rent": true
+  "rent": true,
+  "jerusalem": false,
+  "living": true,
+  "view": true,
+  "key": true,
+  "couch": false
 }
