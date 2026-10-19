@@ -1,20 +1,39 @@
-// Synthesizes the cinematic score for DreamRaffleCine (32s), so there are no
+// Synthesizes the cinematic score for DreamRaffleCine, so there are no
 // licensing concerns. No dependencies; writes a 16-bit stereo WAV.
 //
 //   node scripts/generate-dreamcine-score.mjs <out-dir>
 //
-// Sections (seconds, must match PARTS in src/DreamRaffleCine/index.tsx):
-//   0 → 5     tension: low drone, muted pulse (rent)
-//   5 → 19    the dream: warm strings, piano arpeggios, slow build
-//   19 → 23   the cause: piano alone over a soft pad
-//   23 → 27   urgency: string tremolo, accelerating timpani
-//   27 → 32   climax: full strings, brass and timpani, then fade
+// Sections follow the shots in src/DreamRaffleCine/timeline.json (shot
+// lengths computed as in index.tsx, from the voiceover timings):
+//   rent             tension: low drone, muted pulse
+//   jerusalem→cause  the dream: warm strings, piano arpeggios, slow build
+//   cause            the cause: piano alone over a soft pad
+//   couch            urgency: string tremolo, accelerating timpani
+//   end              climax: full strings, brass and timpani, then fade
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+const readJson = (p) =>
+  JSON.parse(readFileSync(new URL(p, import.meta.url), "utf8"));
+const timeline = readJson("../src/DreamRaffleCine/timeline.json");
+const vo = readJson("../src/DreamRaffleCine/vo-timings.json");
+const AT = {};
+let frames = 0;
+for (const t of timeline.shots) {
+  AT[t.id] = frames / timeline.fps;
+  frames += Math.max(
+    t.min,
+    t.vo ? timeline.voAt + Math.ceil(vo[t.vo] * timeline.fps) + timeline.voTail : 0,
+  );
+}
+const DREAM_AT = AT.jerusalem;
+const CAUSE_AT = AT.cause;
+const URGENT_AT = AT.couch;
+const CLIMAX_AT = AT.end;
+
 const SR = 44100;
-const TOTAL = 32;
+const TOTAL = frames / timeline.fps;
 const outDir = process.argv[2] ?? ".";
 mkdirSync(outDir, { recursive: true });
 
@@ -123,25 +142,28 @@ const braam = (start, gain) => {
   timpani(start, 38, gain * 6);
 };
 
-// 0–5: tension. D minor drone with a muted, heartbeat-like pulse.
-strings(0, 5, [38, 45], 0.07, 0.025, 1.2);
-for (let t = 0.2; t < 5; t += 0.8) timpani(t, 38, 0.18);
+// Tension. D minor drone with a muted, heartbeat-like pulse.
+strings(0, DREAM_AT, [38, 45], 0.07, 0.025, 1.2);
+for (let t = 0.2; t < DREAM_AT; t += 0.8) timpani(t, 38, 0.18);
 
-// 5–19: the dream. D – Bm – G – A, 3.5s each, filter opening as it builds.
+// The dream. D – Bm – G – A, 3.5s each and looped, filter opening as it
+// builds.
 const DREAM = [
   [38, [62, 66, 69]],
   [35, [62, 66, 71]],
   [31, [62, 67, 71]],
   [33, [61, 64, 69]],
 ];
-DREAM.forEach(([bass, chord], i) => {
-  const t0 = 5 + i * 3.5;
+const DREAM_LEN = CAUSE_AT - DREAM_AT;
+for (let i = 0; i * 3.5 < DREAM_LEN - 0.5; i++) {
+  const [bass, chord] = DREAM[i % DREAM.length];
+  const t0 = DREAM_AT + i * 3.5;
   strings(
     t0,
-    3.5,
+    Math.min(3.5, CAUSE_AT - t0),
     [bass, bass + 12, ...chord],
     0.05,
-    (t) => 0.03 + 0.05 * ((t - 5) / 14),
+    (t) => 0.03 + 0.05 * ((t - DREAM_AT) / DREAM_LEN),
     0.9,
   );
   const arp = [
@@ -154,43 +176,48 @@ DREAM.forEach(([bass, chord], i) => {
     chord[0] + 12,
     chord[2] + 12,
   ];
-  arp.forEach((note, k) =>
-    piano(t0 + k * 0.4375, note, 0.08, k % 2 ? 0.4 : -0.4),
-  );
-});
+  arp.forEach((note, k) => {
+    if (t0 + k * 0.4375 < CAUSE_AT)
+      piano(t0 + k * 0.4375, note, 0.08, k % 2 ? 0.4 : -0.4);
+  });
+}
 
-// 19–23: the cause. Piano alone over a soft pad.
-strings(19, 4, [38, 50, 57], 0.035, 0.02, 1.5);
+// The cause. Piano alone over a soft pad.
+const CAUSE_LEN = URGENT_AT - CAUSE_AT;
+strings(CAUSE_AT, CAUSE_LEN, [38, 50, 57], 0.035, 0.02, 1.5);
 [
-  [19, [62, 66, 69]],
-  [21, [59, 62, 66]],
+  [CAUSE_AT, [62, 66, 69]],
+  [CAUSE_AT + CAUSE_LEN / 2, [59, 62, 66]],
 ].forEach(([t0, chord]) =>
   chord.forEach((note, k) => piano(t0 + k * 0.12, note, 0.12)),
 );
-piano(22.4, 74, 0.1);
+piano(URGENT_AT - 0.6, 74, 0.1);
 
-// 23–27: urgency. Tremolo strings and accelerating timpani.
+// Urgency. Tremolo strings and accelerating timpani.
+const URGENT_LEN = CLIMAX_AT - URGENT_AT;
 strings(
-  23,
-  4,
+  URGENT_AT,
+  URGENT_LEN,
   [33, 45, 57, 64],
   0.05,
-  (t) => 0.03 + 0.08 * ((t - 23) / 4),
+  (t) => 0.03 + 0.08 * ((t - URGENT_AT) / URGENT_LEN),
   0.4,
   8,
 );
-for (let t = 23; t < 27; ) {
-  const p = (t - 23) / 4;
+for (let t = URGENT_AT; t < CLIMAX_AT; ) {
+  const p = (t - URGENT_AT) / URGENT_LEN;
   timpani(t, 33, 0.12 + 0.3 * p * p);
   t += 0.5 - 0.38 * p;
 }
 
-// 27–32: climax. D major, full strings, brass-like stack, timpani.
-braam(27, 0.06);
-strings(27, 4.5, [38, 50, 62, 66, 69, 74, 78], 0.055, 0.12, 0.25);
-strings(27, 4.5, [50, 57, 62], 0.05, (t) => 0.05 + 0.04 * Math.sin(t * 2), 0.2);
-[27, 28, 29, 30].forEach((t, i) => timpani(t, i % 2 ? 45 : 38, 0.35));
-[74, 78, 81, 86].forEach((note, k) => piano(27.5 + k * 0.5, note, 0.08));
+// Climax. D major, full strings, brass-like stack, timpani.
+const C0 = CLIMAX_AT;
+const CLIMAX_LEN = TOTAL - C0 - 0.5;
+braam(C0, 0.06);
+strings(C0, CLIMAX_LEN, [38, 50, 62, 66, 69, 74, 78], 0.055, 0.12, 0.25);
+strings(C0, CLIMAX_LEN, [50, 57, 62], 0.05, (t) => 0.05 + 0.04 * Math.sin(t * 2), 0.2);
+[0, 1, 2, 3].forEach((d, i) => timpani(C0 + d, i % 2 ? 45 : 38, 0.35));
+[74, 78, 81, 86].forEach((note, k) => piano(C0 + 0.5 + k * 0.5, note, 0.08));
 
 // Reverb (small Schroeder) and write.
 const verb = (input, offset) => {
