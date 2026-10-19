@@ -16,12 +16,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+// Without FAL_KEY, requests go out unauthenticated and rely on an egress
+// proxy that injects the fal.ai credentials (e.g. Claude Code cloud sessions).
 const KEY = process.env.FAL_KEY;
 if (!KEY) {
-  console.error(
-    "FAL_KEY is not set. Add it in the environment settings and start a new session.",
-  );
-  process.exit(1);
+  console.warn("FAL_KEY is not set; relying on proxy-injected fal.ai auth.");
 }
 
 const ROOT = "public/dreamcine";
@@ -103,12 +102,22 @@ const CLIP_SHOTS = {
 };
 
 const headers = {
-  Authorization: `Key ${KEY}`,
+  ...(KEY ? { Authorization: `Key ${KEY}` } : {}),
   "Content-Type": "application/json",
 };
 
-// fal queue API: submit, poll status, then fetch the result.
+// fal queue API: submit, poll status, then fetch the result. Without a key,
+// use the synchronous fal.run endpoint (the host the proxy authenticates).
 const run = async (model, input) => {
+  if (!KEY) {
+    const res = await fetch(`https://fal.run/${model}`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(input),
+    });
+    if (!res.ok) throw new Error(`${model}: ${res.status} ${await res.text()}`);
+    return res.json();
+  }
   const sub = await fetch(`https://queue.fal.run/${model}`, {
     method: "POST",
     headers,
