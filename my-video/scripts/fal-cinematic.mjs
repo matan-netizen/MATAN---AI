@@ -15,6 +15,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
 
 // Without FAL_KEY, requests go out unauthenticated and rely on an egress
 // proxy that injects the fal.ai credentials (e.g. Claude Code cloud sessions).
@@ -110,13 +111,15 @@ const headers = {
 // use the synchronous fal.run endpoint (the host the proxy authenticates).
 const run = async (model, input) => {
   if (!KEY) {
-    const res = await fetch(`https://fal.run/${model}`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(input),
-    });
-    if (!res.ok) throw new Error(`${model}: ${res.status} ${await res.text()}`);
-    return res.json();
+    // curl, not fetch: video jobs can outlast undici's 5-minute header timeout.
+    const out = execFileSync(
+      "curl",
+      ["-sS", "--fail-with-body", "--max-time", "1500", "-X", "POST",
+       "-H", "Content-Type: application/json", "--data-binary", "@-",
+       `https://fal.run/${model}`],
+      { input: JSON.stringify(input), maxBuffer: 64 << 20 },
+    );
+    return JSON.parse(out.toString());
   }
   const sub = await fetch(`https://queue.fal.run/${model}`, {
     method: "POST",
