@@ -62,6 +62,8 @@ type Shot = {
   vo?: string;
   // Source range in seconds of the client's promo video.
   promo?: number[];
+  // Play the promo's own sound (the winner's interview) instead of VO.
+  sound?: boolean;
   // Real footage of this year's apartment (public/dreamcine/apartment),
   // cut from the client's walkthrough with its burned-in captions cropped off.
   footage?: string;
@@ -117,6 +119,7 @@ const SHOTS: Shot[] = timeline.shots.map((t) => ({
   id: t.id,
   vo: t.vo,
   promo: t.promo,
+  sound: t.sound,
   duration: Math.max(
     t.min,
     t.vo ? VO_AT + Math.ceil(VO_LEN[t.vo] * FPS) + timeline.voTail : 0,
@@ -129,6 +132,29 @@ SHOTS.reduce((t, s) => {
   return t + s.duration;
 }, 0);
 export const CINE_DURATION = SHOTS.reduce((t, s) => t + s.duration, 0);
+
+// Score level: ducked under shots that play their original sound.
+const SCORE = 0.4;
+const DUCKED = 0.08;
+const scoreVolume = (f: number) =>
+  SHOTS.filter((s) => s.sound).reduce(
+    (v, s) =>
+      Math.min(
+        v,
+        interpolate(
+          f,
+          [
+            START[s.id] - 8,
+            START[s.id],
+            START[s.id] + s.duration,
+            START[s.id] + s.duration + 12,
+          ],
+          [SCORE, DUCKED, DUCKED, SCORE],
+          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+        ),
+      ),
+    SCORE,
+  );
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
@@ -159,7 +185,12 @@ const Footage: React.FC<{ shot: Shot }> = ({ shot }) => {
     return (
       <OffthreadVideo
         src={staticFile("dreamcine/promo.mp4")}
-        muted
+        muted={!shot.sound}
+        // Out before the cross-fade tail, where the promo's own narrator
+        // starts talking.
+        volume={(f) =>
+          interpolate(f, [shot.duration - 6, shot.duration], [1, 0], clamp)
+        }
         trimBefore={Math.round(from * FPS)}
         playbackRate={Math.min(1, ((to - from) * FPS) / shot.duration)}
         style={{ width: "100%", height: "100%" }}
@@ -585,7 +616,10 @@ export const DreamRaffleCine: React.FC = () => {
   });
   return (
     <AbsoluteFill style={{ backgroundColor: "black", fontFamily: SANS }}>
-      <Html5Audio src={staticFile("dreamcine/score.mp3")} volume={0.4} />
+      <Html5Audio
+        src={staticFile("dreamcine/score.mp3")}
+        volume={scoreVolume}
+      />
       {SHOTS.filter((shot) => shot.vo).map((shot) => (
         <Sequence
           key={`vo-${shot.id}`}
@@ -603,11 +637,7 @@ export const DreamRaffleCine: React.FC = () => {
           durationInFrames={shot.duration + (i < SHOTS.length - 1 ? 10 : 0)}
         >
           <CrossFade first={i === 0}>
-            {shot.id === "end" ? (
-              <End />
-            ) : (
-              <Footage shot={shot} />
-            )}
+            {shot.id === "end" ? <End /> : <Footage shot={shot} />}
             {TITLES[shot.id] ?? null}
           </CrossFade>
         </Sequence>

@@ -24,7 +24,9 @@ for (const t of timeline.shots) {
   AT[t.id] = frames / timeline.fps;
   frames += Math.max(
     t.min,
-    t.vo ? timeline.voAt + Math.ceil(vo[t.vo] * timeline.fps) + timeline.voTail : 0,
+    t.vo
+      ? timeline.voAt + Math.ceil(vo[t.vo] * timeline.fps) + timeline.voTail
+      : 0,
   );
 }
 const DREAM_AT = AT.jerusalem;
@@ -215,7 +217,14 @@ const C0 = CLIMAX_AT;
 const CLIMAX_LEN = TOTAL - C0 - 0.5;
 braam(C0, 0.06);
 strings(C0, CLIMAX_LEN, [38, 50, 62, 66, 69, 74, 78], 0.055, 0.12, 0.25);
-strings(C0, CLIMAX_LEN, [50, 57, 62], 0.05, (t) => 0.05 + 0.04 * Math.sin(t * 2), 0.2);
+strings(
+  C0,
+  CLIMAX_LEN,
+  [50, 57, 62],
+  0.05,
+  (t) => 0.05 + 0.04 * Math.sin(t * 2),
+  0.2,
+);
 [0, 1, 2, 3].forEach((d, i) => timpani(C0 + d, i % 2 ? 45 : 38, 0.35));
 [74, 78, 81, 86].forEach((note, k) => piano(C0 + 0.5 + k * 0.5, note, 0.08));
 

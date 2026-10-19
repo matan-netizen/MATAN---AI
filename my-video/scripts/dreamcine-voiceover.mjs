@@ -4,31 +4,32 @@
 //
 //   FAL_KEY=... node scripts/dreamcine-voiceover.mjs
 //
-// Optional: VO_VOICE (default Brian), VO_SPEED.
+// Read a little faster than conversational, with high-energy promo delivery
+// (low stability, high style), and loudness-normalized so it sits well above
+// the score. Optional: VO_VOICE (default Brian), VO_SPEED (default 1.12).
 // Writes public/dreamcine/vo/<id>.mp3 and src/DreamRaffleCine/vo-timings.json.
 // Line ids match the shot ids in src/DreamRaffleCine/index.tsx.
 
 import { execFileSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const LINES = {
-  rent: "Twenty-five hundred dollars a month... for a home that will never be yours.",
-  jerusalem: "Now imagine: no mortgage. No rent. Ever.",
+  rent: "Twenty-five hundred dollars a month... for a home that will never be yours?",
+  jerusalem: "Now imagine this: No mortgage! No rent! Ever!",
   promoWin:
-    "A brand-new, one-point-three-million-dollar apartment, in Jerusalem.",
-  living: "Fully furnished, down to the last detail. Just bring your suitcase.",
-  winner: "Last year, Aryeh from New York got the call. He won the apartment.",
-  promoYou: "This year... it could be you.",
+    "A brand-new, one-point-three-million-dollar apartment, right in Jerusalem!",
+  living: "Fully furnished, down to the last detail! Just bring your suitcase!",
+  winner: "Last year, Aryeh from New York got the call!",
+  promoYou: "And this year... it could be you!",
   features:
-    "Givat Mordechai, Jerusalem. Two bedrooms, two full baths, a large balcony, and a Shabbat elevator.",
+    "Givat Mordechai, Jerusalem! Two bedrooms, two full baths, a large balcony, and a Shabbat elevator!",
   offer:
-    "Right now, every order is doubled. Buy one ticket, get one free. And order by November eleventh, for the fifteen-thousand-dollar cash bonus.",
+    "And right now, every order is doubled! Buy one ticket, get one free! Order by November eleventh, and you're in for the fifteen-thousand-dollar cash bonus!",
   cause:
-    "Every ticket helps build the Land of Israel, and supports IDF soldiers.",
-  couch:
-    "Worst case? You helped Israel's heroes. Best case? You get the keys.",
-  end: "Tap the link, double your tickets, and enter today, at the dream raffle dot com.",
+    "Every ticket helps build the Land of Israel, and supports IDF soldiers!",
+  couch: "Worst case? You helped Israel's heroes! Best case? You get the keys!",
+  end: "Don't wait! Tap the link, double your tickets, and enter today, at the dream raffle dot com!",
 };
 
 const KEY = process.env.FAL_KEY;
@@ -38,8 +39,11 @@ if (!KEY) {
 }
 const MODEL = "fal-ai/elevenlabs/tts/multilingual-v2";
 const VOICE = process.env.VO_VOICE ?? "Brian";
-const SPEED = Number(process.env.VO_SPEED ?? 1.0);
-const headers = { Authorization: `Key ${KEY}`, "Content-Type": "application/json" };
+const SPEED = Number(process.env.VO_SPEED ?? 1.12);
+const headers = {
+  Authorization: `Key ${KEY}`,
+  "Content-Type": "application/json",
+};
 
 const run = async (input) => {
   const sub = await fetch(`https://queue.fal.run/${MODEL}`, {
@@ -65,17 +69,39 @@ for (const [id, text] of Object.entries(LINES)) {
   const out = await run({
     text,
     voice: VOICE,
-    stability: 0.45,
-    similarity_boost: 0.75,
-    style: 0.25,
+    stability: 0.3,
+    similarity_boost: 0.8,
+    style: 0.65,
     speed: SPEED,
   });
   const path = join(OUT, `${id}.mp3`);
   const r = await fetch(out.audio.url);
-  writeFileSync(path, Buffer.from(await r.arrayBuffer()));
+  const raw = join(OUT, `${id}.raw.mp3`);
+  writeFileSync(raw, Buffer.from(await r.arrayBuffer()));
+  execFileSync("ffmpeg", [
+    "-v",
+    "error",
+    "-y",
+    "-i",
+    raw,
+    "-af",
+    "loudnorm=I=-14:TP=-1.5:LRA=7",
+    "-ar",
+    "44100",
+    "-b:a",
+    "192k",
+    path,
+  ]);
+  unlinkSync(raw);
   const sec = Number(
     execFileSync("ffprobe", [
-      "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path,
+      "-v",
+      "error",
+      "-show_entries",
+      "format=duration",
+      "-of",
+      "csv=p=0",
+      path,
     ]).toString(),
   );
   timings[id] = Math.round(sec * 1000) / 1000;
