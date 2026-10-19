@@ -53,12 +53,14 @@ export const CINE_FPS = 30;
 type Shot = {
   id: string;
   duration: number;
+  // Real footage of this year's apartment (public/dreamcine/apartment),
+  // cut from the client's walkthrough with its burned-in captions cropped off.
+  footage?: string;
   // Source shown before the fal.ai clip exists.
   still?: string;
   photo?: string;
   placeholder: string;
   grade: string;
-  lastYear?: boolean;
 };
 
 const SHOTS: Shot[] = [
@@ -80,18 +82,16 @@ const SHOTS: Shot[] = [
   {
     id: "living",
     duration: 120,
-    photo: "living",
-    placeholder: "Dolly through the furnished living room",
+    footage: "living",
+    placeholder: "Pan from the sofa to the dining area",
     grade: "saturate(1.05) contrast(1.05) sepia(0.08)",
-    lastYear: true,
   },
   {
     id: "view",
     duration: 90,
-    photo: "view",
-    placeholder: "Push toward the balcony and the Jerusalem view",
+    footage: "bedroom",
+    placeholder: "Pan across the bedroom",
     grade: "saturate(1.08) contrast(1.05) sepia(0.1)",
-    lastYear: true,
   },
   {
     id: "key",
@@ -148,11 +148,15 @@ const Push: React.FC<{ src: string; filter: string }> = ({ src, filter }) => {
 };
 
 const Footage: React.FC<{ shot: Shot }> = ({ shot }) => {
-  if (HAVE[shot.id]) {
+  if (shot.footage || HAVE[shot.id]) {
     return (
       <AbsoluteFill style={{ overflow: "hidden" }}>
         <OffthreadVideo
-          src={staticFile(`dreamcine/clips/${shot.id}.mp4`)}
+          src={staticFile(
+            shot.footage
+              ? `dreamcine/apartment/${shot.footage}.mp4`
+              : `dreamcine/clips/${shot.id}.mp4`,
+          )}
           muted
           style={{
             width: "100%",
@@ -321,25 +325,6 @@ const Lines: React.FC<{
   </div>
 );
 
-const LastYear: React.FC = () => (
-  <div
-    style={{
-      position: "absolute",
-      bottom: 300,
-      left: 0,
-      right: 0,
-      textAlign: "center",
-      fontFamily: SANS,
-      fontWeight: 600,
-      fontSize: 26,
-      color: "rgba(255,255,255,0.85)",
-      textShadow: SHADOW,
-    }}
-  >
-    Photos: previous Dream Raffle apartment
-  </div>
-);
-
 const CAUSE = [
   { src: IMG.soldiers, label: "Support for IDF soldiers" },
   { src: IMG.ambulance, label: "Emergency medical equipment" },
@@ -408,15 +393,23 @@ const End: React.FC = () => {
         filter="brightness(0.35) blur(4px) saturate(1.1)"
       />
       <Lines top={170}>
-        <Img
-          src={staticFile("dreamus/logo-en.png")}
+        {/* Cream backing: the logo's dark-brown arc text ("Back for the 9th
+            year") and skyline outline vanish on the dark end card. */}
+        <div
           style={{
-            width: 460,
+            padding: "34px 40px 30px",
+            borderRadius: 48,
+            background: "#F6EEDF",
+            boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
             opacity: logo,
             transform: `scale(${0.9 + 0.1 * logo})`,
-            filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.6))",
           }}
-        />
+        >
+          <Img
+            src={staticFile("dreamus/logo-en.png")}
+            style={{ width: 400, display: "block" }}
+          />
+        </div>
       </Lines>
       <Lines top={780}>
         <Title at={14} size={70}>
@@ -670,7 +663,6 @@ export const DreamRaffleCine: React.FC = () => {
             ) : (
               <Footage shot={shot} />
             )}
-            {shot.lastYear ? <LastYear /> : null}
             {TITLES[shot.id] ?? null}
           </CrossFade>
         </Sequence>
