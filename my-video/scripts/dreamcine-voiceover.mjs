@@ -2,8 +2,9 @@
 // ElevenLabs on fal.ai, one clip per line, plus a timings file with each
 // clip's length so the shots can be stretched to fit the narration.
 //
-//   FAL_KEY=... node scripts/dreamcine-voiceover.mjs
+//   FAL_KEY=... node scripts/dreamcine-voiceover.mjs [ids…]
 //
+// With ids, only those lines are (re)generated and merged into the timings.
 // Read a little faster than conversational, with high-energy promo delivery
 // (low stability, high style), and loudness-normalized so it sits well above
 // the score. Optional: VO_VOICE (default Brian), VO_SPEED (default 1.12).
@@ -11,7 +12,13 @@
 // Line ids match the shot ids in src/DreamRaffleCine/index.tsx.
 
 import { execFileSync } from "node:child_process";
-import { mkdirSync, unlinkSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 
 const LINES = {
@@ -29,6 +36,8 @@ const LINES = {
   cause:
     "Every ticket helps build the Land of Israel, and supports IDF soldiers!",
   couch: "Worst case? You helped Israel's heroes! Best case? You get the keys!",
+  offerShort:
+    "Buy one ticket, get one free! Plus a fifteen-thousand-dollar cash bonus, if you order by November eleventh!",
   end: "Don't wait! Tap the link, double your tickets, and enter today, at the dream raffle dot com!",
 };
 
@@ -64,8 +73,14 @@ const run = async (input) => {
 
 const OUT = "public/dreamcine/vo";
 mkdirSync(OUT, { recursive: true });
-const timings = {};
+const TIMINGS = "src/DreamRaffleCine/vo-timings.json";
+const only = process.argv.slice(2);
+const timings =
+  only.length && existsSync(TIMINGS)
+    ? JSON.parse(readFileSync(TIMINGS, "utf8"))
+    : {};
 for (const [id, text] of Object.entries(LINES)) {
+  if (only.length && !only.includes(id)) continue;
   const out = await run({
     text,
     voice: VOICE,
@@ -107,7 +122,4 @@ for (const [id, text] of Object.entries(LINES)) {
   timings[id] = Math.round(sec * 1000) / 1000;
   console.log(`${id}: ${timings[id]}s`);
 }
-writeFileSync(
-  "src/DreamRaffleCine/vo-timings.json",
-  JSON.stringify(timings, null, 2) + "\n",
-);
+writeFileSync(TIMINGS, JSON.stringify(timings, null, 2) + "\n");

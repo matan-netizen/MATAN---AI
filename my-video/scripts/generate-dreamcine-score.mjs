@@ -1,22 +1,25 @@
 // Synthesizes the cinematic score for DreamRaffleCine, so there are no
 // licensing concerns. No dependencies; writes a 16-bit stereo WAV.
 //
-//   node scripts/generate-dreamcine-score.mjs <out-dir>
+//   node scripts/generate-dreamcine-score.mjs <out-dir> [timeline.json]
 //
-// Sections follow the shots in src/DreamRaffleCine/timeline.json (shot
-// lengths computed as in index.tsx, from the voiceover timings):
-//   rent             tension: low drone, muted pulse
-//   jerusalem→cause  the dream: warm strings, piano arpeggios, slow build
-//   cause            the cause: piano alone over a soft pad
-//   couch            urgency: string tremolo, accelerating timpani
-//   end              climax: full strings, brass and timpani, then fade
+// Sections follow the shots of a DreamRaffleCine timeline (default
+// timeline.json; shot lengths computed as in index.tsx, from the voiceover
+// timings). Its "score" map names the shot each section starts on:
+//   start → dream    tension: low drone, muted pulse
+//   dream → cause    the dream: warm strings, piano arpeggios, slow build
+//   cause → urgent   the cause: piano alone over a soft pad
+//   urgent → climax  urgency: string tremolo, accelerating timpani
+//   climax → end     climax: full strings, brass and timpani, then fade
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const readJson = (p) =>
   JSON.parse(readFileSync(new URL(p, import.meta.url), "utf8"));
-const timeline = readJson("../src/DreamRaffleCine/timeline.json");
+const timeline = readJson(
+  `../src/DreamRaffleCine/${process.argv[3] ?? "timeline.json"}`,
+);
 const vo = readJson("../src/DreamRaffleCine/vo-timings.json");
 const AT = {};
 let frames = 0;
@@ -29,10 +32,10 @@ for (const t of timeline.shots) {
       : 0,
   );
 }
-const DREAM_AT = AT.jerusalem;
-const CAUSE_AT = AT.cause;
-const URGENT_AT = AT.couch;
-const CLIMAX_AT = AT.end;
+const DREAM_AT = AT[timeline.score.dream];
+const CAUSE_AT = AT[timeline.score.cause];
+const URGENT_AT = AT[timeline.score.urgent];
+const CLIMAX_AT = AT[timeline.score.climax];
 
 const SR = 44100;
 const TOTAL = frames / timeline.fps;

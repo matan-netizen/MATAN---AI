@@ -1,0 +1,21 @@
+{
+  "fps": 30,
+  "voAt": 4,
+  "voTail": 10,
+  "score": {
+    "dream": "promoWin",
+    "cause": "winner",
+    "urgent": "offer",
+    "climax": "end"
+  },
+  "shots": [
+    { "id": "rent", "min": 120, "vo": "rent" },
+    { "id": "promoWin", "min": 60, "vo": "promoWin", "promo": [7.0, 9.75] },
+    { "id": "living", "min": 90, "vo": "living" },
+    { "id": "winner", "min": 60, "vo": "winner", "promo": [10.0, 12.6] },
+    { "id": "winnerTalk", "min": 114, "promo": [12.6, 16.4], "sound": true },
+    { "id": "promoYou", "min": 40, "vo": "promoYou", "promo": [16.6, 17.9] },
+    { "id": "offer", "min": 0, "vo": "offerShort", "promo": [28.5, 35.8] },
+    { "id": "end", "min": 150, "vo": "end" }
+  ]
+}

@@ -36,6 +36,7 @@
     "dream9-anim-music": "node scripts/generate-dream9-audio.mjs scripts/dream9-wav --anim && remotion ffmpeg -y -loglevel error -i scripts/dream9-wav/music-anim.wav -c:a libmp3lame -b:a 192k public/dream9/audio/music-anim.mp3 && rm -r scripts/dream9-wav",
     "dreamus-sfx": "node scripts/generate-dreamus-sfx.mjs scripts/dreamus-wav && for f in buzzer keys; do remotion ffmpeg -y -loglevel error -i scripts/dreamus-wav/$f.wav -c:a libmp3lame -b:a 192k public/dreamus/audio/$f.mp3; done && rm -r scripts/dreamus-wav",
     "dreamcine-score": "node scripts/generate-dreamcine-score.mjs scripts/dreamcine-wav && remotion ffmpeg -y -loglevel error -i scripts/dreamcine-wav/score.wav -c:a libmp3lame -b:a 192k public/dreamcine/score.mp3 && rm -r scripts/dreamcine-wav",
+    "dreamcine-score-short": "node scripts/generate-dreamcine-score.mjs scripts/dreamcine-wav timeline-short.json && remotion ffmpeg -y -loglevel error -i scripts/dreamcine-wav/score.wav -c:a libmp3lame -b:a 192k public/dreamcine/score-short.mp3 && rm -r scripts/dreamcine-wav",
     "dreamcine-stills": "NODE_USE_ENV_PROXY=1 node scripts/fal-cinematic.mjs stills",
     "dreamcine-clips": "NODE_USE_ENV_PROXY=1 node scripts/fal-cinematic.mjs clips",
     "dreamcine-vo": "node scripts/dreamcine-voiceover.mjs"

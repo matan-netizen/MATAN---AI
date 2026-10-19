@@ -17,6 +17,7 @@ import {
 import { Cursor } from "../DreamRaffle9Anim/art";
 import manifest from "../../public/dreamcine/manifest.json";
 import timeline from "./timeline.json";
+import timelineShort from "./timeline-short.json";
 import vo from "./vo-timings.json";
 
 // Cinematic live-action cut of the US "Rent vs. $0 mortgage" ad. The people
@@ -24,10 +25,12 @@ import vo from "./vo-timings.json";
 // clip exists the composition shows its still, the real photo it is
 // animated from, or a labelled placeholder, so it doubles as an animatic.
 // Segments of the client's motion-graphics promo (public/dreamcine/promo.mp4)
-// are cut in between. Shot order and lengths live in timeline.json: each shot
-// is stretched to fit its voiceover line (npm run dreamcine-vo), and promo
+// are cut in between. Shot order and lengths live in timeline.json (65s
+// full cut) and timeline-short.json (focused ~33s cut): each shot is
+// stretched to fit its voiceover line (npm run dreamcine-vo), and promo
 // segments slow down to fill it.
-// Score: npm run dreamcine-score (reads the same timeline).
+// Score: npm run dreamcine-score / dreamcine-score-short (read the same
+// timelines).
 
 loadFont({
   family: "Montserrat",
@@ -112,49 +115,67 @@ const LOOK: Record<string, Omit<Shot, "id" | "duration">> = {
 };
 
 const FPS = timeline.fps;
-const VO_AT = timeline.voAt;
 const VO_LEN = vo as Record<string, number>;
-const SHOTS: Shot[] = timeline.shots.map((t) => ({
-  ...LOOK[t.id],
-  id: t.id,
-  vo: t.vo,
-  promo: t.promo,
-  sound: t.sound,
-  duration: Math.max(
-    t.min,
-    t.vo ? VO_AT + Math.ceil(VO_LEN[t.vo] * FPS) + timeline.voTail : 0,
-  ),
-}));
 
-const START: Record<string, number> = {};
-SHOTS.reduce((t, s) => {
-  START[s.id] = t;
-  return t + s.duration;
-}, 0);
-export const CINE_DURATION = SHOTS.reduce((t, s) => t + s.duration, 0);
+type Timeline = typeof timeline;
+type Cut = {
+  shots: Shot[];
+  start: Record<string, number>;
+  duration: number;
+  voAt: number;
+};
+
+const makeCut = (t: Timeline): Cut => {
+  const shots: Shot[] = t.shots.map((x) => ({
+    ...LOOK[x.id],
+    id: x.id,
+    vo: x.vo,
+    promo: x.promo,
+    sound: x.sound,
+    duration: Math.max(
+      x.min,
+      x.vo ? t.voAt + Math.ceil(VO_LEN[x.vo] * FPS) + t.voTail : 0,
+    ),
+  }));
+  const start: Record<string, number> = {};
+  const duration = shots.reduce((at, sh) => {
+    start[sh.id] = at;
+    return at + sh.duration;
+  }, 0);
+  return { shots, start, duration, voAt: t.voAt };
+};
+
+const FULL = makeCut(timeline);
+const SHORT = makeCut(timelineShort);
+export const CINE_DURATION = FULL.duration;
+export const CINE_SHORT_DURATION = SHORT.duration;
 
 // Score level: ducked under shots that play their original sound.
 const SCORE = 0.4;
 const DUCKED = 0.08;
-const scoreVolume = (f: number) =>
-  SHOTS.filter((s) => s.sound).reduce(
-    (v, s) =>
-      Math.min(
-        v,
-        interpolate(
-          f,
-          [
-            START[s.id] - 8,
-            START[s.id],
-            START[s.id] + s.duration,
-            START[s.id] + s.duration + 12,
-          ],
-          [SCORE, DUCKED, DUCKED, SCORE],
-          { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-        ),
-      ),
-    SCORE,
-  );
+const scoreVolume =
+  ({ shots, start }: Cut) =>
+  (f: number) =>
+    shots
+      .filter((sh) => sh.sound)
+      .reduce(
+        (v, sh) =>
+          Math.min(
+            v,
+            interpolate(
+              f,
+              [
+                start[sh.id] - 8,
+                start[sh.id],
+                start[sh.id] + sh.duration,
+                start[sh.id] + sh.duration + 12,
+              ],
+              [SCORE, DUCKED, DUCKED, SCORE],
+              { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+            ),
+          ),
+        SCORE,
+      );
 
 const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
@@ -608,7 +629,8 @@ const TITLES: Record<string, React.ReactNode> = {
   ),
 };
 
-export const DreamRaffleCine: React.FC = () => {
+const Cine: React.FC<{ cut: Cut; score: string }> = ({ cut, score }) => {
+  const { shots, start, voAt } = cut;
   const frame = useCurrentFrame();
   const bars = interpolate(frame, [0, 24], [260, 0], {
     ...clamp,
@@ -617,24 +639,26 @@ export const DreamRaffleCine: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: "black", fontFamily: SANS }}>
       <Html5Audio
-        src={staticFile("dreamcine/score.mp3")}
-        volume={scoreVolume}
+        src={staticFile(`dreamcine/${score}`)}
+        volume={scoreVolume(cut)}
       />
-      {SHOTS.filter((shot) => shot.vo).map((shot) => (
-        <Sequence
-          key={`vo-${shot.id}`}
-          name={`vo: ${shot.vo}`}
-          from={START[shot.id] + VO_AT}
-        >
-          <Html5Audio src={staticFile(`dreamcine/vo/${shot.vo}.mp3`)} />
-        </Sequence>
-      ))}
-      {SHOTS.map((shot, i) => (
+      {shots
+        .filter((shot) => shot.vo)
+        .map((shot) => (
+          <Sequence
+            key={`vo-${shot.id}`}
+            name={`vo: ${shot.vo}`}
+            from={start[shot.id] + voAt}
+          >
+            <Html5Audio src={staticFile(`dreamcine/vo/${shot.vo}.mp3`)} />
+          </Sequence>
+        ))}
+      {shots.map((shot, i) => (
         <Sequence
           key={shot.id}
           name={shot.id}
-          from={START[shot.id]}
-          durationInFrames={shot.duration + (i < SHOTS.length - 1 ? 10 : 0)}
+          from={start[shot.id]}
+          durationInFrames={shot.duration + (i < shots.length - 1 ? 10 : 0)}
         >
           <CrossFade first={i === 0}>
             {shot.id === "end" ? <End /> : <Footage shot={shot} />}
@@ -666,6 +690,13 @@ export const DreamRaffleCine: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+export const DreamRaffleCine: React.FC = () => (
+  <Cine cut={FULL} score="score.mp3" />
+);
+export const DreamRaffleCineShort: React.FC = () => (
+  <Cine cut={SHORT} score="score-short.mp3" />
+);
 
 // Each shot dissolves in over the previous one (which runs 10 frames long).
 const CrossFade: React.FC<{ children: React.ReactNode; first: boolean }> = ({

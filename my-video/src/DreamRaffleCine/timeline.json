@@ -2,6 +2,12 @@
   "fps": 30,
   "voAt": 8,
   "voTail": 14,
+  "score": {
+    "dream": "jerusalem",
+    "cause": "cause",
+    "urgent": "couch",
+    "climax": "end"
+  },
   "shots": [
     { "id": "rent", "min": 150, "vo": "rent" },
     { "id": "jerusalem", "min": 90, "vo": "jerusalem" },
