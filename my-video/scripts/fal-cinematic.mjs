@@ -42,8 +42,8 @@ const NEG =
 const STILL_SHOTS = {
   rent: {
     model: "fal-ai/flux/dev",
-    prompt: `${MAN}, standing in a small cramped New York rental apartment kitchen at dusk, looking down at his smartphone with a frustrated, tired expression, cold blue window light, cluttered countertop, ${LOOK}`,
-    seed: 4207,
+    prompt: `stressed and worried, ${MAN}, NOT smiling, furrowed brow, tense jaw, one hand rubbing his temple, standing in a small cramped New York rental apartment kitchen at dusk, staring down at a rent payment notice on his smartphone with a frustrated, exhausted expression, cold blue window light, cluttered countertop, ${LOOK}`,
+    seed: 4208,
   },
   key: {
     model: "fal-ai/flux/dev",
