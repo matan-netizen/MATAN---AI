@@ -14,6 +14,7 @@ import {
   DREAM9_ANIM_FPS,
   DreamRaffle9Anim,
 } from "./DreamRaffle9Anim";
+import { DreamRaffleUS, US_DURATION, US_FPS } from "./DreamRaffleUS";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -64,6 +65,14 @@ export const RemotionRoot: React.FC = () => {
         component={DreamRaffle9Anim}
         durationInFrames={DREAM9_ANIM_DURATION}
         fps={DREAM9_ANIM_FPS}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="DreamRaffleUS"
+        component={DreamRaffleUS}
+        durationInFrames={US_DURATION}
+        fps={US_FPS}
         width={1080}
         height={1920}
       />

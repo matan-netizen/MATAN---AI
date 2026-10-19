@@ -33,7 +33,8 @@
     "voiceover": "NODE_USE_ENV_PROXY=1 node scripts/generate-voiceover.mjs",
     "kardan-music": "node scripts/generate-kardan-music.mjs scripts/kardan.wav && remotion ffmpeg -y -loglevel error -i scripts/kardan.wav -c:a libmp3lame -b:a 192k public/kardan/music.mp3 && rm scripts/kardan.wav",
     "dream9-audio": "node scripts/generate-dream9-audio.mjs scripts/dream9-wav && mkdir -p public/dream9/audio && for f in music bassdrop swoosh cash pop ticker stamp ticktock click riser; do remotion ffmpeg -y -loglevel error -i scripts/dream9-wav/$f.wav -c:a libmp3lame -b:a 192k public/dream9/audio/$f.mp3; done && rm -r scripts/dream9-wav",
-    "dream9-anim-music": "node scripts/generate-dream9-audio.mjs scripts/dream9-wav --anim && remotion ffmpeg -y -loglevel error -i scripts/dream9-wav/music-anim.wav -c:a libmp3lame -b:a 192k public/dream9/audio/music-anim.mp3 && rm -r scripts/dream9-wav"
+    "dream9-anim-music": "node scripts/generate-dream9-audio.mjs scripts/dream9-wav --anim && remotion ffmpeg -y -loglevel error -i scripts/dream9-wav/music-anim.wav -c:a libmp3lame -b:a 192k public/dream9/audio/music-anim.mp3 && rm -r scripts/dream9-wav",
+    "dreamus-sfx": "node scripts/generate-dreamus-sfx.mjs scripts/dreamus-wav && for f in buzzer keys; do remotion ffmpeg -y -loglevel error -i scripts/dreamus-wav/$f.wav -c:a libmp3lame -b:a 192k public/dreamus/audio/$f.mp3; done && rm -r scripts/dreamus-wav"
   },
   "sideEffects": [
     "*.css"
