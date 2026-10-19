@@ -10,7 +10,7 @@
   },
   "shots": [
     { "id": "rent", "min": 120, "vo": "rent" },
-    { "id": "promoWin", "min": 60, "vo": "promoWin", "promo": [7.0, 9.75] },
+    { "id": "promoWin", "min": 60, "vo": "promoWin" },
     { "id": "living", "min": 90, "vo": "living" },
     { "id": "winner", "min": 60, "vo": "winner", "promo": [10.0, 12.6] },
     { "id": "winnerTalk", "min": 114, "promo": [12.6, 16.4], "sound": true },

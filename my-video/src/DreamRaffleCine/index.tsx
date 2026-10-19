@@ -58,6 +58,9 @@ const HAVE = manifest as Record<string, boolean>;
 
 export const CINE_FPS = timeline.fps;
 
+// x: horizontal focus of the photo (0 left – 1 right), dir: pan direction.
+type GalleryPhoto = { src: string; x: number; dir: 1 | -1 };
+
 type Shot = {
   id: string;
   duration: number;
@@ -67,9 +70,9 @@ type Shot = {
   promo?: number[];
   // Play the promo's own sound (the winner's interview) instead of VO.
   sound?: boolean;
-  // Real footage of this year's apartment (public/dreamcine/apartment),
-  // cut from the client's walkthrough with its burned-in captions cropped off.
-  footage?: string;
+  // Photos of this year's apartment from the site's gallery
+  // (public/dreamcine/gallery), shown in turn with a slow pan.
+  gallery?: GalleryPhoto[];
   // Source shown before the fal.ai clip exists.
   still?: string;
   photo?: string;
@@ -90,15 +93,28 @@ const LOOK: Record<string, Omit<Shot, "id" | "duration">> = {
     placeholder: "Aerial drift over the Old City at golden hour",
     grade: "saturate(1.1) contrast(1.05)",
   },
+  promoWin: {
+    gallery: [{ src: "balcony-view", x: 0.42, dir: 1 }],
+    grade: "saturate(1.08) contrast(1.05)",
+  },
   living: {
-    footage: "living",
-    placeholder: "Pan from the sofa to the dining area",
-    grade: "saturate(1.05) contrast(1.05) sepia(0.08)",
+    gallery: [
+      { src: "living", x: 0.5, dir: 1 },
+      { src: "living-dining", x: 0.62, dir: -1 },
+    ],
+    grade: "saturate(1.05) contrast(1.05) sepia(0.06)",
   },
   view: {
-    footage: "bedroom",
-    placeholder: "Pan across the bedroom",
-    grade: "saturate(1.08) contrast(1.05) sepia(0.1)",
+    gallery: [{ src: "cabinet", x: 0.5, dir: 1 }],
+    grade: "saturate(1.05) contrast(1.05) sepia(0.06)",
+  },
+  features: {
+    gallery: [
+      { src: "bedroom", x: 0.42, dir: 1 },
+      { src: "kitchen", x: 0.45, dir: -1 },
+      { src: "balcony", x: 0.35, dir: 1 },
+    ],
+    grade: "saturate(1.05) contrast(1.05) sepia(0.06)",
   },
   key: {
     still: "key",
@@ -200,6 +216,51 @@ const Push: React.FC<{ src: string; filter?: string }> = ({ src, filter }) => {
   );
 };
 
+// Landscape gallery photos fill the frame's height and pan slowly across
+// their focus point; portrait ones just push in.
+const GALLERY_SIZE: Record<string, [number, number]> = {
+  "balcony-view": [1800, 1200],
+  living: [1781, 1188],
+  "living-dining": [1800, 1200],
+  cabinet: [1181, 1772],
+  bedroom: [1800, 1200],
+  kitchen: [1800, 1200],
+  balcony: [1800, 1200],
+};
+const Pan: React.FC<{ photo: GalleryPhoto; filter?: string }> = ({
+  photo,
+  filter,
+}) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const [w, h] = GALLERY_SIZE[photo.src];
+  const scale = Math.max(1920 / h, 1080 / w);
+  const width = w * scale;
+  const height = h * scale;
+  const t = interpolate(frame, [0, durationInFrames], [-1, 1], clamp);
+  const center = 540 - width * photo.x;
+  const x = Math.min(0, Math.max(1080 - width, center + photo.dir * -t * 160));
+  const zoom = interpolate(frame, [0, durationInFrames], [1.0, 1.06], clamp);
+  return (
+    <AbsoluteFill style={{ overflow: "hidden" }}>
+      <Img
+        src={staticFile(`dreamcine/gallery/${photo.src}.jpg`)}
+        style={{
+          position: "absolute",
+          left: x,
+          top: (1920 - height) / 2,
+          width,
+          height,
+          maxWidth: "none",
+          transform: `scale(${zoom})`,
+          transformOrigin: `${photo.x * 100}% 50%`,
+          filter,
+        }}
+      />
+    </AbsoluteFill>
+  );
+};
+
 const Footage: React.FC<{ shot: Shot }> = ({ shot }) => {
   if (shot.promo) {
     const [from, to] = shot.promo;
@@ -218,15 +279,37 @@ const Footage: React.FC<{ shot: Shot }> = ({ shot }) => {
       />
     );
   }
-  if (shot.footage || HAVE[shot.id]) {
+  if (shot.gallery) {
+    const n = shot.gallery.length;
+    const len = Math.ceil(shot.duration / n);
+    return (
+      <AbsoluteFill>
+        {shot.gallery.map((ph, k) => (
+          <Sequence
+            key={ph.src}
+            from={k * len}
+            durationInFrames={k < n - 1 ? len + 10 : undefined}
+          >
+            <CrossFade first={k === 0}>
+              <Pan photo={ph} filter={shot.grade} />
+            </CrossFade>
+          </Sequence>
+        ))}
+        {/* The apartment's white walls swallow the titles without this. */}
+        <AbsoluteFill
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 38%)",
+          }}
+        />
+      </AbsoluteFill>
+    );
+  }
+  if (HAVE[shot.id]) {
     return (
       <AbsoluteFill style={{ overflow: "hidden" }}>
         <OffthreadVideo
-          src={staticFile(
-            shot.footage
-              ? `dreamcine/apartment/${shot.footage}.mp4`
-              : `dreamcine/clips/${shot.id}.mp4`,
-          )}
+          src={staticFile(`dreamcine/clips/${shot.id}.mp4`)}
           muted
           style={{
             width: "100%",
@@ -235,15 +318,6 @@ const Footage: React.FC<{ shot: Shot }> = ({ shot }) => {
             filter: shot.grade,
           }}
         />
-        {shot.footage ? (
-          // The apartment's white walls swallow the titles without this.
-          <AbsoluteFill
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 32%)",
-            }}
-          />
-        ) : null}
       </AbsoluteFill>
     );
   }
@@ -550,6 +624,41 @@ const End: React.FC = () => {
 
 // Titles per shot (shot-local frames).
 const TITLES: Record<string, React.ReactNode> = {
+  promoWin: (
+    <Lines top={250}>
+      <Title at={6} size={56} weight={700}>
+        Imagine winning a
+      </Title>
+      <Title at={12} size={190} color={C.gold} font={COND} weight={700}>
+        $1.3M
+      </Title>
+      <Title at={24} size={70} font={COND} weight={700}>
+        BRAND-NEW APARTMENT
+      </Title>
+      <Title at={32} size={70} color={C.gold} font={COND} weight={700}>
+        IN JERUSALEM
+      </Title>
+    </Lines>
+  ),
+  features: (
+    <Lines top={250}>
+      <Title at={6} size={96} color={C.gold} font={COND} weight={700}>
+        GIVAT MORDECHAI
+      </Title>
+      <Title at={12} size={48} weight={700}>
+        Jerusalem
+      </Title>
+      <Title at={44} size={64} font={COND} weight={700}>
+        2 BEDROOMS · 2 FULL BATHS
+      </Title>
+      <Title at={92} size={64} font={COND} weight={700}>
+        LARGE BALCONY
+      </Title>
+      <Title at={116} size={64} font={COND} weight={700}>
+        SHABBAT ELEVATOR
+      </Title>
+    </Lines>
+  ),
   rent: (
     <>
       <Lines top={260}>
