@@ -1,5 +1,6 @@
 {
   "still:rent": true,
   "still:key": true,
-  "still:couch": true
+  "still:couch": true,
+  "rent": true
 }
